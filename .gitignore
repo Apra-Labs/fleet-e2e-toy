@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.env
+*.log
+# NOTE: CLAUDE.local.md is committed here because this is a demo project.
+# In real projects, add CLAUDE.local.md to .gitignore — it's personal overrides.

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Tag filtering endpoint",
+    "description": "GET /api/notes?tag=work returns only notes with that tag. Already partially implemented — needs tests.",
+    "passes": false
+  },
+  {
+    "name": "Full-text search",
+    "description": "GET /api/notes?q=meeting searches title and content. Already partially implemented — needs edge case tests (empty query, no matches).",
+    "passes": false
+  },
+  {
+    "name": "Pagination support",
+    "description": "GET /api/notes?page=1&limit=10 returns paginated results with total count in response. Add pagination metadata: { data: [...], total: N, page: N, limit: N }.",
+    "passes": false
+  },
+  {
+    "name": "Note archiving",
+    "description": "Add an 'archived' boolean field to notes. POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints. GET /api/notes excludes archived notes by default; GET /api/notes?include_archived=true includes them.",
+    "passes": false
+  }
+]
