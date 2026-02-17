@@ -1,9 +1,12 @@
 #!/bin/bash
 # Overnight harness loop — runs AGENT_PROMPT.md across multiple context windows.
 # Each session completes exactly one feature, then exits. This loop restarts it.
-# Press Ctrl+C to stop.
+# Stops automatically when all features pass.
+# To stop early: Ctrl+C, or create a file called STOP (touch STOP) from another terminal.
 
 trap 'echo ""; echo "  HARNESS STOPPED."; exit 0' INT
+
+rm -f STOP
 
 while true; do
   echo ""
@@ -11,13 +14,21 @@ while true; do
   echo "  STARTING NEW CONTEXT WINDOW"
   echo "========================================"
   echo ""
-  OUTPUT=$(claude -p "$(cat AGENT_PROMPT.md)" --max-turns 15 --dangerously-skip-permissions 2>&1)
-  echo "$OUTPUT"
+  claude -p "$(cat AGENT_PROMPT.md)" --max-turns 15 --dangerously-skip-permissions
 
-  if echo "$OUTPUT" | grep -q "ALL_FEATURES_DONE"; then
+  if ! grep -q '"passes": false' feature_list.json; then
     echo ""
     echo "========================================"
     echo "  ALL FEATURES COMPLETE — harness exiting."
+    echo "========================================"
+    exit 0
+  fi
+
+  if [ -f STOP ]; then
+    rm -f STOP
+    echo ""
+    echo "========================================"
+    echo "  STOP file detected — harness exiting."
     echo "========================================"
     exit 0
   fi
