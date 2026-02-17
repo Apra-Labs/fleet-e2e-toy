@@ -5,7 +5,7 @@
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
-if echo "$COMMAND" | grep -qE 'rm\s+-rf|git\s+push\s+--force|drop\s+table|truncate\s+table'; then
+if echo "$COMMAND" | grep -qE 'rm\s+-r|git\s+push\s+--force|drop\s+table|truncate\s+table'; then
   echo "BLOCKED: Destructive command detected: $COMMAND"
   exit 2
 fi
