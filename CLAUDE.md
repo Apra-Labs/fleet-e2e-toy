@@ -10,6 +10,9 @@ REST API for managing notes with tags and search. Node.js + Express + TypeScript
 - `npm run lint:fix` — auto-fix lint errors
 - `npm run build` — compile TypeScript to dist/
 
+ ## Skills
+  - **noteapi-devops** (`.claude/skills/noteapi-devops/SKILL.md`) — CI/CD pipeline diagnostics via GitHub Actions.
+
 ## Code Conventions
 - All API handlers go in `src/api/` — one file per resource
 - Validate inputs before processing — use helpers from `src/utils/validation.ts`
