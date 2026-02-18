@@ -33,9 +33,5 @@
     ]
   },
   "mcpServers": {
-    "browser-snapshot": {
-      "command": "npx",
-      "args": ["-y", "browser-snapshot-mcp-server"]
-    }
   }
 }
