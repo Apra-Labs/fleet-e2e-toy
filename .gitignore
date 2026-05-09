@@ -5,3 +5,8 @@ coverage/
 *.log
 # NOTE: CLAUDE.local.md is committed here because this is a demo project.
 # In real projects, add CLAUDE.local.md to .gitignore — it's personal overrides.
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key

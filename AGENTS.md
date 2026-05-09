@@ -1,30 +1,40 @@
-# NoteAPI
+# Agent Instructions
 
-REST API for managing notes with tags and search. Node.js + Express + TypeScript, in-memory store.
+This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
 
-## Commands
-- `npm test` — run all tests (Jest)
-- `npm run test:coverage` — run tests with coverage report
-- `npm start` — start server on port 3000
-- `npm run lint` — check for lint errors
-- `npm run lint:fix` — auto-fix lint errors
-- `npm run build` — compile TypeScript to dist/
+## Quick Reference
 
- ## Skills
-  - **noteapi-devops** (`.claude/skills/noteapi-devops/SKILL.md`) — CI/CD pipeline diagnostics via GitHub Actions.
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --claim  # Claim work atomically
+bd close <id>         # Complete work
+bd dolt push          # Push beads data to remote
+```
 
-## Code Conventions
-- All API handlers go in `src/api/` — one file per resource
-- Validate inputs before processing — use helpers from `src/utils/validation.ts`
-- Never return raw error objects to the client — wrap in `{ error: "message" }`
-- Use `res.status(code).json(...)` — never `res.send()` for API responses
-- Tests use supertest against the Express app (not a running server)
+## Non-Interactive Shell Commands
 
-## What NOT To Do
-- No `console.log` in route handlers — use structured responses
-- No `any` types — use proper interfaces from `src/models/`
-- Don't install a database — the in-memory store is intentional
+**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
 
+Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
+
+**Use these forms instead:**
+```bash
+# Force overwrite without prompting
+cp -f source dest           # NOT: cp source dest
+mv -f source dest           # NOT: mv source dest
+rm -f file                  # NOT: rm file
+
+# For recursive operations
+rm -rf directory            # NOT: rm -r directory
+cp -rf source dest          # NOT: cp -r source dest
+```
+
+**Other commands that may prompt:**
+- `scp` - use `-o BatchMode=yes` for non-interactive
+- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
+- `apt-get` - use `-y` flag
+- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
