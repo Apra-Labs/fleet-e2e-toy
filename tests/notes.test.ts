@@ -39,6 +39,27 @@ describe("GET /api/notes", () => {
     expect(res.body[0].title).toBe("Tagged");
   });
 
+  it("returns empty array when no notes match tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work note", content: "Body", tags: ["work"] });
+    const res = await request(app).get("/api/notes?tag=nonexistent");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(0);
+  });
+
+  it("returns all notes when no tag filter is specified", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note A", content: "Body A", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note B", content: "Body B", tags: ["personal"] });
+    const res = await request(app).get("/api/notes");
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(2);
+  });
+
   it("searches by query string", async () => {
     await request(app)
       .post("/api/notes")
@@ -50,6 +71,61 @@ describe("GET /api/notes", () => {
     const res = await request(app).get("/api/notes?q=meeting");
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Meeting notes");
+  });
+
+  it("returns empty array when filtering by a tag no notes have", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=nonexistent");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("filters by tag when note has multiple tags", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Multi-tagged", content: "Body", tags: ["work", "urgent", "meeting"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Other note", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Multi-tagged");
+  });
+
+  it("tag filter is case-sensitive", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Lowercase tag", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Uppercase tag", content: "Body", tags: ["Work"] });
+
+    const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Lowercase tag");
+  });
+
+  it("applies both tag and query filters together", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work meeting", content: "Discuss Q3", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work report", content: "Summary", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Personal meeting", content: "Catch up", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=work&q=meeting");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Work meeting");
   });
 });
 
