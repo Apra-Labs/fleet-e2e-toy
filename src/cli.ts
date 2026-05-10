@@ -1,4 +1,5 @@
 import pkg from "../package.json";
+import { validateCliArg } from "./utils/validation";
 
 export function runCli(args: string[]): { exitCode: number; output: string } {
   if (args.includes("--version") || args.includes("-v")) {
@@ -6,6 +7,17 @@ export function runCli(args: string[]): { exitCode: number; output: string } {
       exitCode: 0,
       output: `fleet-e2e-toy v${pkg.version}`,
     };
+  }
+
+  const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
+  for (const arg of positionalArgs) {
+    const error = validateCliArg(arg);
+    if (error) {
+      return {
+        exitCode: 1,
+        output: error,
+      };
+    }
   }
 
   return {

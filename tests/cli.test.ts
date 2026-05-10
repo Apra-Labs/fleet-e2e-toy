@@ -16,4 +16,18 @@ describe("runCli", () => {
       expect(result.output).toContain("1.0.0");
     });
   });
+
+  describe("input validation", () => {
+    it("rejects empty string argument", () => {
+      const result = runCli([""]);
+      expect(result.exitCode).toBe(1);
+      expect(result.output).toBe("Error: input must not be empty");
+    });
+
+    it("rejects whitespace-only argument", () => {
+      const result = runCli(["   "]);
+      expect(result.exitCode).toBe(1);
+      expect(result.output).toBe("Error: input must not be empty");
+    });
+  });
 });
