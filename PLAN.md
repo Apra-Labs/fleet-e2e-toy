@@ -34,7 +34,7 @@
 - Run `npm test` — all Jest tests (existing + new) must pass
 - Manually confirm: `ts-node src/cli.ts --version`, `ts-node src/cli.ts help`, `ts-node src/cli.ts --help`, `ts-node src/cli.ts ""` all produce correct output and exit codes
 - Report: tests passing, any regressions, any issues found
-- Push: `git push origin e2e-s1-25620232517/version-validation-help`
+- Push: `git push origin e2e-s1-25621199172/implement`
 
 ---
 
@@ -51,4 +51,4 @@
 - Each task results in one git commit
 - VERIFY is a checkpoint — stop and report after it; do not proceed past it without PM review
 - Base branch: main
-- Implementation branch: e2e-s1-25620232517/version-validation-help
+- Implementation branch: e2e-s1-25621199172/implement
