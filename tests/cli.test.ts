@@ -30,4 +30,30 @@ describe("runCli", () => {
       expect(result.output).toBe("Error: input must not be empty");
     });
   });
+
+  describe("help subcommand", () => {
+    it("returns help with 'help' subcommand", () => {
+      const result = runCli(["help"]);
+      expect(result.exitCode).toBe(0);
+      expect(result.output).toContain("help");
+      expect(result.output).toContain("--version");
+      expect(result.output).toContain("--help");
+    });
+
+    it("returns help with --help flag", () => {
+      const result = runCli(["--help"]);
+      expect(result.exitCode).toBe(0);
+      expect(result.output).toContain("help");
+      expect(result.output).toContain("--version");
+      expect(result.output).toContain("--help");
+    });
+
+    it("returns help with -h flag", () => {
+      const result = runCli(["-h"]);
+      expect(result.exitCode).toBe(0);
+      expect(result.output).toContain("help");
+      expect(result.output).toContain("--version");
+      expect(result.output).toContain("--help");
+    });
+  });
 });
