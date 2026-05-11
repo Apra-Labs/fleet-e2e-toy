@@ -76,3 +76,10 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateCliArg(value: string): string | null {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return "Error: input must not be empty";
+  }
+  return null;
+}
