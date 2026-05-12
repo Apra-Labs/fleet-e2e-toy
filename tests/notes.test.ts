@@ -26,7 +26,7 @@ describe("GET /api/notes", () => {
     expect(res.body).toHaveLength(2);
   });
 
-  it("filters by tag", async () => {
+  it("filters by tag — matching tag returns only matching notes", async () => {
     await request(app)
       .post("/api/notes")
       .send({ title: "Tagged", content: "Body", tags: ["work"] });
@@ -35,8 +35,32 @@ describe("GET /api/notes", () => {
       .send({ title: "Untagged", content: "Body", tags: ["personal"] });
 
     const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Tagged");
+  });
+
+  it("filters by tag — non-matching tag returns empty array", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work note", content: "Body", tags: ["work"] });
+
+    const res = await request(app).get("/api/notes?tag=nonexistent");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("no tag param returns all notes", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "First", content: "Body 1", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Second", content: "Body 2", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
   });
 
   it("searches by query string", async () => {
