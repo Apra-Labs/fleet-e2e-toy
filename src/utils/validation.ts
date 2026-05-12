@@ -1,5 +1,19 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+/**
+ * Validates that a string is non-empty and not whitespace-only.
+ * Returns an error message on failure, or null on success.
+ */
+export function validateNonBlankString(
+  value: string,
+  fieldName: string = "value"
+): string | null {
+  if (value.trim().length === 0) {
+    return `${fieldName} must not be empty or blank`;
+  }
+  return null;
+}
+
 export interface ValidationError {
   field: string;
   message: string;

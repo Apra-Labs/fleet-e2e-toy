@@ -2,7 +2,7 @@
   "sprint": "e2e-s1.3-25715107841",
   "tasks": [
     {"id": 1, "title": "Add --version flag", "status": "completed", "notes": "Added CLI arg parsing in src/index.ts; reads version from package.json via resolveJsonModule; added CLI tests in tests/cli.test.ts"},
-    {"id": 2, "title": "Add input validation for empty/blank strings", "status": "pending"},
+    {"id": 2, "title": "Add input validation for empty/blank strings", "status": "completed", "notes": "Added validateNonBlankString() to src/utils/validation.ts; returns error message for empty/whitespace-only strings; added 6 tests in validation.test.ts"},
     {"id": 3, "title": "Implement --help command", "status": "pending"},
     {"id": 4, "title": "Final verification", "status": "pending", "type": "verify"}
   ]
