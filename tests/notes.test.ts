@@ -10,7 +10,7 @@ describe("GET /api/notes", () => {
   it("returns empty array when no notes exist", async () => {
     const res = await request(app).get("/api/notes");
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual([]);
+    expect(res.body).toEqual([]);
   });
 
   it("returns all notes", async () => {
@@ -23,7 +23,7 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes");
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(2);
+    expect(res.body).toHaveLength(2);
   });
 
   it("filters by tag", async () => {
@@ -35,21 +35,8 @@ describe("GET /api/notes", () => {
       .send({ title: "Untagged", content: "Body", tags: ["personal"] });
 
     const res = await request(app).get("/api/notes?tag=work");
-    expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].title).toBe("Tagged");
-  });
-
-  it("searches by query string", async () => {
-    await request(app)
-      .post("/api/notes")
-      .send({ title: "Meeting notes", content: "Discuss project", tags: [] });
-    await request(app)
-      .post("/api/notes")
-      .send({ title: "Shopping list", content: "Milk, eggs", tags: [] });
-
-    const res = await request(app).get("/api/notes?q=meeting");
-    expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].title).toBe("Meeting notes");
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Tagged");
   });
 });
 

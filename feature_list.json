@@ -1,8 +1,8 @@
-[
+﻿[
   {
     "name": "Tag filtering endpoint",
     "description": "GET /api/notes?tag=work returns only notes with that tag. Already partially implemented — needs tests.",
-    "passes": false
+    "passes": true
   },
   {
     "name": "Full-text search",

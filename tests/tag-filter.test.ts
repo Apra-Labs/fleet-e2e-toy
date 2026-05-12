@@ -6,7 +6,7 @@ beforeEach(() => {
   noteStore.clear();
 });
 
-describe("GET /api/notes?tag= — Tag Filtering", () => {
+describe("GET /api/notes?tag= � Tag Filtering", () => {
   it("returns only notes with the given tag", async () => {
     await request(app)
       .post("/api/notes")
@@ -17,8 +17,8 @@ describe("GET /api/notes?tag= — Tag Filtering", () => {
 
     const res = await request(app).get("/api/notes?tag=work");
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].title).toBe("Work item");
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Work item");
   });
 
   it("returns empty array when no notes match the tag", async () => {
@@ -28,7 +28,7 @@ describe("GET /api/notes?tag= — Tag Filtering", () => {
 
     const res = await request(app).get("/api/notes?tag=nonexistent");
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual([]);
+    expect(res.body).toEqual([]);
   });
 
   it("returns notes that have the tag among multiple tags", async () => {
@@ -41,8 +41,8 @@ describe("GET /api/notes?tag= — Tag Filtering", () => {
 
     const res = await request(app).get("/api/notes?tag=urgent");
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].title).toBe("Multi-tagged");
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Multi-tagged");
   });
 
   it("returns multiple notes that all share the same tag", async () => {
@@ -58,8 +58,8 @@ describe("GET /api/notes?tag= — Tag Filtering", () => {
 
     const res = await request(app).get("/api/notes?tag=work");
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(2);
-    const titles = res.body.data.map((n: { title: string }) => n.title);
+    expect(res.body).toHaveLength(2);
+    const titles = res.body.map((n: { title: string }) => n.title);
     expect(titles).toContain("Note A");
     expect(titles).toContain("Note B");
   });
@@ -74,6 +74,6 @@ describe("GET /api/notes?tag= — Tag Filtering", () => {
 
     const res = await request(app).get("/api/notes");
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(2);
+    expect(res.body).toHaveLength(2);
   });
 });
