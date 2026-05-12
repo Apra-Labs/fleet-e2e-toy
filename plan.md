@@ -1,32 +1,28 @@
-# Feature: NoteAPI v2 — Search, Pagination, and Archiving
+# PLAN — fleet-e2e-toy Sprint
 
-## Problem Statement
-The API supports basic CRUD but lacks the query features users need for real use: filtering by tag, searching content, paginating large result sets, and archiving old notes without deleting them.
+## Phase 1: Implement all three features
 
-## Approach
-Add four features incrementally. Each feature is independent — no ordering dependencies. All use the existing in-memory store (no database changes). Each feature must have tests before it's considered done.
+### Task 1: Add --version flag (Issue #1)
+- Add CLI argument parsing to the application entry point
+- Read version from package.json
+- When `--version` is passed, print the version string to stdout and exit with code 0
+- Add tests for the --version flag
 
-## Phases
+### Task 2: Add input validation for empty/blank strings (Issue #2)
+- Update validation utilities in `src/utils/validation.ts`
+- Reject empty or whitespace-only strings with a clear error message on stderr
+- Return non-zero exit code for invalid input
+- Ensure existing non-blank input works as before
+- Add tests for empty/blank string validation
 
-### Phase 1: Tag Filtering
-- [ ] GET /api/notes?tag=work returns only notes with that tag
-- [ ] Tests: single tag, no match, multiple tags on same note
-- Integration test: `curl localhost:3000/api/notes?tag=work`
+### Task 3: Implement --help command (Issue #3)
+- Add --help flag parsing to the entry point
+- Display formatted usage information covering all commands and flags
+- Print to stdout and exit with code 0
+- Add tests for the --help flag
 
-### Phase 2: Full-Text Search
-- [ ] GET /api/notes?q=meeting searches title and content (case-insensitive)
-- [ ] Tests: match in title, match in content, no match, empty query returns all
-- Integration test: `curl localhost:3000/api/notes?q=meeting`
-
-### Phase 3: Pagination
-- [ ] GET /api/notes?page=1&limit=10 returns paginated results
-- [ ] Response format: `{ data: [...], total: N, page: N, limit: N }`
-- [ ] Default: page 1, limit 20
-- Integration test: create 25 notes, verify page 1 has 20, page 2 has 5
-
-### Phase 4: Note Archiving
-- [ ] Add `archived: boolean` field to Note model (default: false)
-- [ ] POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints
-- [ ] GET /api/notes excludes archived by default
-- [ ] GET /api/notes?include_archived=true includes them
-- Integration test: archive a note, verify it's hidden, unarchive, verify it's back
+### Task 4: Final verification
+- Run `npm test` to ensure all tests pass
+- Run `npm run lint` to ensure no lint errors
+- Run `npm run build` to ensure TypeScript compiles
+- Commit and push all changes

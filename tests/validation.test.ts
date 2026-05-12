@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateNonBlankString } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -41,6 +41,38 @@ describe("validateCreateInput", () => {
     if (!result.valid) {
       expect(result.errors[0].field).toBe("tags");
     }
+  });
+});
+
+describe("validateNonBlankString", () => {
+  it("returns null for a valid non-blank string", () => {
+    expect(validateNonBlankString("hello")).toBeNull();
+  });
+
+  it("returns an error message for an empty string", () => {
+    const result = validateNonBlankString("", "title");
+    expect(result).not.toBeNull();
+    expect(result).toContain("title");
+  });
+
+  it("returns an error message for a whitespace-only string", () => {
+    const result = validateNonBlankString("   ", "content");
+    expect(result).not.toBeNull();
+    expect(result).toContain("content");
+  });
+
+  it("returns an error message for tab-only string", () => {
+    const result = validateNonBlankString("\t\n", "field");
+    expect(result).not.toBeNull();
+  });
+
+  it("accepts a string with surrounding whitespace as long as it has content", () => {
+    expect(validateNonBlankString("  hello  ")).toBeNull();
+  });
+
+  it("uses default field name when none provided", () => {
+    const result = validateNonBlankString("");
+    expect(result).toContain("value");
   });
 });
 
