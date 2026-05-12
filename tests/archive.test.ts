@@ -67,8 +67,8 @@ describe("Note Archiving", () => {
 
       const res = await request(app).get("/api/notes");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].id).toBe(note.id);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].id).toBe(note.id);
     });
 
     it("includes archived notes when include_archived=true", async () => {
@@ -78,7 +78,7 @@ describe("Note Archiving", () => {
 
       const res = await request(app).get("/api/notes?include_archived=true");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(2);
+      expect(res.body.data).toHaveLength(2);
     });
 
     it("returns empty array when all notes are archived", async () => {
@@ -87,7 +87,7 @@ describe("Note Archiving", () => {
 
       const res = await request(app).get("/api/notes");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual([]);
+      expect(res.body.data).toEqual([]);
     });
 
     it("unarchived notes reappear in default listing", async () => {
@@ -97,7 +97,7 @@ describe("Note Archiving", () => {
 
       const res = await request(app).get("/api/notes");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
+      expect(res.body.data).toHaveLength(1);
     });
   });
 });

@@ -5,13 +5,34 @@ import { validateCreateInput, validateUpdateInput } from "../utils/validation";
 
 const router = Router();
 
-// TODO: Add pagination to GET /api/notes (query params: page, limit)
 // TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
 
-// List all notes, with optional tag filter and search
+// List all notes, with optional tag filter, search, and pagination
 router.get("/", (req: Request, res: Response) => {
+  const pageParam = req.query.page as string | undefined;
+  const limitParam = req.query.limit as string | undefined;
+
+  let page = 1;
+  let limit = 10;
+
+  if (pageParam !== undefined) {
+    page = Number(pageParam);
+    if (!Number.isInteger(page) || page < 1) {
+      res.status(400).json({ error: "page must be a positive integer" });
+      return;
+    }
+  }
+
+  if (limitParam !== undefined) {
+    limit = Number(limitParam);
+    if (!Number.isInteger(limit) || limit < 1) {
+      res.status(400).json({ error: "limit must be a positive integer" });
+      return;
+    }
+  }
+
   let notes = noteStore.getAll();
 
   const tag = req.query.tag as string | undefined;
@@ -32,7 +53,11 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  const total = notes.length;
+  const start = (page - 1) * limit;
+  const paginatedNotes = notes.slice(start, start + limit);
+
+  res.json({ data: paginatedNotes, total, page, limit });
 });
 
 // Get a single note by ID
