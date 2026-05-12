@@ -7,8 +7,8 @@
       "phase": 1,
       "title": "Add edge-case tests for tag filtering",
       "tier": "cheap",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "Added three test cases: unrecognised tag, absent tag param, multiple tags matching. Tests added to notes.test.ts."
     },
     {
       "id": "T1-VERIFY",
