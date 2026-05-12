@@ -5,6 +5,13 @@ export interface ValidationError {
   message: string;
 }
 
+export function validateStringArg(value: string): { valid: boolean; error?: string } {
+  if (value.trim().length === 0) {
+    return { valid: false, error: 'Error: argument cannot be empty or contain only whitespace' };
+  }
+  return { valid: true };
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
