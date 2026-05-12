@@ -61,4 +61,5 @@
 ## Notes
 - Each task should result in a git commit
 - Base branch: main
-- Implementation branch: feat/sprint-init
+- Implementation branch prefix: e2e-s7.1-25757924828
+- Task branches: `<prefix>/<issue-id>` (e.g., e2e-s7.1-25757924828/gh-toy-bzq)
