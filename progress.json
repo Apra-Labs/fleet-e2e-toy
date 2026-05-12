@@ -1,0 +1,59 @@
+{
+  " project\: \fleet-e2e-toy\,
+ \plan_file\: \PLAN.md\,
+ \created\: \2025-05-22\,
+ \tasks\: [
+ {
+ \id\: 1,
+ \step\: \Comprehensive Tests for Tag Filtering\,
+ \type\: \work\,
+ \status\: \completed\,
+ \tier\: \cheap\,
+ \commit\: \\,
+ \notes\: \\
+ },
+ {
+ \id\: 2,
+ \step\: \Comprehensive Tests for Full-text Search\,
+ \type\: \work\,
+ \status\: \completed\,
+ \tier\: \cheap\,
+ \commit\: \\,
+ \notes\: \\
+ },
+ {
+ \id\: 3,
+ \step\: \VERIFY: Phase 1\,
+ \type\: \verify\,
+ \status\: \completed\,
+ \commit\: \\,
+ \notes\: \\
+ },
+ {
+ \id\: 4,
+ \step\: \Implement Pagination logic in GET /api/notes\,
+ \type\: \work\,
+ \status\: \pending\,
+ \tier\: \standard\,
+ \commit\: \\,
+ \notes\: \\
+ },
+ {
+ \id\: 5,
+ \step\: \Add Tests for Pagination\,
+ \type\: \work\,
+ \status\: \pending\,
+ \tier\: \standard\,
+ \commit\: \\,
+ \notes\: \\
+ },
+ {
+ \id\: 6,
+ \step\: \VERIFY: Phase 2\,
+ \type\: \verify\,
+ \status\: \pending\,
+ \commit\: \\,
+ \notes\: \\
+ }
+ ]
+}
