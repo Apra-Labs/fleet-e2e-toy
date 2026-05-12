@@ -27,7 +27,7 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  res.json({ data: notes });
 });
 
 // Get a single note by ID
