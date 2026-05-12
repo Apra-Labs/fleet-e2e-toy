@@ -3,6 +3,7 @@ export interface Note {
   title: string;
   content: string;
   tags: string[];
+  archived: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,22 @@ export const noteStore = {
       createdAt: existing.createdAt,
       updatedAt: existing.updatedAt,
     };
+    notes.set(id, updated);
+    return updated;
+  },
+
+  archive(id: string): Note | undefined {
+    const existing = notes.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, archived: true };
+    notes.set(id, updated);
+    return updated;
+  },
+
+  unarchive(id: string): Note | undefined {
+    const existing = notes.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, archived: false };
     notes.set(id, updated);
     return updated;
   },
