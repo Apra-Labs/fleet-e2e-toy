@@ -51,6 +51,46 @@ describe("GET /api/notes", () => {
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Meeting notes");
   });
+
+  it("returns empty array for unrecognised tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work note", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Personal note", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=nonexistent");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns all notes when tag param is absent", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note 1", content: "Content 1", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note 2", content: "Content 2", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
+  });
+
+  it("matches notes with multiple tags", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Multi-tagged", content: "Body", tags: ["work", "urgent"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Single-tagged", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=urgent");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Multi-tagged");
+  });
 });
 
 describe("GET /api/notes/:id", () => {
