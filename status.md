@@ -5,8 +5,8 @@
 - **Repo:** TBD
 
 ## Members
-- **doer:** Implementation
-- **reviewer:** Review and Verification
+- **doer:** Implementation (Paired)
+- **reviewer:** Review and Verification (Paired)
 
 ## Phases
 
