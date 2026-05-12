@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { validateStringArg } from './utils/validation';
 
 function readVersion(): string {
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
@@ -30,5 +31,16 @@ export function handleCliArgs(): void {
     const version = readVersion();
     console.log(`fleet-e2e-toy v${version}`);
     process.exit(0);
+  }
+
+  // Validate positional string arguments
+  for (const arg of args) {
+    if (!arg.startsWith('-')) {
+      const validation = validateStringArg(arg);
+      if (!validation.valid) {
+        console.error(validation.error);
+        process.exit(1);
+      }
+    }
   }
 }
