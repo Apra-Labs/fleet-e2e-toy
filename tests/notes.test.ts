@@ -39,6 +39,45 @@ describe("GET /api/notes", () => {
     expect(res.body[0].title).toBe("Tagged");
   });
 
+  it("returns empty array for unknown tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Tagged", content: "Body", tags: ["work"] });
+
+    const res = await request(app).get("/api/notes?tag=nope");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns empty array for empty tag string", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Tagged", content: "Body", tags: ["work"] });
+
+    const res = await request(app).get("/api/notes?tag=");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("tag matching is case-sensitive", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "lower", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "upper", content: "Body", tags: ["Work"] });
+
+    const lower = await request(app).get("/api/notes?tag=work");
+    expect(lower.status).toBe(200);
+    expect(lower.body).toHaveLength(1);
+    expect(lower.body[0].title).toBe("lower");
+
+    const upper = await request(app).get("/api/notes?tag=Work");
+    expect(upper.status).toBe(200);
+    expect(upper.body).toHaveLength(1);
+    expect(upper.body[0].title).toBe("upper");
+  });
+
   it("searches by query string", async () => {
     await request(app)
       .post("/api/notes")
