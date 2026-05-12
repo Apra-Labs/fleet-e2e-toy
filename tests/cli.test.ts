@@ -41,14 +41,43 @@ describe('CLI argument parsing', () => {
       expect(processExitSpy).not.toHaveBeenCalled();
       expect(consoleLogSpy).not.toHaveBeenCalled();
     });
+  });
 
-    it('should not exit or print with other flags', () => {
+  describe('help command and flags', () => {
+    it('should print help text and exit with code 0 when help subcommand is passed', () => {
+      process.argv = ['node', 'script.js', 'help'];
+
+      expect(() => handleCliArgs()).toThrow('process.exit(0)');
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Commands:'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Flags:'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('--version'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('--help'));
+      expect(processExitSpy).toHaveBeenCalledWith(0);
+    });
+
+    it('should print help text and exit with code 0 when --help is passed', () => {
       process.argv = ['node', 'script.js', '--help'];
 
-      handleCliArgs();
+      expect(() => handleCliArgs()).toThrow('process.exit(0)');
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Commands:'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Flags:'));
+      expect(processExitSpy).toHaveBeenCalledWith(0);
+    });
 
-      expect(processExitSpy).not.toHaveBeenCalled();
-      expect(consoleLogSpy).not.toHaveBeenCalled();
+    it('should print help text and exit with code 0 when -h is passed', () => {
+      process.argv = ['node', 'script.js', '-h'];
+
+      expect(() => handleCliArgs()).toThrow('process.exit(0)');
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Commands:'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Flags:'));
+      expect(processExitSpy).toHaveBeenCalledWith(0);
+    });
+
+    it('should show help for all supported commands in usage text', () => {
+      process.argv = ['node', 'script.js', 'help'];
+
+      expect(() => handleCliArgs()).toThrow('process.exit(0)');
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('help'));
     });
   });
 });
