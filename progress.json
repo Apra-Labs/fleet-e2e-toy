@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "id": "1.1",
+      "title": "Create src/cli.ts with argument parser and tests",
+      "phase": 1,
+      "tier": "cheap",
+      "type": "work",
+      "status": "pending"
+    },
+    {
+      "id": "1.2",
+      "title": "Wire argument handling into src/index.ts",
+      "phase": 1,
+      "tier": "cheap",
+      "type": "work",
+      "status": "pending"
+    },
+    {
+      "id": "1.verify",
+      "title": "VERIFY: Phase 1 CLI Features",
+      "phase": 1,
+      "tier": "standard",
+      "type": "verify",
+      "status": "pending"
+    }
+  ]
+}
