@@ -1,100 +1,67 @@
-# fleet-e2e-toy — Plan Review
+# fleet-e2e-toy — Code Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-11 00:00:00+00:00
+**Date:** 2026-05-11 21:30:00-04:00
 **Verdict:** APPROVED
 
 ---
 
-## 1. Done Criteria Clarity
+## Correctness — PASS
 
-**PASS.** Every task has an explicit "Done when" section with numbered, testable conditions. Task 1 specifies output format, exit code, absence of extra output, and no regression on normal startup. Task 2 specifies both invocation forms, content requirements, exit code, and no side effects. Task 3 specifies empty string, whitespace-only, non-zero exit, and valid-input passthrough. All criteria are concrete and verifiable.
+All three requirements are implemented correctly:
 
----
+- **T1.1 (--version):** `handleCliArgs()` reads version from `package.json` via `readVersion()`, prints `fleet-e2e-toy v{version}`, and exits with code 0. Both `--version` and `-v` are supported. The version format matches acceptance criteria (`fleet-e2e-toy vx.y.z`).
 
-## 2. Cohesion and Coupling
+- **T1.2 (help):** `getHelpText()` returns a single help string listing commands and flags. Triggered by `help` subcommand, `--help`, and `-h`. Exits with code 0. Help text lists all current commands and flags as required.
 
-**PASS.** All three tasks belong to the same concern — CLI argument parsing — and are grouped in a single phase. Task 1 creates the shared scaffold (`src/cli.ts`); Tasks 2 and 3 extend it independently. Task 3 introduces `validateStringArg` in `src/utils/validation.ts`, which is the right home given the project's existing validation patterns. Coupling between Tasks 2 and 3 is minimal — they both depend on Task 1 but not on each other.
+- **T1.3 (input validation):** `validateStringArg()` in `src/utils/validation.ts` rejects empty and whitespace-only strings. Integrated into `handleCliArgs()` for all positional (non-flag) arguments. Exits with code 1 and a clear error message.
 
----
-
-## 3. Key Abstractions in Earliest Tasks
-
-**PASS.** Task 1 creates `src/cli.ts` and integrates it into `src/index.ts`. This is the foundational abstraction that all subsequent tasks extend. Good sequencing.
+Argument precedence is sensible: help flags are checked before version, which is checked before validation. This means `--help --version` shows help (reasonable behavior).
 
 ---
 
-## 4. Riskiest Assumption Validated Early
+## Test Quality — PASS
 
-**PASS.** The two highest risks identified in the risk register — `process.exit()` killing Jest and `package.json` resolution from `dist/` — are both exercised in Task 1. If either fails, it surfaces immediately before further work is built on top.
+12 new tests in `tests/cli.test.ts` covering:
 
----
+- `--version` and `-v` flags: output format, exit code 0, and no-op when absent
+- `help`, `--help`, `-h`: output content checks (Commands, Flags sections), exit code 0
+- Empty string, whitespace-only string: error output and exit code 1
+- Valid args pass through; flags (dash-prefixed) skip validation
+- Multiple positional args with one invalid
 
-## 5. DRY / Reuse of Early Abstractions
+Tests use `jest.spyOn` for `process.exit` and console methods with proper `mockRestore` in `afterEach`. The `process.exit` mock throws to halt execution, which is a clean pattern for testing exit behavior.
 
-**PASS.** Tasks 2 and 3 both extend `src/cli.ts` created in Task 1 rather than introducing parallel entry points. The help text is kept in a single definition (Task 2) so it stays maintainable. Task 3 places its validator in the existing `src/utils/validation.ts` module, consistent with the project's conventions.
-
----
-
-## 6. Phase Boundaries at Cohesion Boundaries
-
-**PASS.** A single phase is appropriate here — all three issues share the CLI argument-processing code path. Splitting into multiple phases would introduce unnecessary overhead for tightly related work.
+All 33 tests pass (3 suites). No regressions in existing API and validation tests.
 
 ---
 
-## 7. Tiers Monotonically Non-Decreasing
+## Security — PASS
 
-**PASS.** cheap → standard → standard is monotonically non-decreasing.
-
----
-
-## 8. Alignment with Requirements Intent
-
-**PASS.** Each requirement maps cleanly to a task:
-- Issue 1 (--version) → Task 1. Format `fleet-e2e-toy v<version>` satisfies the requirement's accepted formats (`x.y.z` or `fleet-e2e-toy vx.y.z`).
-- Issue 3 (help/--help) → Task 2. Both `help` subcommand and `--help` flag are handled; output lists commands and flags.
-- Issue 2 (empty/blank validation) → Task 3. Empty and whitespace-only strings are rejected with human-readable error and non-zero exit.
-
-**NOTE:** The requirement for Issue 2 says "passing an empty string as input" generically. The plan interprets this as validating positional CLI arguments, which is a reasonable interpretation given that the app is a server and positional args are the only user-supplied string input on the command line. This design choice is sound.
+- `readVersion()` uses `path.join(__dirname, '..', 'package.json')` — no user-controlled path components. NOTE: This reads from the filesystem at runtime rather than inlining the version at build time. Acceptable for this project scope.
+- `validateStringArg` uses `.trim().length` — no injection risk.
+- No new HTTP endpoints, no user input flows to shell or file operations.
 
 ---
 
-## 9. Each Task Completable in One Session
+## File Hygiene — PASS
 
-**PASS.** Each task touches 2–3 files with a narrow, well-defined scope. None requires architectural decisions or external dependencies. All are comfortably single-session work.
-
----
-
-## 10. Dependencies Satisfied in Order
-
-**PASS.** Task 1 has no blockers. Tasks 2 and 3 both depend on Task 1 (cli.ts scaffold) and declare this explicitly. Tasks 2 and 3 are independent of each other, so their ordering is flexible.
+Changed files: `src/cli.ts` (new), `src/index.ts` (modified), `src/utils/validation.ts` (modified), `tests/cli.test.ts` (new), `PLAN.md`, `requirements.md`, `progress.json`, `feedback.md`. All are justified by sprint requirements or sprint tracking. No stray files.
 
 ---
 
-## 11. Vague Tasks
+## Requirements Alignment — PASS
 
-**PASS.** No vague tasks. All three tasks specify exact files, function signatures, behavior, and test expectations.
+Each requirement in `requirements.md` is fully addressed:
 
----
-
-## 12. Hidden Dependencies
-
-**PASS.** No hidden dependencies detected. The VERIFY step correctly depends on all three tasks. The `tsconfig.json` should already support the new files without changes (standard `src/` inclusion). The `package.json` version field is stable at `1.0.0`.
-
----
-
-## 13. Risk Register
-
-**PASS.** Four risks are identified with impact ratings and mitigations:
-- `process.exit()` in Jest (High) — mocking strategy specified.
-- `package.json` resolution from `dist/` (Med) — relative path + build verification.
-- Backward compatibility (Med) — known-flag-only interception, fallthrough for unknown/no args.
-- Whitespace trimming cross-platform (Low) — `.trim().length === 0` is consistent.
-
-All four are genuine risks for this work. Mitigations are practical and actionable.
+| Requirement | Acceptance Criteria | Status |
+|---|---|---|
+| Issue 1: --version | Format `fleet-e2e-toy vx.y.z`, exit 0, matches package.json | Met |
+| Issue 2: Input validation | Empty/blank rejected, clear error, non-zero exit, valid input passes | Met |
+| Issue 3: Help command | `help` and `--help` both work, lists commands/flags, exit 0, no side effects | Met |
 
 ---
 
 ## Summary
 
-The plan is well-structured and complete. All 13 review criteria pass. The single-phase design is appropriate for three tightly related CLI features. Task sequencing is correct — the scaffold comes first, extensions build on it independently. Done criteria are specific and testable. The risk register covers the real risks with practical mitigations. No changes needed.
+Phase 1 is complete and correct. All three CLI features (--version, help, input validation) are implemented cleanly, with proper argument precedence. 12 well-structured tests cover the new behavior with no regressions in the existing 21 tests. Code is consistent with existing patterns (validation logic placed in `utils/validation.ts`, clean separation of concerns). No security issues or unnecessary files. Approved to proceed.
