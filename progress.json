@@ -1,0 +1,70 @@
+{
+  "project": "fleet-e2e-toy",
+  "branch": "e2e-s1.1-25715106074/notes-api-features",
+  "tasks": [
+    {
+      "id": "T1",
+      "phase": 1,
+      "title": "Add edge-case tests for tag filtering",
+      "tier": "cheap",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T1-VERIFY",
+      "phase": 1,
+      "title": "VERIFY: Phase 1 — Tag Filtering",
+      "type": "verify",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T2",
+      "phase": 2,
+      "title": "Add edge-case tests for full-text search",
+      "tier": "cheap",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T2-VERIFY",
+      "phase": 2,
+      "title": "VERIFY: Phase 2 — Full-Text Search",
+      "type": "verify",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T3",
+      "phase": 3,
+      "title": "Update existing GET /api/notes tests for pagination envelope",
+      "tier": "cheap",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T4",
+      "phase": 3,
+      "title": "Implement pagination in GET /api/notes",
+      "tier": "standard",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T5",
+      "phase": 3,
+      "title": "Add pagination-specific tests",
+      "tier": "standard",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T3-VERIFY",
+      "phase": 3,
+      "title": "VERIFY: Phase 3 — Pagination",
+      "type": "verify",
+      "status": "pending",
+      "notes": ""
+    }
+  ]
+}
