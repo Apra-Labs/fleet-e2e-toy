@@ -30,6 +30,8 @@
 
 **FAIL.** The plan identifies the envelope retrofit as the highest-impact risk ("All four existing GET /api/notes test assertions must be updated"). This risk is not validated until Task 3. Task 1 is the safest work in the entire plan — test-only additions for already-working tag filtering with zero chance of regression. The riskiest assumption (that the envelope shape works cleanly with all existing tests and filter paths) sits in Phase 3. To fix: either move a minimal envelope smoke test into Task 1 (validating the shape early), or explicitly acknowledge in the plan narrative that risk validation is deferred to Phase 3 and explain why that ordering is acceptable (e.g., because Phases 1 and 2 are prerequisite test coverage that Task 3 needs to update).
 
+**Doer:** fixed in commit bce5353 — added Phase 3 narrative explaining why envelope validation cannot move earlier: Task 3 must update tag-filter and search tests introduced by Tasks 1 and 2, so Tasks 1 and 2 are hard prerequisites; moving the envelope smoke test before them would either split Task 3 into two passes or create tests that don't yet exist to update.
+
 ---
 
 ## 5. Later Tasks Reuse Early Abstractions (DRY)
@@ -72,6 +74,8 @@
 
 **FAIL.** Task 3 explicitly states: "Also update the tag-filter and search tests added in Tasks 1 and 2 to use `res.body.data`." This is a hard dependency on Tasks 1 and 2 being completed and committed first — Task 3 cannot update tests that don't exist yet. However, Task 3 declares "Blockers: None." This is incorrect and could cause confusion if tasks are executed out of order or assigned to different developers. Fix: Task 3's blockers should list Tasks 1 and 2.
 
+**Doer:** fixed in commit bce5353 — Task 3 Blockers updated to: "Tasks 1 and 2 must be committed first — Task 3 updates the tag-filter and search tests they introduce. Task 3 cannot modify tests that do not yet exist."
+
 ---
 
 ## 12. Risk Register
@@ -80,6 +84,8 @@
 
 - **Invalid `page`/`limit` input:** Task 4 mentions clamping and `isNaN` guarding, but Task 5 has no test case for non-numeric input (`?page=abc`) or zero/negative values (`?limit=0`, `?page=-1`). Without tests, this risk is mitigated in code but unverified.
 - **Search result ordering stability:** The requirements specify "results are returned in a consistent order" for search. Neither the risk register nor any task addresses ordering guarantees. The in-memory store presumably returns insertion order, but this is an implicit assumption that should be called out.
+
+**Doer:** fixed in commit bce5353 — Task 5 gains three new test cases: non-numeric `?page=abc` (treated as default page=1), `?limit=0` (clamped to minimum 1), `?page=-1` (clamped to minimum 1). Risk register gains a "Search result ordering relies on Map insertion order" entry noting the JavaScript Map guarantee and that a database replacement would require explicit ORDER BY.
 
 ---
 
@@ -90,6 +96,8 @@
 1. **Tag filtering — "absent tag" ambiguity:** The requirements state "an unrecognised or absent tag returns an empty array rather than an error." The plan's Task 1 test case 2 asserts "absent `tag` param returns all notes," which matches the current implementation (`if (tag)` skips filtering when the param is missing). However, the requirements wording could be read as requiring an empty array when the tag param is absent. The plan should explicitly note this interpretation choice and confirm it matches stakeholder intent, rather than silently picking a reading.
 
 2. **Search — consistent order requirement:** The requirements for gh-toy-gw1 specify "results are returned in a consistent order." No task in the plan includes a test asserting result ordering. This acceptance criterion is unaddressed.
+
+**Doer:** fixed in commit bce5353 — (1) Task 1 gains an "Interpretation note" explaining that "absent tag param" means the query parameter is not included at all (→ no filter, return all), distinguishing it from an unrecognised tag value (→ empty array). The requirements phrase is interpreted as referring to the latter. (2) Task 2 gains a fifth test case asserting that two matching notes are returned in consistent insertion order across repeated requests.
 
 ---
 
