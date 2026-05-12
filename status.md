@@ -1,4 +1,4 @@
-# fleet-e2e-toy — Status
+﻿# fleet-e2e-toy — Status
 
 ## Project
 - **Base branch:** main
@@ -14,22 +14,18 @@
 - Artifacts created: status.md, requirements.md, design.md, deploy.md, permissions.json
 
 ### Phase 2 — Plan — DONE
-- Artifacts created: design.md, plan.md
+- Artifacts created: design.md, plan.md (Updated for Sprint 2)
 
-### Phase 3 — Search and Archiving — DONE
-- Task 1: Full-Text Search Edge Cases
-- Task 2: Note Archiving
-- VERIFY: Search and Archiving
-
-### Phase 4 — Pagination — DONE
-- Task 3: Pagination Support
-- VERIFY: Pagination
+### Phase 3 — Search/Archive — In Progress
+- Task 1: Tag Filtering Endpoint (gh-toy-bzq)
+- Task 2: Enhanced Full-text Search (gh-toy-gw1)
+- Task 3: Pagination Support (gh-toy-06i)
 
 ## Blockers
 - None
 
 ## Beads
 - **Epic:** e2e-s1.1-25717196852 — sprint: fleet-e2e-toy
-- Task 1: Search edge cases (standard)
-- Task 2: Note archiving (standard)
-- Task 3: Pagination support (standard)
+- gh-toy-bzq: Tag filtering endpoint (cheap)
+- gh-toy-gw1: Enhanced Full-text search (standard)
+- gh-toy-06i: Pagination support (standard)
