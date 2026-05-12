@@ -51,6 +51,26 @@ describe("GET /api/notes", () => {
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Meeting notes");
   });
+
+  it("returns empty array when no notes match tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "Body", tags: ["a"] });
+
+    const res = await request(app).get("/api/notes?tag=non-existent");
+    expect(res.body).toHaveLength(0);
+  });
+
+  it("handles special characters in tag", async () => {
+    const specialTag = "special!@#";
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Special", content: "Body", tags: [specialTag] });
+
+    const res = await request(app).get(`/api/notes?tag=${encodeURIComponent(specialTag)}`);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].tags).toContain(specialTag);
+  });
 });
 
 describe("GET /api/notes/:id", () => {
