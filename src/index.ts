@@ -8,6 +8,18 @@ if (args.includes("--version")) {
   process.exit(0);
 }
 
+if (args.includes("--help")) {
+  console.log(`Usage: noteapi [options]
+
+Options:
+  --version    Print the version and exit
+  --help       Show this help message and exit
+
+Environment:
+  PORT         Port to listen on (default: 3000)`);
+  process.exit(0);
+}
+
 const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, () => {
