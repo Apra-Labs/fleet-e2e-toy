@@ -20,14 +20,14 @@ router.get("/", (req: Request, res: Response) => {
   }
 
   const q = req.query.q as string | undefined;
-  if (q) {
+  if (q && q.trim()) {
     const lower = q.toLowerCase();
     notes = notes.filter(
       (n) => n.title.toLowerCase().includes(lower) || n.content.toLowerCase().includes(lower)
     );
   }
 
-  res.json(notes);
+  res.json({ data: notes });
 });
 
 // Get a single note by ID
