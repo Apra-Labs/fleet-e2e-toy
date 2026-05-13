@@ -42,6 +42,38 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects whitespace-only title", () => {
+    const result = validateCreateInput({ title: "   ", content: "Body" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("title");
+    }
+  });
+
+  it("rejects empty content", () => {
+    const result = validateCreateInput({ title: "Note", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateCreateInput({ title: "Note", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("trims content on valid input", () => {
+    const result = validateCreateInput({ title: "Note", content: "  Body  " });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe("Body");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -62,5 +94,29 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+
+  it("rejects whitespace-only title", () => {
+    const result = validateUpdateInput({ title: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("title");
+    }
+  });
+
+  it("rejects empty content string", () => {
+    const result = validateUpdateInput({ content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects whitespace-only content string", () => {
+    const result = validateUpdateInput({ content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
   });
 });

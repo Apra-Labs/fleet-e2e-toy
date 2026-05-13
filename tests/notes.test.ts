@@ -87,6 +87,30 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 for whitespace-only title", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "   ", content: "Body" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
+
+  it("returns 400 for empty content", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
+
+  it("returns 400 for whitespace-only content", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +133,30 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 for whitespace-only title on update", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Body", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
+
+  it("returns 400 for whitespace-only content on update", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Body", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
   });
 });
 
