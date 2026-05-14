@@ -1,0 +1,44 @@
+[
+  {
+    "id": "cli-init",
+    "task": "Initialize CLI Entry Point",
+    "files": ["src/cli.ts"],
+    "tests": []
+  },
+  {
+    "id": "cli-scripts",
+    "task": "Create Tool Scripts",
+    "files": ["tool", "tool.ps1"],
+    "tests": []
+  },
+  {
+    "id": "gh-toy-4ef",
+    "task": "Implement Version Flag",
+    "files": ["src/cli.ts"],
+    "tests": []
+  },
+  {
+    "id": "gh-toy-kbk",
+    "task": "Implement Help System",
+    "files": ["src/cli.ts"],
+    "tests": []
+  },
+  {
+    "id": "gh-toy-v6z-1",
+    "task": "Implement Argument Validation",
+    "files": ["src/cli.ts"],
+    "tests": []
+  },
+  {
+    "id": "gh-toy-v6z-2",
+    "task": "Add CLI Unit Tests",
+    "files": ["tests/cli.test.ts"],
+    "tests": ["tests/cli.test.ts"]
+  },
+  {
+    "id": "cli-model-validation",
+    "task": "Update Model Validation",
+    "files": ["src/utils/validation.ts"],
+    "tests": ["tests/validation.test.ts"]
+  }
+]
