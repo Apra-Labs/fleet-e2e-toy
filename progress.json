@@ -35,6 +35,7 @@
     {
         "id": "gh-toy-v6z-2",
         "task": "Add CLI Unit Tests",
-        "status": "pending"
+        "status": "completed",
+        "notes": "Added CLI unit tests in tests/cli.test.ts covering version, help, and validation."
     }
 ]
