@@ -1,53 +1,29 @@
-﻿# fleet-e2e-toy — Plan Review
+# fleet-e2e-toy — Phase 1 Review
 
 **Reviewer:** reviewer
 **Date:** 2026-05-13 14:00:00+00:00
-**Verdict:** APPROVED
+**Verdict:** CHANGES NEEDED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## 1. Does every task have clear done criteria?
-**PASS:** All tasks define clear, testable done criteria.
+## Findings
 
-## 2. High cohesion within each task, low coupling between tasks?
-**PASS:** Tasks are appropriately focused and do not overlap.
+**FAIL:** Tool scripts do not point to the CLI entry point.
+- The `tool` and `tool.ps1` wrapper scripts execute `node dist/index.js "$@"` and `node dist/index.js $args` respectively.
+- `index.js` starts the Express server on port 3000 instead of handling CLI commands.
+- Consequently, running `./tool --version` either crashes with `EADDRINUSE` (if port 3000 is occupied) or simply starts the server without printing the version.
+- The wrapper scripts must invoke the CLI entry point (`src/cli.ts` or `dist/cli.js`).
 
-## 3. Are key abstractions and shared interfaces in the earliest tasks?
-**PASS:** The CLI entry point and wrapper scripts are established in Tasks 1 and 2.
+**NOTE:** Version logic in CLI entry point.
+- The `src/cli.ts` file correctly detects the `--version` and `-v` flags and outputs `fleet-e2e-toy v1.0.0` before exiting with code 0. However, this logic is unreachable since `cli.ts` is not executed by the wrapper scripts.
 
-## 4. Is the riskiest assumption validated in Task 1?
-**PASS:** Execution via the entry point is validated in Task 1.
-
-## 5. Later tasks reuse early abstractions (DRY)?
-**PASS:** Tasks 3, 4, and 5 reuse the src/cli.ts structure.
-
-## 6. Are phase boundaries drawn at cohesion boundaries?
-**PASS:** Phases cleanly separate Foundation, Help Subcommand, and Validation.
-
-## 7. Are tiers monotonically non-decreasing within each phase?
-**PASS:** Tiers are cheap -z cheap -z cheap in Phase 1; standard in Phase 2; standard -z standard -z standard in Phase 3.
-
-## 8. Each task completable in one session?
-**PASS:** All tasks are atomic and scoped appropriately.
-
-## 9. Dependencies satisfied in order?
-**PASS:** Dependencies are logical and follow the phases.
-
-## 10. Any vague tasks that two developers would interpret differently?
-**PASS:** Tasks are explicitly defined.
-
-## 11. Any hidden dependencies between tasks?
-**PASS:** No hidden dependencies found.
-
-## 12. Does the plan include a risk register?
-**PASS:** A risk register is included and identifies appropriate risks and mitigations.
-
-## 13. Does the plan align with requirements.md intent?
-**PASS:** Task 7 scope creep has been removed. The plan correctly implements the CLI framework, version flag, and help subcommand without modifying out-of-scope model validation.
+**PASS:** Testing integrity.
+- Existing tests continue to pass (`npm test` returns 21/21 passed).
 
 ---
 
 ## Summary
-The plan is structurally solid, properly tiered, and correctly implements the CLI framework, version flag, and help subcommand. The out-of-scope Task 7 has been successfully removed. Approved to proceed with implementation.
+
+The core logic for the `--version` flag is correctly implemented in `src/cli.ts`. However, the `tool` and `tool.ps1` scripts are misconfigured to start the Express server instead of the CLI entry point. Please update the wrapper scripts so they execute the CLI script (e.g., via `npx ts-node src/cli.ts` or by building and running `node dist/cli.js`) to ensure `./tool --version` works as intended.
