@@ -1,1 +1,6 @@
-﻿[ { " id\: \version_flag\, \name\: \Add --version flag\, \status\: \pending\, \notes\: \\ }, { \id\: \help_command\, \name\: \Implement help command\, \status\: \pending\, \notes\: \\ }, { \id\: \input_validation\, \name\: \Add input validation\, \status\: \pending\, \notes\: \\ }, { \id\: \verify_checkpoint\, \name\: \Verify Checkpoint\, \status\: \pending\, \notes\: \\ } ]
+[
+  { "id": "version_flag", "name": "Add --version flag", "status": "completed", "notes": "Implemented --version and -v flags in src/index.ts. Added tests/cli.test.ts." },
+  { "id": "help_command", "name": "Implement help command", "status": "pending", "notes": "" },
+  { "id": "input_validation", "name": "Add input validation", "status": "pending", "notes": "" },
+  { "id": "verify_checkpoint", "name": "Verify Checkpoint", "status": "pending", "notes": "" }
+]
