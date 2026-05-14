@@ -1,5 +1,13 @@
 const args = process.argv.slice(2);
 
+
+for (const arg of args) {
+  if (arg.trim() === "") {
+    console.error("Error: Argument cannot be empty or whitespace only.");
+    process.exit(1);
+  }
+}
+
 function showHelp() {
   console.log("Usage: fleet-e2e-toy [options] [command]");
   console.log("");
