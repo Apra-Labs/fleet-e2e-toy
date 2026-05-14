@@ -31,3 +31,16 @@ SESSION_DONE
 
 ---
 Status after 2 sessions: 2/4 features done, 2 remaining (Pagination, Note archiving)
+
+## Session 3 — 2026-05-14 00:50 UTC
+
+### Feature: CLI Enhancements
+- Implemented --version/-v flag (gh-toy-4ef)
+- Implemented help command and --help/-h flag (gh-toy-kbk)
+- Added input validation for empty/blank strings (gh-toy-v6z)
+- Created \	ool\ and \	ool.cmd\ scripts for easy CLI access
+- Added comprehensive unit tests in \	ests/cli.test.ts\
+- All tests pass (CLI and existing API tests)
+- Committed: feat: add CLI version, help, and input validation (gh-toy-4ef, gh-toy-kbk, gh-toy-v6z)
+
+SESSION_DONE
