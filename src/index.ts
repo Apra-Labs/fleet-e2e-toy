@@ -3,6 +3,20 @@ if (process.argv.includes('--version') || process.argv.includes('-v')) {
   process.exit(0);
 }
 
+const helpMessage = `Usage: fleet-e2e-toy [command] [options]
+
+Commands:
+  help               Display help information
+
+Options:
+  -v, --version      Display version information
+  -h, --help         Display help information`;
+
+if (process.argv.includes('help') || process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log(helpMessage);
+  process.exit(0);
+}
+
 import app from './app';
 
 const PORT = process.env.PORT ?? 3000;

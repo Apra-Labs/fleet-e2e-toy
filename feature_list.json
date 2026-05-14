@@ -1,5 +1,17 @@
 [
-  { "name": "Add --version flag", "description": "Add --version and -v flags", "passes": true },
-  { "name": "Implement help command", "describen": "Implement help subcommand and flags", "passes": false },
-  { "name": "Add input validation", "description": "Validate empty or blank strings", "passes": false }
+  {
+    "name": "Add --version flag",
+    "description": "Add --version and -v flags",
+    "passes": true
+  },
+  {
+    "name": "Implement help command",
+    "describen": "Implement help subcommand and flags",
+    "passes": true
+  },
+  {
+    "name": "Add input validation",
+    "description": "Validate empty or blank strings",
+    "passes": false
+  }
 ]

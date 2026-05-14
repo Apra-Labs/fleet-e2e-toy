@@ -15,3 +15,29 @@ describe('CLI --version', () => {
     expect(output.trim()).toBe('fleet-e2e-toy v1.0.0');
   });
 });
+
+describe('CLI help', () => {
+  const expectedHelp = `Usage: fleet-e2e-toy [command] [options]
+
+Commands:
+  help               Display help information
+
+Options:
+  -v, --version      Display version information
+  -h, --help         Display help information`;
+
+  it('prints help information with --help', () => {
+    const output = execSync(`\"${tsNode}\" \"${entryPoint}\" --help`, { encoding: 'utf8', env: { ...process.env, PORT: '0' } });
+    expect(output.trim()).toBe(expectedHelp);
+  });
+
+  it('prints help information with -h', () => {
+    const output = execSync(`\"${tsNode}\" \"${entryPoint}\" -h`, { encoding: 'utf8', env: { ...process.env, PORT: '0' } });
+    expect(output.trim()).toBe(expectedHelp);
+  });
+
+  it('prints help information with help subcommand', () => {
+    const output = execSync(`\"${tsNode}\" \"${entryPoint}\" help`, { encoding: 'utf8', env: { ...process.env, PORT: '0' } });
+    expect(output.trim()).toBe(expectedHelp);
+  });
+});
