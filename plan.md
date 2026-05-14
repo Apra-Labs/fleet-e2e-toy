@@ -68,13 +68,6 @@
 - **Done when:** `npm test` passes with the new test suite.
 - **Blockers:** Task 5
 
-#### Task 7: Update Model Validation
-- **Change:** Update `src/utils/validation.ts` to ensure `content` field in notes also rejects whitespace-only strings, aligning with the new validation standards.
-- **Files:** `fleet-e2e-toy/src/utils/validation.ts`, `fleet-e2e-toy/tests/validation.test.ts`
-- **Tier:** standard
-- **Done when:** Existing validation tests pass and new cases for blank content are added and passing.
-- **Blockers:** None
-
 #### VERIFY: Validation & Quality
 - Run `npm test` and ensure all 21 existing + new tests pass.
 - Manually verify `./tool "  "` fails with descriptive error.

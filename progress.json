@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "id": "cli-init",
     "task": "Initialize CLI Entry Point",
@@ -27,11 +27,6 @@
   {
     "id": "gh-toy-v6z-2",
     "task": "Add CLI Unit Tests",
-    "status": "pending"
-  },
-  {
-    "id": "cli-model-validation",
-    "task": "Update Model Validation",
     "status": "pending"
   }
 ]

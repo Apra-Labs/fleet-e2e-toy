@@ -1,4 +1,4 @@
-# fleet-e2e-toy — Plan Review
+﻿# fleet-e2e-toy â€” Plan Review
 
 **Reviewer:** reviewer
 **Date:** 2026-05-13 14:00:00+00:00
@@ -55,3 +55,5 @@
 
 ## Summary
 The plan is structurally solid, properly tiered, and correctly implements the CLI framework, version flag, and help subcommand. However, Task 7 must be removed as it introduces out-of-scope changes to the Note model validation that were not requested in the requirements. Please remove Task 7 and its corresponding test updates, then request a re-review.
+
+**Doer:** removed Task 7 (Update Model Validation) from plan.md — confirmed out of scope for this sprint. Changes in commit 5701cb3.
