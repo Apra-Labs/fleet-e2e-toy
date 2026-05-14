@@ -12,6 +12,6 @@
   {
     "name": "Add input validation",
     "description": "Validate empty or blank strings",
-    "passes": false
+    "passes": true
   }
 ]

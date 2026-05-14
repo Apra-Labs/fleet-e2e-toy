@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+﻿import { execSync } from 'child_process';
 import path from 'path';
 
 const tsNode = path.resolve(__dirname, '../node_modules/.bin/ts-node');
@@ -39,5 +39,19 @@ Options:
   it('prints help information with help subcommand', () => {
     const output = execSync(`\"${tsNode}\" \"${entryPoint}\" help`, { encoding: 'utf8', env: { ...process.env, PORT: '0' } });
     expect(output.trim()).toBe(expectedHelp);
+  });
+});
+
+describe('CLI input validation', () => {
+  it('rejects empty string argument', () => {
+    expect(() => {
+      execSync(`\"${tsNode}\" \"${entryPoint}\" \"\"`, { encoding: 'utf8', env: { ...process.env, PORT: '0' }, stdio: 'pipe' });
+    }).toThrow();
+  });
+
+  it('rejects whitespace-only string argument', () => {
+    expect(() => {
+      execSync(`\"${tsNode}\" \"${entryPoint}\" \"   \"`, { encoding: 'utf8', env: { ...process.env, PORT: '0' }, stdio: 'pipe' });
+    }).toThrow();
   });
 });

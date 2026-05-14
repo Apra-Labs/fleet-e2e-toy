@@ -14,8 +14,8 @@
   {
     "id": "input_validation",
     "name": "Add input validation",
-    "status": "pending",
-    "notes": ""
+    "status": "completed",
+    "notes": "Implemented validation for empty and whitespace-only arguments in src/index.ts. Added tests in tests/cli.test.ts."
   },
   {
     "id": "verify_checkpoint",
