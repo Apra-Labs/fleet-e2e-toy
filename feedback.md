@@ -1,7 +1,7 @@
-# fleet-e2e-toy — Phase 1 Review
+﻿# fleet-e2e-toy — Phase 2 Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-13 14:05:00+00:00
+**Date:** 2026-05-13 15:00:00+00:00
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
@@ -10,16 +10,18 @@
 
 ## Findings
 
-**PASS:** Tool scripts now point to the CLI entry point.
-- **Doer:** fixed tool and tool.ps1 to invoke dist/cli.js instead of dist/index.js
-- The `tool` and `tool.ps1` wrapper scripts correctly execute `node dist/cli.js "$@"` and `node dist/cli.js $args` respectively.
-- Running `./tool --version` and `./tool.ps1 --version` successfully output `fleet-e2e-toy v1.0.0` and exit with code 0 without starting the Express server.
+**PASS:** Implement Help System (gh-toy-kbk)
+- The CLI properly exposes a help subcommand as well as --help and -h flags.
+- Output lists all available commands (help) and flags (-v, --version, -h, --help) with brief descriptions.
+- Invocation styles (./tool help, ./tool --help, ./tool -h) produce identical output.
+- The process exits with code 0.
 
 **PASS:** Testing integrity.
-- Existing tests continue to pass (`npm test` returns 21/21 passed).
+- Existing tests continue to pass (
+pm test returns 21/21 passed).
 
 ---
 
 ## Summary
 
-The doer successfully addressed the findings from the previous review. The wrapper scripts now correctly invoke the CLI entry point (`dist/cli.js`), and the `--version` flag functions as intended. All tests pass successfully. Phase 1 is APPROVED.
+The doer successfully implemented the help subcommand and flags. All output is consistent, lists all features appropriately, and exits successfully. Tests continue to pass. Phase 2 is APPROVED.
