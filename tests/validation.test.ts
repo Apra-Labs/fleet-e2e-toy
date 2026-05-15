@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+﻿import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -10,7 +10,20 @@ describe("validateCreateInput", () => {
     expect(result.valid).toBe(true);
     if (result.valid) {
       expect(result.data.title).toBe("My Note");
+      expect(result.data.content).toBe("Some content");
       expect(result.data.tags).toEqual(["work", "urgent"]);
+    }
+  });
+
+  it("trims title and content", () => {
+    const result = validateCreateInput({
+      title: "  My Note  ",
+      content: "  Some content  ",
+    });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toBe("My Note");
+      expect(result.data.content).toBe("Some content");
     }
   });
 
@@ -26,7 +39,31 @@ describe("validateCreateInput", () => {
     const result = validateCreateInput({ content: "Body" });
     expect(result.valid).toBe(false);
     if (!result.valid) {
-      expect(result.errors[0].field).toBe("title");
+      expect(result.errors.some(e => e.field === "title")).toBe(true);
+    }
+  });
+
+  it("rejects blank title", () => {
+    const result = validateCreateInput({ title: "   ", content: "Body" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "title")).toBe(true);
+    }
+  });
+
+  it("rejects missing content", () => {
+    const result = validateCreateInput({ title: "Title" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("rejects blank content", () => {
+    const result = validateCreateInput({ title: "Title", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "content")).toBe(true);
     }
   });
 
@@ -39,7 +76,7 @@ describe("validateCreateInput", () => {
     const result = validateCreateInput({ title: "Note", content: "Body", tags: [1, 2] });
     expect(result.valid).toBe(false);
     if (!result.valid) {
-      expect(result.errors[0].field).toBe("tags");
+      expect(result.errors.some(e => e.field === "tags")).toBe(true);
     }
   });
 });
@@ -54,9 +91,45 @@ describe("validateUpdateInput", () => {
     }
   });
 
+  it("trims updated fields", () => {
+    const result = validateUpdateInput({ title: "  Updated  ", content: "  New Content  " });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toBe("Updated");
+      expect(result.data.content).toBe("New Content");
+    }
+  });
+
   it("rejects empty title string", () => {
     const result = validateUpdateInput({ title: "" });
     expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "title")).toBe(true);
+    }
+  });
+
+  it("rejects blank title string", () => {
+    const result = validateUpdateInput({ title: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "title")).toBe(true);
+    }
+  });
+
+  it("rejects empty content string", () => {
+    const result = validateUpdateInput({ content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("rejects blank content string", () => {
+    const result = validateUpdateInput({ content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some(e => e.field === "content")).toBe(true);
+    }
   });
 
   it("accepts empty object (no-op update)", () => {
