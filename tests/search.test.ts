@@ -18,7 +18,7 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(2);
+      expect(res.body.data).toHaveLength(2);
     });
 
     it("returns all notes when query is whitespace only", async () => {
@@ -31,7 +31,7 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=%20%20%20");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(2);
+      expect(res.body.data).toHaveLength(2);
     });
   });
 
@@ -43,8 +43,8 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=HELLO");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].title).toBe("Hello World");
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toBe("Hello World");
     });
 
     it("finds matches with mixed case query", async () => {
@@ -54,8 +54,8 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=TyPeScRiPt");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].title).toContain("TypeScript");
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toContain("TypeScript");
     });
 
     it("finds matches in content with case variation", async () => {
@@ -65,29 +65,29 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=BASICS");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
+      expect(res.body.data).toHaveLength(1);
     });
   });
 
   describe("No matches", () => {
-    it("returns empty array with 200 when no notes match", async () => {
+    it("returns empty array in data with 200 when no notes match", async () => {
       await request(app)
         .post("/api/notes")
         .send({ title: "Existing note", content: "Some content", tags: [] });
 
       const res = await request(app).get("/api/notes?q=nonexistent");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual([]);
+      expect(res.body.data).toEqual([]);
     });
 
-    it("returns empty array with 200 for query with no matches", async () => {
+    it("returns empty array in data with 200 for query with no matches", async () => {
       await request(app)
         .post("/api/notes")
         .send({ title: "Note", content: "Content", tags: [] });
 
       const res = await request(app).get("/api/notes?q=xyz123abc");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual([]);
+      expect(res.body.data).toEqual([]);
     });
   });
 
@@ -99,8 +99,8 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=Hello");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].title).toContain("Hello");
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toContain("Hello");
     });
 
     it("finds notes by content", async () => {
@@ -110,17 +110,17 @@ describe("GET /api/notes - Search Edge Cases", () => {
 
       const res = await request(app).get("/api/notes?q=REST");
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
+      expect(res.body.data).toHaveLength(1);
     });
 
-    it("returns empty array for query with no matches in title or content", async () => {
+    it("returns empty array in data for query with no matches in title or content", async () => {
       await request(app)
         .post("/api/notes")
         .send({ title: "One", content: "Another", tags: [] });
 
       const res = await request(app).get("/api/notes?q=missing");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual([]);
+      expect(res.body.data).toEqual([]);
     });
   });
 });
