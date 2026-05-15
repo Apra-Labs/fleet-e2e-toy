@@ -76,3 +76,7 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateString(input: string): boolean {
+  return input.trim().length > 0;
+}
