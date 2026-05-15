@@ -48,3 +48,4 @@ Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
 ## License
 
 MIT
+E2E test s7.1 - sprint coordination test
