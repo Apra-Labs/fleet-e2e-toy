@@ -17,6 +17,6 @@
   {
     "name": "Note archiving",
     "description": "Add an 'archived' boolean field to notes. POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints. GET /api/notes excludes archived notes by default; GET /api/notes?include_archived=true includes them.",
-    "passes": false
+    "passes": true
   }
 ]

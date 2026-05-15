@@ -250,6 +250,93 @@ describe("DELETE /api/notes/:id", () => {
   });
 });
 
+describe("Note archiving", () => {
+  it("archived note is excluded from GET /api/notes by default", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "To archive", content: "Body", tags: [] });
+
+    await request(app).post(`/api/notes/${create.body.id}/archive`);
+
+    const res = await request(app).get("/api/notes");
+    expect(res.body.data.map((n: { id: string }) => n.id)).not.toContain(create.body.id);
+    expect(res.body.total).toBe(0);
+  });
+
+  it("archived note is included when include_archived=true", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Archived", content: "Body", tags: [] });
+
+    await request(app).post(`/api/notes/${create.body.id}/archive`);
+
+    const res = await request(app).get("/api/notes?include_archived=true");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].archived).toBe(true);
+  });
+
+  it("unarchived note is visible again in default GET", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Unarchive me", content: "Body", tags: [] });
+
+    await request(app).post(`/api/notes/${create.body.id}/archive`);
+    await request(app).post(`/api/notes/${create.body.id}/unarchive`);
+
+    const res = await request(app).get("/api/notes");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].archived).toBe(false);
+  });
+
+  it("GET /:id returns archived note", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Archived single", content: "Body", tags: [] });
+
+    await request(app).post(`/api/notes/${create.body.id}/archive`);
+
+    const res = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(res.status).toBe(200);
+    expect(res.body.archived).toBe(true);
+  });
+
+  it("archive returns 404 for non-existent note", async () => {
+    const res = await request(app).post("/api/notes/no-such-id/archive");
+    expect(res.status).toBe(404);
+  });
+
+  it("unarchive returns 404 for non-existent note", async () => {
+    const res = await request(app).post("/api/notes/no-such-id/unarchive");
+    expect(res.status).toBe(404);
+  });
+
+  it("pagination total counts only non-archived notes by default", async () => {
+    for (let i = 1; i <= 5; i++) {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: `Note ${i}`, content: "Content", tags: [] });
+    }
+    const list = await request(app).get("/api/notes");
+    const firstId = list.body.data[0].id;
+    await request(app).post(`/api/notes/${firstId}/archive`);
+
+    const res = await request(app).get("/api/notes");
+    expect(res.body.total).toBe(4);
+    expect(res.body.data).toHaveLength(4);
+  });
+
+  it("archive endpoint returns updated note with archived=true", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Check response", content: "Body", tags: [] });
+
+    const res = await request(app).post(`/api/notes/${create.body.id}/archive`);
+    expect(res.status).toBe(200);
+    expect(res.body.archived).toBe(true);
+    expect(res.body.id).toBe(create.body.id);
+  });
+});
+
 describe("GET /health", () => {
   it("returns ok status", async () => {
     const res = await request(app).get("/health");

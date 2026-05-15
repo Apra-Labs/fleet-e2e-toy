@@ -70,3 +70,18 @@ SESSION_DONE
 - Updated feature_list.json: "Pagination support" -> passes: true
 
 SESSION_DONE
+
+## Session 6 — 2026-05-15
+
+### Feature: Note archiving
+- Added `archived: boolean` (required, default false) to Note interface in src/models/note.ts
+- Added `setArchived(id, archived)` method to noteStore — dedicated method rather than widening UpdateNoteInput
+- Updated POST /api/notes to set `archived: false` on creation
+- Updated GET /api/notes to filter out archived notes before tag/q/pagination (so `total` stays accurate); `?include_archived=true` bypasses the filter
+- Added POST /api/notes/:id/archive and POST /api/notes/:id/unarchive endpoints (200+body on success, 404 if not found)
+- GET /api/notes/:id still returns archived notes (plan only says to exclude from collection)
+- Added 8 tests covering: hide archived from default GET, include_archived=true, unarchive restores visibility, GET /:id works on archived, 404 on both endpoints, pagination total excludes archived, archive response shape
+- All 38 tests pass
+- Updated feature_list.json: "Note archiving" -> passes: true
+
+SESSION_DONE

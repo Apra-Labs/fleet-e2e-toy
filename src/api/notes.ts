@@ -14,6 +14,10 @@ const router = Router();
 router.get("/", (req: Request, res: Response) => {
   let notes = noteStore.getAll();
 
+  if (req.query.include_archived !== "true") {
+    notes = notes.filter((n) => !n.archived);
+  }
+
   const tag = req.query.tag as string | undefined;
   if (tag) {
     notes = notes.filter((n) => n.tags.includes(tag));
@@ -58,6 +62,7 @@ router.post("/", (req: Request, res: Response) => {
   const note: Note = {
     id: uuidv4(),
     ...result.data,
+    archived: false,
     createdAt: now,
     updatedAt: now,
   };
@@ -81,6 +86,26 @@ router.put("/:id", (req: Request<{ id: string }>, res: Response) => {
   }
 
   const updated = noteStore.update(req.params.id, result.data);
+  res.json(updated);
+});
+
+// Archive a note
+router.post("/:id/archive", (req: Request<{ id: string }>, res: Response) => {
+  const updated = noteStore.setArchived(req.params.id, true);
+  if (!updated) {
+    res.status(404).json({ error: "Note not found" });
+    return;
+  }
+  res.json(updated);
+});
+
+// Unarchive a note
+router.post("/:id/unarchive", (req: Request<{ id: string }>, res: Response) => {
+  const updated = noteStore.setArchived(req.params.id, false);
+  if (!updated) {
+    res.status(404).json({ error: "Note not found" });
+    return;
+  }
   res.json(updated);
 });
 
