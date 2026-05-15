@@ -39,6 +39,30 @@ describe("GET /api/notes", () => {
     expect(res.body[0].title).toBe("Tagged");
   });
 
+  it("returns empty array when no notes match tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Work note", content: "Body", tags: ["work"] });
+
+    const res = await request(app).get("/api/notes?tag=nonexistent");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns note that has multiple tags when filtering by one of them", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Multi-tag", content: "Body", tags: ["work", "important", "review"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Single-tag", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=important");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Multi-tag");
+  });
+
   it("searches by query string", async () => {
     await request(app)
       .post("/api/notes")

@@ -31,3 +31,15 @@ SESSION_DONE
 
 ---
 Status after 2 sessions: 2/4 features done, 2 remaining (Pagination, Note archiving)
+
+## Session 3 — 2026-05-15
+
+### Feature: Tag filtering endpoint
+- Tag filtering already implemented in src/api/notes.ts (lines 17-20)
+- Existing test covered single-tag case; added two more tests:
+  - No match: returns empty array when tag doesn't exist on any note
+  - Multiple tags: note with multiple tags is returned when filtering by any one of them
+- All 23 tests pass
+- Updated feature_list.json: "Tag filtering endpoint" -> passes: true
+
+SESSION_DONE
