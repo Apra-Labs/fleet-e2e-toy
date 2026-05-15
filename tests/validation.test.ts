@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateString } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -62,5 +62,18 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+});
+
+describe("validateString", () => {
+  it("returns true for non-empty strings", () => {
+    expect(validateString("hello")).toBe(true);
+    expect(validateString(" a ")).toBe(true);
+  });
+
+  it("returns false for empty or whitespace-only strings", () => {
+    expect(validateString("")).toBe(false);
+    expect(validateString("   ")).toBe(false);
+    expect(validateString("\t\n")).toBe(false);
   });
 });
