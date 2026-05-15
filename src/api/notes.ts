@@ -10,7 +10,7 @@ const router = Router();
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
 
-// List all notes, with optional tag filter and search
+// List all notes, with optional tag filter, search, and pagination
 router.get("/", (req: Request, res: Response) => {
   let notes = noteStore.getAll();
 
@@ -27,7 +27,13 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  const total = notes.length;
+  const page = Math.max(1, parseInt(req.query.page as string) || 1);
+  const limit = Math.max(1, parseInt(req.query.limit as string) || 20);
+  const start = (page - 1) * limit;
+  const data = notes.slice(start, start + limit);
+
+  res.json({ data, total, page, limit });
 });
 
 // Get a single note by ID

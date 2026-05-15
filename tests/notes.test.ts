@@ -10,7 +10,8 @@ describe("GET /api/notes", () => {
   it("returns empty array when no notes exist", async () => {
     const res = await request(app).get("/api/notes");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([]);
+    expect(res.body.data).toEqual([]);
+    expect(res.body.total).toBe(0);
   });
 
   it("returns all notes", async () => {
@@ -23,7 +24,7 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(2);
+    expect(res.body.data).toHaveLength(2);
   });
 
   it("filters by tag", async () => {
@@ -35,8 +36,8 @@ describe("GET /api/notes", () => {
       .send({ title: "Untagged", content: "Body", tags: ["personal"] });
 
     const res = await request(app).get("/api/notes?tag=work");
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].title).toBe("Tagged");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].title).toBe("Tagged");
   });
 
   it("returns empty array when no notes match tag", async () => {
@@ -46,7 +47,7 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?tag=nonexistent");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([]);
+    expect(res.body.data).toEqual([]);
   });
 
   it("returns note that has multiple tags when filtering by one of them", async () => {
@@ -59,8 +60,8 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?tag=important");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].title).toBe("Multi-tag");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].title).toBe("Multi-tag");
   });
 
   it("searches by query string", async () => {
@@ -72,8 +73,8 @@ describe("GET /api/notes", () => {
       .send({ title: "Shopping list", content: "Milk, eggs", tags: [] });
 
     const res = await request(app).get("/api/notes?q=meeting");
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].title).toBe("Meeting notes");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].title).toBe("Meeting notes");
   });
 
   it("searches in content field (not just title)", async () => {
@@ -86,8 +87,8 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?q=meeting");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].title).toBe("Daily log");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].title).toBe("Daily log");
   });
 
   it("returns empty array when no notes match search query", async () => {
@@ -97,7 +98,7 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?q=zzznomatch");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([]);
+    expect(res.body.data).toEqual([]);
   });
 
   it("returns all notes when search query is empty string", async () => {
@@ -110,7 +111,7 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?q=");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(2);
+    expect(res.body.data).toHaveLength(2);
   });
 
   it("search is case-insensitive", async () => {
@@ -120,8 +121,54 @@ describe("GET /api/notes", () => {
 
     const res = await request(app).get("/api/notes?q=meeting");
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].title).toBe("MEETING AGENDA");
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].title).toBe("MEETING AGENDA");
+  });
+
+  it("paginates results with page and limit params", async () => {
+    for (let i = 1; i <= 25; i++) {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: `Note ${i}`, content: "Content", tags: [] });
+    }
+
+    const page1 = await request(app).get("/api/notes?page=1&limit=10");
+    expect(page1.status).toBe(200);
+    expect(page1.body.data).toHaveLength(10);
+    expect(page1.body.total).toBe(25);
+    expect(page1.body.page).toBe(1);
+    expect(page1.body.limit).toBe(10);
+
+    const page3 = await request(app).get("/api/notes?page=3&limit=10");
+    expect(page3.body.data).toHaveLength(5);
+    expect(page3.body.total).toBe(25);
+    expect(page3.body.page).toBe(3);
+  });
+
+  it("defaults to page 1 with limit 20", async () => {
+    for (let i = 1; i <= 25; i++) {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: `Note ${i}`, content: "Content", tags: [] });
+    }
+
+    const res = await request(app).get("/api/notes");
+    expect(res.body.data).toHaveLength(20);
+    expect(res.body.total).toBe(25);
+    expect(res.body.page).toBe(1);
+    expect(res.body.limit).toBe(20);
+  });
+
+  it("returns empty data array when page is beyond total", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Only note", content: "Content", tags: [] });
+
+    const res = await request(app).get("/api/notes?page=5&limit=10");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([]);
+    expect(res.body.total).toBe(1);
+    expect(res.body.page).toBe(5);
   });
 });
 

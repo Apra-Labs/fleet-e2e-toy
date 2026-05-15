@@ -12,7 +12,7 @@
   {
     "name": "Pagination support",
     "description": "GET /api/notes?page=1&limit=10 returns paginated results with total count in response. Add pagination metadata: { data: [...], total: N, page: N, limit: N }.",
-    "passes": false
+    "passes": true
   },
   {
     "name": "Note archiving",

@@ -58,3 +58,15 @@ SESSION_DONE
 - Updated feature_list.json: "Full-text search" -> passes: true
 
 SESSION_DONE
+
+## Session 5 — 2026-05-15
+
+### Feature: Pagination support
+- Changed GET /api/notes response format from plain array to `{ data, total, page, limit }`
+- Default page=1, limit=20; both params are optional
+- Updated all 10 existing GET /api/notes tests to use `res.body.data` instead of `res.body`
+- Added 3 new pagination tests: page+limit params, default values, page beyond total
+- All 30 tests pass
+- Updated feature_list.json: "Pagination support" -> passes: true
+
+SESSION_DONE
