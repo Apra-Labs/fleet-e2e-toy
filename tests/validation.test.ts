@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+﻿import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -27,6 +27,31 @@ describe("validateCreateInput", () => {
     expect(result.valid).toBe(false);
     if (!result.valid) {
       expect(result.errors[0].field).toBe("title");
+    }
+  });
+  it("rejects whitespace-only title", () => {
+    const result = validateCreateInput({ title: "   ", content: "Valid content" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("title");
+      expect(result.errors[0].message).toContain("Title is required");
+    }
+  });
+
+  it("rejects empty content", () => {
+    const result = validateCreateInput({ title: "Title", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+      expect(result.errors[0].message).toContain("non-empty string");
+    }
+  });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateCreateInput({ title: "Title", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
     }
   });
 
@@ -59,8 +84,17 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(false);
   });
 
+  it("rejects empty content string", () => {
+    const result = validateUpdateInput({ content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
   });
 });
+
