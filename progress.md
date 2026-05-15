@@ -43,3 +43,18 @@ Status after 2 sessions: 2/4 features done, 2 remaining (Pagination, Note archiv
 - Updated feature_list.json: "Tag filtering endpoint" -> passes: true
 
 SESSION_DONE
+
+## Session 4 — 2026-05-15
+
+### Feature: Full-text search
+- Search by ?q= already implemented in src/api/notes.ts (lines 22-28) — case-insensitive, searches title and content
+- Empty string query handled correctly: `if (q)` is falsy for "", so no filter applied (returns all)
+- Added 4 edge case tests:
+  - Match in content (not title): verifies content field is searched
+  - No match returns empty array
+  - Empty query string returns all notes
+  - Case-insensitive: uppercase title found by lowercase query
+- All 27 tests pass
+- Updated feature_list.json: "Full-text search" -> passes: true
+
+SESSION_DONE

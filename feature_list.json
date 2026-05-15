@@ -7,7 +7,7 @@
   {
     "name": "Full-text search",
     "description": "GET /api/notes?q=meeting searches title and content. Already partially implemented — needs edge case tests (empty query, no matches).",
-    "passes": false
+    "passes": true
   },
   {
     "name": "Pagination support",

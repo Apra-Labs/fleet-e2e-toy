@@ -75,6 +75,54 @@ describe("GET /api/notes", () => {
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Meeting notes");
   });
+
+  it("searches in content field (not just title)", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Daily log", content: "Had a team meeting today", tags: [] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Random note", content: "Nothing interesting", tags: [] });
+
+    const res = await request(app).get("/api/notes?q=meeting");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Daily log");
+  });
+
+  it("returns empty array when no notes match search query", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note one", content: "Some content", tags: [] });
+
+    const res = await request(app).get("/api/notes?q=zzznomatch");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns all notes when search query is empty string", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note one", content: "Content", tags: [] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Note two", content: "Content", tags: [] });
+
+    const res = await request(app).get("/api/notes?q=");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
+  });
+
+  it("search is case-insensitive", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "MEETING AGENDA", content: "Quarterly review", tags: [] });
+
+    const res = await request(app).get("/api/notes?q=meeting");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("MEETING AGENDA");
+  });
 });
 
 describe("GET /api/notes/:id", () => {
