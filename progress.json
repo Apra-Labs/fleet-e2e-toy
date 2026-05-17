@@ -1,0 +1,79 @@
+{
+    "_schema":  {
+                    "type":  "work | verify",
+                    "status":  "pending | completed | blocked"
+                },
+    "project":  "fleet-e2e-toy",
+    "plan_file":  "PLAN.md",
+    "created":  "2026-05-17",
+    "tasks":  [
+                  {
+                      "id":  1,
+                      "phase":  1,
+                      "step":  "Task 1: Create CLI entry point and wrapper script",
+                      "type":  "work",
+                      "status":  "completed",
+                      "tier":  "standard",
+                      "commit":  "",
+                      "notes":  "Created src/cli.ts and wrapper scripts tool/tool.cmd. Verified with --help."
+                  },
+                  {
+                      "id":  2,
+                      "phase":  1,
+                      "step":  "VERIFY: Phase 1",
+                      "type":  "verify",
+                      "status":  "pending",
+                      "commit":  "",
+                      "notes":  ""
+                  },
+                  {
+                      "id":  3,
+                      "phase":  2,
+                      "step":  "Task 2: Implement --version flag",
+                      "type":  "work",
+                      "status":  "pending",
+                      "tier":  "cheap",
+                      "commit":  "",
+                      "notes":  ""
+                  },
+                  {
+                      "id":  4,
+                      "phase":  2,
+                      "step":  "Task 3: Implement help subcommand and --help flag",
+                      "type":  "work",
+                      "status":  "pending",
+                      "tier":  "standard",
+                      "commit":  "",
+                      "notes":  ""
+                  },
+                  {
+                      "id":  5,
+                      "phase":  2,
+                      "step":  "Task 4: Implement \u0027add\u0027 command with blank string validation",
+                      "type":  "work",
+                      "status":  "pending",
+                      "tier":  "standard",
+                      "commit":  "",
+                      "notes":  ""
+                  },
+                  {
+                      "id":  6,
+                      "phase":  2,
+                      "step":  "Task 5: Add automated tests for CLI features",
+                      "type":  "work",
+                      "status":  "pending",
+                      "tier":  "standard",
+                      "commit":  "",
+                      "notes":  ""
+                  },
+                  {
+                      "id":  7,
+                      "phase":  2,
+                      "step":  "VERIFY: Phase 2",
+                      "type":  "verify",
+                      "status":  "pending",
+                      "commit":  "",
+                      "notes":  ""
+                  }
+              ]
+}
