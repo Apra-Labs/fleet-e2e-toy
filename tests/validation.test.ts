@@ -42,6 +42,22 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateCreateInput({ title: "T", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects empty string content", () => {
+    const result = validateCreateInput({ title: "T", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
