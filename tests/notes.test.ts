@@ -179,3 +179,48 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("GET /version", () => {
+  it("returns 200", async () => {
+    const res = await request(app).get("/version");
+    expect(res.status).toBe(200);
+  });
+
+  it("body has name fleet-e2e-toy and version 1.0.0", async () => {
+    const res = await request(app).get("/version");
+    expect(res.body.name).toBe("fleet-e2e-toy");
+    expect(res.body.version).toBe("1.0.0");
+  });
+
+  it("version matches package.json", async () => {
+    const pkg = require("../package.json");
+    const res = await request(app).get("/version");
+    expect(res.body.version).toBe(pkg.version);
+  });
+});
+
+describe("GET /help", () => {
+  it("returns 200", async () => {
+    const res = await request(app).get("/help");
+    expect(res.status).toBe(200);
+  });
+
+  it("body has routes array", async () => {
+    const res = await request(app).get("/help");
+    expect(Array.isArray(res.body.routes)).toBe(true);
+  });
+
+  it("routes array has at least 8 entries", async () => {
+    const res = await request(app).get("/help");
+    expect(res.body.routes.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it("each route entry has method, path, description fields", async () => {
+    const res = await request(app).get("/help");
+    for (const route of res.body.routes) {
+      expect(route).toHaveProperty("method");
+      expect(route).toHaveProperty("path");
+      expect(route).toHaveProperty("description");
+    }
+  });
+});
