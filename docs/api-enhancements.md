@@ -32,17 +32,23 @@ All validation failures return HTTP 400 with a JSON body containing an `errors` 
 
 **Error body shape:**
 ```json
-{ "errors": ["<message>", ...] }
+{
+  "errors": [
+    { "field": "content", "message": "Content must be a non-empty string" }
+  ]
+}
 ```
 
-**Rejection rules:**
-| Field | Rejected when |
-|-------|--------------|
-| `content` (create) | absent, not a string, empty string, or whitespace-only |
-| `content` (update) | present and empty string or whitespace-only |
-| `tags[*]` (create or update) | any element is an empty string or whitespace-only |
+Each element of `errors` is an object with two string fields: `field` (the input field that failed) and `message` (a human-readable description). Multiple validation failures are returned together in a single response.
 
-**Error messages (verbatim):**
+**Rejection rules:**
+| Field | Rejected when | `field` value in error |
+|-------|--------------|------------------------|
+| `content` (create) | absent, not a string, empty string, or whitespace-only | `"content"` |
+| `content` (update) | present and empty string or whitespace-only | `"content"` |
+| `tags[*]` (create or update) | any element is an empty string or whitespace-only | `"tags"` |
+
+**Example error messages (verbatim):**
 - `"Content must be a non-empty string"`
 - `"Tags must not contain empty or whitespace-only values"`
 
@@ -74,7 +80,7 @@ Content-Type: application/json
     { "method": "GET",    "path": "/health",          "description": "..." },
     { "method": "GET",    "path": "/version",         "description": "..." },
     { "method": "GET",    "path": "/help",            "description": "..." },
-    { "method": "GET",    "path": "/api/notes",       "description": "...", "requestBody"?: {...} },
+    { "method": "GET",    "path": "/api/notes",       "description": "..." },
     { "method": "GET",    "path": "/api/notes/:id",   "description": "..." },
     { "method": "POST",   "path": "/api/notes",       "description": "...", "requestBody": {...}, "responseShape": {...} },
     { "method": "PUT",    "path": "/api/notes/:id",   "description": "...", "requestBody": {...} },
