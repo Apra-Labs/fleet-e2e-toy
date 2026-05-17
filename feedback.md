@@ -173,3 +173,82 @@ No unexpected files. No build artifacts, no config changes, no unrelated modific
 Both phases are complete and correct. All five implementation tasks meet their PLAN.md done criteria. All three requirements.md issues (1, 2, 3) are fully addressed with appropriate test coverage. The codebase compiles cleanly, all 40 tests pass, file hygiene is clean, and no security concerns exist.
 
 **Verdict: APPROVED** — Sprint complete. All issues resolved.
+
+---
+---
+
+# Documentation Harvest Review — docs/api-enhancements.md
+
+**Reviewer:** reviewer
+**Date:** 2026-05-17 16:10:00+00:00
+**Verdict:** CHANGES NEEDED
+
+---
+
+## Durable Knowledge Check
+
+### Architecture decisions with rationale
+
+**PASS.** Three decisions are documented with clear rationale:
+- Trim-based validation (why `.trim().length === 0` over `=== ""`)
+- Version from package.json / name hardcoded (npm name vs product name divergence)
+- Static route list over runtime introspection (stability over auto-discovery)
+
+All three are durable design choices that a future maintainer would benefit from understanding.
+
+### API contracts (exact shapes)
+
+**FAIL.** The error body shape is incorrect.
+
+The document states:
+```json
+{ "errors": ["<message>", ...] }
+```
+
+The actual response (per `src/api/notes.ts:47`) is:
+```json
+{ "errors": [{"field": "content", "message": "Content must be a non-empty string"}, ...] }
+```
+
+`errors` is an array of `{field: string, message: string}` objects, not an array of plain strings. This is a significant inaccuracy for an API contract document — a consumer relying on this doc would parse the response incorrectly.
+
+Additionally, the GET /help example on line 78 shows `"requestBody"?: {...}` on the `GET /api/notes` entry. The actual code does not include a `requestBody` field on that route entry. The `?` notation is used as a documentation convention for optionality, but placing it on a specific GET endpoint is misleading — it implies that endpoint might carry a request body.
+
+### Key trade-offs
+
+**PASS.** Four trade-offs documented:
+- Breaking change for existing consumers (accepted because in-memory store, no migration)
+- Name divergence is intentional (avoids npm rename churn)
+- Manual route-list maintenance (simplicity over auto-sync)
+- package.json import across rootDir boundary (safe given current layout)
+
+All are genuine, well-reasoned, and relevant long-term.
+
+---
+
+## Transient Content Check
+
+| Check | Status |
+|-------|--------|
+| No task IDs (T1.1, T2.V etc.) | **PASS** |
+| No code-line references | **PASS** |
+| No implementation steps or "how to" | **PASS** |
+| No debug notes or PR references | **PASS** |
+
+The document references file paths (`src/utils/validation.ts`, `src/app.ts`) which is appropriate — these are architectural locations, not line-level references.
+
+---
+
+## Required Changes
+
+1. **Fix error body shape** — Change the documented shape from `{ "errors": ["<message>", ...] }` to `{ "errors": [{"field": "<field>", "message": "<message>"}, ...] }`. This matches the actual `ValidationError` interface and the response serialization in `src/api/notes.ts`.
+
+2. **Remove `requestBody?` from GET /api/notes line** — The `GET /api/notes` entry in the help example should not show a `requestBody` field (even as optional). Only POST and PUT entries carry that field in the actual response.
+
+---
+
+## Summary
+
+The document excels at capturing durable architecture decisions and trade-offs — the rationale sections are clear and valuable for future maintainers. However, the API contract section has a factual error in the error response shape that would mislead consumers. This must be corrected before the doc can be considered accurate.
+
+**Verdict: CHANGES NEEDED** — Fix the error body shape and the GET /api/notes example, then re-submit.
