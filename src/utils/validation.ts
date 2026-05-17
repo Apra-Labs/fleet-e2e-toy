@@ -5,6 +5,13 @@ export interface ValidationError {
   message: string;
 }
 
+export function validateCliArg(value: string): string | null {
+  if (!value || value.trim().length === 0) {
+    return "Error: input must not be empty";
+  }
+  return null;
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
