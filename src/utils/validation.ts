@@ -20,8 +20,8 @@ export function validateCreateInput(
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
   }
 
-  if (typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (typeof obj.content !== "string" || obj.content.trim().length === 0) {
+    errors.push({ field: "content", message: "Content is required and must be a non-empty string" });
   }
 
   if (obj.tags !== undefined) {
