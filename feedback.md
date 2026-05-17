@@ -254,3 +254,52 @@ The document references file paths (`src/utils/validation.ts`, `src/app.ts`) whi
 The document excels at capturing durable architecture decisions and trade-offs — the rationale sections are clear and valuable for future maintainers. However, the API contract section has a factual error in the error response shape that would mislead consumers. This must be corrected before the doc can be considered accurate.
 
 **Verdict: CHANGES NEEDED** — Fix the error body shape and the GET /api/notes example, then re-submit.
+
+---
+---
+
+# Documentation Harvest Re-review — docs/api-enhancements.md
+
+**Reviewer:** reviewer
+**Date:** 2026-05-17 16:35:00+00:00
+**Verdict:** APPROVED
+
+---
+
+## Verification of Prior Findings
+
+### Fix 1: Error response shape
+
+**PASS.** The error body shape now correctly shows:
+```json
+{
+  "errors": [
+    { "field": "content", "message": "Content must be a non-empty string" }
+  ]
+}
+```
+This matches the `ValidationError` interface (`{ field: string, message: string }`) and the actual serialization in `src/api/notes.ts`. The explanatory text ("Each element of `errors` is an object with two string fields...") is accurate and clear.
+
+The rejection rules table also gained a `field` value column, which is a useful addition showing what each error's `field` property contains.
+
+### Fix 2: GET /api/notes requestBody removed
+
+**PASS.** The GET /api/notes entry in the /help example now reads:
+```
+{ "method": "GET",    "path": "/api/notes",       "description": "..." },
+```
+No `requestBody` field. Only POST and PUT entries show `requestBody`/`responseShape`, matching the actual code.
+
+---
+
+## New Issues Check
+
+No new issues introduced. The document remains free of transient content (no task IDs, no line references, no debug notes). All architectural decisions, API contracts, and trade-offs are accurate against the current codebase.
+
+---
+
+## Summary
+
+Both requested changes have been correctly applied. The document now accurately captures the API contracts — particularly the structured error response shape — alongside the architecture decisions and design trade-offs. Ready for long-term reference.
+
+**Verdict: APPROVED** — Documentation harvest is complete and accurate.
