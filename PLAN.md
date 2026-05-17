@@ -8,49 +8,49 @@
 
 ### Phase 1: CLI Foundation
 
-#### [x] Task 1: Create CLI entry point and wrapper script
+#### Task 1 [x]: Create CLI entry point and wrapper script
 - **Change:** Create `src/cli.ts` as the CLI entry point. Create a root `tool` script (shebang + `npx ts-node`) and `tool.cmd` for Windows.
 - **Files:** `src/cli.ts`, `tool`, `tool.cmd`
 - **Tier:** standard
 - **Done when:** Running `./tool` executes without error (even if it does nothing yet).
 - **Blockers:** None
 
-#### [x] VERIFY: Phase 1
+#### VERIFY: Phase 1 [x]
 - Run `./tool` and confirm it exits 0 without error.
 
 ---
 
 ### Phase 2: CLI Features and Validation
 
-#### [x] Task 2: Implement --version flag
+#### Task 2 [x]: Implement --version flag
 - **Change:** Add `--version` and `-v` flag handling to `src/cli.ts` using `yargs`. Print `fleet-e2e-toy v1.0.0`.
 - **Files:** `src/cli.ts`
 - **Tier:** cheap
 - **Done when:** `./tool --version` prints `fleet-e2e-toy v1.0.0` and exits 0.
 - **Blockers:** Task 1
 
-#### [x] Task 3: Implement help subcommand and --help flag
+#### Task 3 [x]: Implement help subcommand and --help flag
 - **Change:** Configure `yargs` in `src/cli.ts` to support the `help` subcommand and `--help` flag. List all available commands (e.g., `add`, `serve`).
 - **Files:** `src/cli.ts`
 - **Tier:** standard
 - **Done when:** `./tool help` and `./tool --help` print usage information and exit 0.
 - **Blockers:** Task 2
 
-#### [x] Task 4: Implement 'add' command with blank string validation
+#### Task 4 [x]: Implement 'add' command with blank string validation
 - **Change:** Add an `add` subcommand that takes a title argument. Implement validation to reject empty or whitespace-only strings.
 - **Files:** `src/cli.ts`
 - **Tier:** standard
 - **Done when:** `./tool add ""` or `./tool add "  "` prints an error and exits with a non-zero code.
 - **Blockers:** Task 3
 
-#### [x] Task 5: Add automated tests for CLI features
+#### Task 5 [x]: Add automated tests for CLI features
 - **Change:** Create `tests/cli.test.ts` to verify version, help, and blank string validation using `execSync`.
 - **Files:** `tests/cli.test.ts`
 - **Tier:** standard
 - **Done when:** `npm test tests/cli.test.ts` passes.
 - **Blockers:** Task 4
 
-#### [x] VERIFY: Phase 2
+#### VERIFY: Phase 2 [x]
 - Run `./tool help`
 - Run `./tool add ""` and verify failure.
 - Run all tests.
