@@ -11,11 +11,19 @@ const parser = yargs(hideBin(process.argv))
   .command("help", "Show help", () => {}, () => {
     parser.showHelp();
   })
-  .command("add", "Add a new note", (y) => {
+  .command("add <title>", "Add a new note", (y) => {
     return y.positional("title", { describe: "Note title", type: "string" });
+  }, (argv) => {
+    const title = argv.title as string;
+    if (!title || title.trim() === "") {
+      console.error("Error: title cannot be blank");
+      process.exit(1);
+    }
+    console.log(`Added note: ${title}`);
   })
   .command("serve", "Start the server", () => {})
-  .demandCommand(1, "You must provide a command");
+  .demandCommand(1, "You must provide a command")
+  .strict();
 
 parser.argv;
 
