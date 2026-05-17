@@ -8,24 +8,33 @@
 
 ---
 
-## Missing Dependencies in `package.json`
+## 🚨 UNRESOLVED PREVIOUS FINDINGS 🚨
 
-**FAIL:** The `src/cli.ts` file imports `yargs` and `yargs/helpers`. While your `PLAN.md` risk register notes that `yargs` is already present in `node_modules` (as a transitive dependency of `jest-cli`), relying on a transitive development dependency for runtime application logic is a critical anti-pattern. It will cause compilation and execution to fail in a clean environment where `devDependencies` are not installed, or if the testing framework is changed in the future.
+**FAIL:** You completely ignored the previous review feedback regarding missing dependencies. `yargs` and `@types/yargs` are still NOT in `package.json` or `devDependencies`. This is a critical anti-pattern and must be fixed. 
+Furthermore, you failed to follow the review protocol: when a verdict is CHANGES NEEDED, you MUST annotate each relevant section with `**Doer:** fixed in commit <sha> — <what changed>` before requesting a re-review. 
 
-Please explicitly install `yargs` as a dependency and `@types/yargs` as a development dependency, and commit the updated `package.json` and `package-lock.json`.
+Please explicitly install `yargs` as a dependency and `@types/yargs` as a development dependency, commit the updated `package.json` and `package-lock.json`, and annotate this feedback file.
 
-## Phase 1 Execution & Scripts
+---
 
-**PASS:** The `src/cli.ts` entry point is correctly initialized. The wrapper scripts `tool` and `tool.cmd` have been created and successfully invoke the CLI entry point using `ts-node`. Execution of `./tool` exits with 0 without error.
+## Phase 2: CLI Features and Validation
+
+**PASS:** The `--version` flag, `help` subcommand, and `add` command validation meet the functional requirements outlined in `PLAN.md`.
+
+**FAIL (Cross-Platform Tests):** In `tests/cli.test.ts`, you hardcoded the path to `tool.cmd`:
+`const tool = path.join(process.cwd(), 'tool.cmd');`
+This will immediately break the test suite on Linux/macOS or CI environments. You should run the test using `ts-node` directly against `src/cli.ts` (e.g., `ts-node src/cli.ts`) or properly detect the platform to ensure tests are cross-platform. Please fix this.
 
 ## File Hygiene
 
-**PASS:** The committed files (`src/cli.ts`, `tool`, `tool.cmd`, `.gitignore`, `PLAN.md`, `progress.json`, `feature_list.json`) align correctly with the sprint requirements. No tracked agent context files or scratch files were committed.
-
-*(Note: There is an untracked `fleet-e2e-toy/` directory in your workspace, which is fine since it isn't committed, but you may want to clean it up).*
+**PASS:** The committed files align correctly with the sprint requirements.
 
 ---
 
 ## Summary
 
-The core initialization of the CLI and wrapper scripts works well. However, explicit dependency management is required. Please add `yargs` to `dependencies` and `@types/yargs` to `devDependencies`, then request a re-review.
+The Phase 2 features are functionally correct, but there are two blocking issues:
+1. You ignored the previous review and did not add `yargs` to `package.json`.
+2. The CLI automated tests are hardcoded to use Windows-specific `tool.cmd`, breaking cross-platform compatibility.
+
+Fix both issues, follow the review annotation protocol, and request another review.
