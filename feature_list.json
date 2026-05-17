@@ -1,22 +1,27 @@
 [
   {
-    "name": "Tag filtering endpoint",
-    "description": "GET /api/notes?tag=work returns only notes with that tag. Already partially implemented — needs tests.",
-    "passes": false
+    "name": "CLI entry point and wrapper script",
+    "description": "Create src/cli.ts, tool, and tool.cmd. Ensure basic execution works.",
+    "passes": true
   },
   {
-    "name": "Full-text search",
-    "description": "GET /api/notes?q=meeting searches title and content. Already partially implemented — needs edge case tests (empty query, no matches).",
-    "passes": false
+    "name": "Implement --version flag",
+    "description": "Output 'fleet-e2e-toy v1.0.0' for --version or -v flags.",
+    "passes": true
   },
   {
-    "name": "Pagination support",
-    "description": "GET /api/notes?page=1&limit=10 returns paginated results with total count in response. Add pagination metadata: { data: [...], total: N, page: N, limit: N }.",
-    "passes": false
+    "name": "Implement help subcommand and --help flag",
+    "description": "List all commands and flags for 'help' subcommand or -h/--help flags.",
+    "passes": true
   },
   {
-    "name": "Note archiving",
-    "description": "Add an 'archived' boolean field to notes. POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints. GET /api/notes excludes archived notes by default; GET /api/notes?include_archived=true includes them.",
-    "passes": false
+    "name": "Implement 'add' command with blank string validation",
+    "description": "Command 'add' should reject empty or whitespace-only strings with non-zero exit.",
+    "passes": true
+  },
+  {
+    "name": "Automated tests for CLI features",
+    "description": "Comprehensive tests for version, help, and validation in tests/cli.test.ts.",
+    "passes": true
   }
 ]
