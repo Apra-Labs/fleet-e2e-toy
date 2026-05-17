@@ -1,110 +1,135 @@
-# fleet-e2e-toy — Plan Review
+# fleet-e2e-toy — Code Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-17 12:00:00+00:00
+**Date:** 2026-05-17 14:30:00+00:00
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## 1. Clear "Done" Criteria
+## 1. Progress Tracking
 
-**PASS.** Every task specifies concrete, testable conditions. Task 1 states exact input/output pairs (`validateCreateInput({title: "T", content: ""})` returns `{valid: false}`). Task 2 enumerates every test assertion and ends with "npm test passes with all new assertions green." Tasks 3 and 4 specify HTTP status codes and exact JSON shapes. Task 5 lists six discrete assertions. The VERIFY steps add a final gate. No task leaves ambiguity about what "done" means.
-
----
-
-## 2. Cohesion Within Tasks / Coupling Between Tasks
-
-**PASS.** Task 1 is a single logical change (add emptiness checks to two functions in one file). Task 2 is purely additive test code. Tasks 3 and 4 are each a single endpoint added to `src/app.ts`. Task 5 is their test coverage. Cross-task coupling is minimal and explicit: Task 2 depends on Task 1, Task 5 depends on Tasks 3-4. No hidden entanglement.
+**PASS.** `progress.json` correctly marks T1.1, T1.2, and T1.V as `"completed"` with accurate notes. Phase 2 tasks (T2.1–T2.V) remain `"pending"`. Task descriptions and tiers match PLAN.md.
 
 ---
 
-## 3. Key Abstractions and Shared Interfaces in Earliest Tasks
+## 2. Commit History
 
-**PASS.** The plan correctly places the validation logic change (Task 1) — the foundational behavioral contract — in the first task. The API metadata endpoints (Phase 2) are purely additive and don't introduce shared abstractions. This is appropriate given the scope: there are no new shared interfaces to extract. The existing `ValidationError` interface and validation function signatures are the only shared contracts, and they aren't being changed — only their internal logic is tightened.
+**PASS.** Three implementation commits in logical order:
 
----
+1. `64a76f0` — `feat(T1.1)`: validation logic changes
+2. `4be0813` — `test(T1.2)`: test additions
+3. `4c61551` — `chore`: progress.json update
 
-## 4. Riskiest Assumption Validated in Task 1
-
-**PASS.** The plan explicitly identifies that modifying existing validation behavior is the riskiest change (it could break consumers that depend on empty content being accepted). Task 1 targets this head-on. The plan also notes: "Verified no existing tests send empty content or empty-string tags, so regression risk is low but non-zero." I verified this claim by reading `tests/validation.test.ts` and `tests/notes.test.ts` — confirmed: no test sends `content: ""` or empty tags. The additive endpoints in Phase 2 carry minimal risk by comparison.
-
----
-
-## 5. Later Tasks Reuse Early Abstractions (DRY)
-
-**PASS.** Task 2 directly exercises the validation changes from Task 1 (both unit and integration level). Phase 2 tasks are independent additive routes and don't duplicate logic from Phase 1. There's no copy-paste between tasks. The plan doesn't introduce unnecessary abstractions either — it correctly avoids extracting a "shared endpoint registrar" or similar premature abstraction for two simple routes.
+Commits are atomic and correctly ordered (logic before tests, tracking last). Commit messages are descriptive and map to task IDs.
 
 ---
 
-## 6. Phase Boundaries at Cohesion Boundaries
+## 3. Validation Logic (src/utils/validation.ts)
 
-**PASS.** Phase 1 (input validation hardening) is a coherent unit: a behavior change plus its tests, producing a reviewable/testable increment. Phase 2 (API metadata endpoints) is another coherent unit: two related feature endpoints plus their tests. Each phase ends with a VERIFY checkpoint. The split is natural — a reviewer could merge Phase 1 independently and the app would be in a consistent, improved state.
+**PASS.** Changes match PLAN.md Task 1 specification exactly:
 
----
+- `validateCreateInput`: content check changed from `typeof obj.content !== "string"` to `typeof obj.content !== "string" || obj.content.trim().length === 0`. Error message updated to `"Content must be a non-empty string"`. **PASS.**
+- `validateCreateInput`: tag emptiness check added as `else if` after the type check — `obj.tags.some((t) => t.trim().length === 0)`. Error message: `"Tags must not contain empty or whitespace-only values"`. **PASS.**
+- `validateUpdateInput`: content check wrapped in `if (obj.content !== undefined)` guard with the same trim check inside. **PASS.** The guard correctly preserves the no-op update behavior (empty body is still valid).
+- `validateUpdateInput`: tag emptiness check added identically to the create function. **PASS.**
 
-## 7. Tiers Monotonically Non-Decreasing Within Each Phase
+The `else if` structure for tags is correct — it only checks for empty values after confirming all tags are strings, avoiding a runtime error on `trim()` for non-string values.
 
-**PASS.** Phase 1: Task 1 is cheap, Task 2 is standard. Phase 2: Task 3 is cheap, Task 4 is cheap, Task 5 is standard. Both phases go cheap → standard. No downgrade occurs within either phase.
+Error messages are user-friendly and consistent with the existing pattern (field-specific, descriptive).
 
----
-
-## 8. Each Task Completable in One Session
-
-**PASS.** Task 1 is a four-line logic change in one file. Task 2 is adding ~15 test cases across two files with clear patterns from existing tests. Tasks 3 and 4 are each adding a single route handler (5-15 lines). Task 5 is ~10 test cases. None of these would take more than a focused session. The risk of scope creep is low because each task's scope is tightly bounded.
-
----
-
-## 9. Dependencies Satisfied in Order
-
-**PASS.** The dependency graph is: Task 1 → Task 2 → VERIFY-1 → Task 3 (no deps) → Task 4 (no deps) → Task 5 (depends on 3 & 4) → VERIFY-2. Tasks 3 and 4 are independent of each other and of Phase 1. The ordering is valid and the plan explicitly states blockers for each task.
+No changes to the `ValidationError` interface or function signatures. Existing behavior for valid inputs is preserved.
 
 ---
 
-## 10. Vague Tasks That Two Developers Would Interpret Differently
+## 4. Requirements Alignment (Issue 2)
 
-**PASS.** The plan is unusually specific. Task 1 quotes exact conditions (`obj.content.trim().length === 0`) and exact error messages. Task 3 specifies the JSON shape and that the name is hardcoded while version is dynamic. Task 4 lists all 8 routes to document. The only minor ambiguity is in Task 4's "optionally `requestBody` and `responseShape`" — but since it's explicitly optional and the done-criteria only require `method`, `path`, and `description`, this won't cause divergent implementations.
+**PASS.** Checked each acceptance criterion from requirements.md:
 
----
-
-## 11. Hidden Dependencies Between Tasks
-
-**PASS.** I checked for subtle coupling:
-- Tasks 3 and 4 both modify `src/app.ts` but add independent route handlers — no merge conflict risk since they append to different locations.
-- Task 4's `/help` endpoint lists `/version`, so if Task 3 were dropped, the help output would reference a nonexistent route. However, the plan structures them in the same phase with Task 4 explicitly following Task 3, so this is a sequencing choice, not a hidden dependency.
-- The `resolveJsonModule` setting needed for Task 3 is already confirmed enabled in `tsconfig.json` (verified: line 12 shows `"resolveJsonModule": true`).
-
-No hidden dependencies found.
-
----
-
-## 12. Risk Register
-
-**PASS.** The plan includes a risk register with five identified risks, impact levels, and mitigations. The risks are relevant and non-trivial:
-1. Content validation breaking downstream consumers — mitigated by test audit (verified correct).
-2. `package.json` import path in compiled JS — mitigated by noting `resolveJsonModule` is enabled.
-3. Help endpoint going stale — acknowledged as by-design per requirements.
-4. Empty tag rejection vs existing data — mitigated by noting in-memory store (no persistence).
-5. Whitespace content now returning 400 — acknowledged as intentional per Issue 2.
-
-**NOTE:** One additional risk worth calling out: the `tsconfig.json` has `"rootDir": "./src"` and `"include": ["src/**/*"]`. Importing `../package.json` from `src/app.ts` may cause a TypeScript compilation error because `package.json` is outside `rootDir`. The plan mentions this in risk #2 but the mitigation ("use `require` pattern or verify import path at build time") is vague. A concrete mitigation would be: use `const pkg = require("../../package.json")` with a type annotation, or adjust `rootDir` to `.` (which has broader implications). This is a minor concern — the implementer will discover it immediately at build time and it has an obvious fix.
+| Criterion | Status |
+|-----------|--------|
+| POST with `content: ""` → 400 | **PASS** — unit test + integration test |
+| POST with `content: "   "` → 400 | **PASS** — unit test + integration test |
+| PUT with `content: ""` → 400 | **PASS** — unit test + integration test |
+| PUT with `content: "   "` → 400 | **PASS** — unit test (integration test covers `content: ""`) |
+| Empty/blank tags → 400 | **PASS** — unit test (empty + mixed) + integration test (POST empty, PUT whitespace) |
+| Error messages user-friendly | **PASS** — "Content must be a non-empty string", "Tags must not contain empty or whitespace-only values" |
+| New unit tests | **PASS** — 7 new unit tests in validation.test.ts |
+| No regressions | **PASS** — all 33 tests pass, 0 failures |
 
 ---
 
-## 13. Alignment with requirements.md Intent
+## 5. Test Quality
 
-**PASS.** The plan directly addresses all three issues from requirements.md:
-- Issue 1 (version endpoint): Task 3 implements `GET /version` with exact acceptance criteria match — JSON body `{"name": "fleet-e2e-toy", "version": "1.0.0"}`, version from package.json, not hardcoded.
-- Issue 2 (input validation): Tasks 1-2 implement the validation hardening for content and tags with all acceptance criteria covered (400 responses, error messages, unit tests, no regressions).
-- Issue 3 (help endpoint): Task 4 implements `GET /help` with routes array covering all required endpoints, static definition, JSON response.
+**PASS.** Tests are well-structured and cover the required surface area.
 
-The plan correctly interprets CLI-oriented issue language into REST API equivalents, matching the "Interpretation for REST API" sections in requirements.md.
+**Unit tests (tests/validation.test.ts)** — 7 new tests:
+- `validateCreateInput` rejects empty content — **PASS**
+- `validateCreateInput` rejects whitespace-only content — **PASS**
+- `validateCreateInput` rejects tags with empty string — **PASS**
+- `validateCreateInput` rejects tags with whitespace mixed with valid — **PASS**
+- `validateUpdateInput` rejects empty content — **PASS**
+- `validateUpdateInput` rejects whitespace-only content — **PASS**
+- `validateUpdateInput` rejects tags with empty string mixed with valid — **PASS**
+
+**Integration tests (tests/notes.test.ts)** — 5 new tests:
+- POST empty content → 400 — **PASS**
+- POST whitespace content → 400 — **PASS**
+- POST empty tag → 400 — **PASS**
+- PUT empty content → 400 — **PASS**
+- PUT whitespace tag → 400 — **PASS**
+
+**NOTE:** The `validateUpdateInput` still-accepts-empty-body test was already present in the existing test suite (`"accepts empty body as no-op update"`), which satisfies the PLAN.md requirement without needing a new test. No redundancy issue.
+
+No overlapping or redundant tests detected. Each test covers a distinct input combination. Integration tests correctly create a note first before testing PUT, matching the existing test patterns.
+
+---
+
+## 6. Build and Tests
+
+**PASS.**
+
+- `tsc` compiles with no errors.
+- `npm test` (Jest): **33/33 tests passed**, 2 suites, 0 failures.
+- No regressions in the 24 pre-existing tests.
+
+---
+
+## 7. File Hygiene
+
+**PASS.** Seven files changed on the branch:
+
+| File | Justification |
+|------|---------------|
+| `PLAN.md` | Sprint plan — required |
+| `requirements.md` | Sprint requirements — required |
+| `progress.json` | Task tracking — required |
+| `feedback.md` | Review document — required |
+| `src/utils/validation.ts` | Core change for Issue 2 (T1.1) |
+| `tests/validation.test.ts` | Unit tests for T1.2 |
+| `tests/notes.test.ts` | Integration tests for T1.2 |
+
+No unexpected files. No build artifacts, no config changes, no unrelated modifications.
+
+---
+
+## 8. Code Quality and Security
+
+**PASS.** The validation changes are defensive — they tighten input constraints, which is a security improvement. No new attack surface introduced. The `trim()` approach is safe and idiomatic for whitespace rejection. No use of `any` types, no `console.log`, no raw error objects returned to clients. Code follows existing patterns in the file.
+
+---
+
+## 9. Regressions in Previously Approved Phases
+
+**PASS.** The prior review (commit `268f832`) approved the implementation plan. That review identified no code to regress against — it was a plan-only review. The current Phase 1 implementation introduces no regressions to the pre-existing codebase: all 24 original tests still pass unchanged.
 
 ---
 
 ## Summary
 
-All 13 review criteria pass. The plan is well-structured, specific, correctly ordered, and aligned with requirements. The only observation worth noting is the minor ambiguity in the `package.json` import path resolution (risk #2) — the mitigation could be more concrete, but the implementer will hit this at build time with an obvious fix path, so it does not rise to CHANGES NEEDED.
+Phase 1 (Input Validation Hardening) is complete and correct. All three tasks (T1.1, T1.2, T1.V) meet their done criteria. The validation logic matches PLAN.md specifications exactly, all requirements.md Issue 2 acceptance criteria are satisfied, tests are comprehensive with no redundancy, build compiles cleanly, and all 33 tests pass. File hygiene is clean — no unexpected changes.
 
-**Verdict: APPROVED** — proceed to implementation.
+Phase 2 (API Metadata Endpoints) remains pending with tasks T2.1–T2.V at `"pending"` status, which is expected.
+
+**Verdict: APPROVED** — Phase 1 is ready. Proceed to Phase 2.
