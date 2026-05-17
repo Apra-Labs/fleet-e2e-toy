@@ -1,104 +1,137 @@
 # fleet-e2e-toy — Code Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-17 14:30:00+00:00
+**Date:** 2026-05-17 15:45:00+00:00
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## 1. Progress Tracking
+## 1. Cumulative Scope
 
-**PASS.** `progress.json` correctly marks T1.1, T1.2, and T1.V as `"completed"` with accurate notes. Phase 2 tasks (T2.1–T2.V) remain `"pending"`. Task descriptions and tiers match PLAN.md.
+This review covers all changes from `main` to HEAD (`79827e7`) across both phases:
 
----
+- **Phase 1** (Issue 2): Input validation hardening — reject empty/whitespace content and tags
+- **Phase 2** (Issues 1 & 3): API metadata endpoints — `GET /version` and `GET /help`
 
-## 2. Commit History
-
-**PASS.** Three implementation commits in logical order:
-
-1. `64a76f0` — `feat(T1.1)`: validation logic changes
-2. `4be0813` — `test(T1.2)`: test additions
-3. `4c61551` — `chore`: progress.json update
-
-Commits are atomic and correctly ordered (logic before tests, tracking last). Commit messages are descriptive and map to task IDs.
+All tasks (T1.1, T1.2, T2.1, T2.2, T2.3) plus verification checkpoints (T1.V, T2.V) are marked complete in `progress.json`.
 
 ---
 
-## 3. Validation Logic (src/utils/validation.ts)
+## 2. Phase 1 — Input Validation Hardening (Issue 2)
 
-**PASS.** Changes match PLAN.md Task 1 specification exactly:
+### Validation Logic (src/utils/validation.ts)
 
-- `validateCreateInput`: content check changed from `typeof obj.content !== "string"` to `typeof obj.content !== "string" || obj.content.trim().length === 0`. Error message updated to `"Content must be a non-empty string"`. **PASS.**
-- `validateCreateInput`: tag emptiness check added as `else if` after the type check — `obj.tags.some((t) => t.trim().length === 0)`. Error message: `"Tags must not contain empty or whitespace-only values"`. **PASS.**
-- `validateUpdateInput`: content check wrapped in `if (obj.content !== undefined)` guard with the same trim check inside. **PASS.** The guard correctly preserves the no-op update behavior (empty body is still valid).
-- `validateUpdateInput`: tag emptiness check added identically to the create function. **PASS.**
+**PASS.** Implementation matches PLAN.md Task 1 specification exactly:
 
-The `else if` structure for tags is correct — it only checks for empty values after confirming all tags are strings, avoiding a runtime error on `trim()` for non-string values.
+- `validateCreateInput`: content check changed from type-only to `typeof obj.content !== "string" || obj.content.trim().length === 0`. Error message: `"Content must be a non-empty string"`.
+- `validateCreateInput`: tag emptiness check added as `else if` after the array-of-strings guard — `obj.tags.some((t) => t.trim().length === 0)`. Error: `"Tags must not contain empty or whitespace-only values"`.
+- `validateUpdateInput`: content check wrapped in `if (obj.content !== undefined)` guard preserving no-op update semantics, with the same trim rejection inside.
+- `validateUpdateInput`: identical tag emptiness check added.
 
-Error messages are user-friendly and consistent with the existing pattern (field-specific, descriptive).
+The `else if` structure is correct — avoids calling `trim()` on non-string values. Error messages are user-friendly and field-specific.
 
-No changes to the `ValidationError` interface or function signatures. Existing behavior for valid inputs is preserved.
+### Phase 1 Tests
 
----
+**PASS.** 7 new unit tests in `tests/validation.test.ts`:
+- `validateCreateInput` rejects: empty content, whitespace content, empty tag, whitespace tag mixed with valid
+- `validateUpdateInput` rejects: empty content, whitespace content, empty tag mixed with valid
 
-## 4. Requirements Alignment (Issue 2)
+5 new integration tests in `tests/notes.test.ts`:
+- POST: empty content (400), whitespace content (400), empty tag (400)
+- PUT: empty content (400), whitespace tag (400)
 
-**PASS.** Checked each acceptance criterion from requirements.md:
+No redundancy. Integration tests correctly create notes before testing PUT. The existing `"accepts empty object (no-op update)"` test continues to pass, confirming the guard logic works.
+
+### Requirements.md Issue 2 Acceptance Criteria
 
 | Criterion | Status |
 |-----------|--------|
-| POST with `content: ""` → 400 | **PASS** — unit test + integration test |
-| POST with `content: "   "` → 400 | **PASS** — unit test + integration test |
-| PUT with `content: ""` → 400 | **PASS** — unit test + integration test |
-| PUT with `content: "   "` → 400 | **PASS** — unit test (integration test covers `content: ""`) |
-| Empty/blank tags → 400 | **PASS** — unit test (empty + mixed) + integration test (POST empty, PUT whitespace) |
-| Error messages user-friendly | **PASS** — "Content must be a non-empty string", "Tags must not contain empty or whitespace-only values" |
-| New unit tests | **PASS** — 7 new unit tests in validation.test.ts |
-| No regressions | **PASS** — all 33 tests pass, 0 failures |
+| POST `content: ""` → 400 | **PASS** |
+| POST `content: "   "` → 400 | **PASS** |
+| PUT `content: ""/whitespace` → 400 | **PASS** |
+| Empty/blank tags → 400 | **PASS** |
+| User-friendly error messages | **PASS** |
+| Unit tests covering new cases | **PASS** (7 tests) |
+| No regressions | **PASS** (all original tests unchanged and passing) |
 
 ---
 
-## 5. Test Quality
+## 3. Phase 2 — API Metadata Endpoints (Issues 1 & 3)
 
-**PASS.** Tests are well-structured and cover the required surface area.
+### GET /version (src/app.ts)
 
-**Unit tests (tests/validation.test.ts)** — 7 new tests:
-- `validateCreateInput` rejects empty content — **PASS**
-- `validateCreateInput` rejects whitespace-only content — **PASS**
-- `validateCreateInput` rejects tags with empty string — **PASS**
-- `validateCreateInput` rejects tags with whitespace mixed with valid — **PASS**
-- `validateUpdateInput` rejects empty content — **PASS**
-- `validateUpdateInput` rejects whitespace-only content — **PASS**
-- `validateUpdateInput` rejects tags with empty string mixed with valid — **PASS**
+**PASS.** Implementation matches PLAN.md Task 3:
 
-**Integration tests (tests/notes.test.ts)** — 5 new tests:
-- POST empty content → 400 — **PASS**
-- POST whitespace content → 400 — **PASS**
-- POST empty tag → 400 — **PASS**
-- PUT empty content → 400 — **PASS**
-- PUT whitespace tag → 400 — **PASS**
+- Imports `pkg` from `../package.json` using ES module import (enabled by `resolveJsonModule: true` in tsconfig).
+- Returns `{ name: "fleet-e2e-toy", version: pkg.version }` — name is hardcoded product name, version is dynamic from package.json.
+- HTTP 200 with `application/json` content type (Express default for `.json()`).
 
-**NOTE:** The `validateUpdateInput` still-accepts-empty-body test was already present in the existing test suite (`"accepts empty body as no-op update"`), which satisfies the PLAN.md requirement without needing a new test. No redundancy issue.
+### GET /help (src/app.ts)
 
-No overlapping or redundant tests detected. Each test covers a distinct input combination. Integration tests correctly create a note first before testing PUT, matching the existing test patterns.
+**PASS.** Implementation matches PLAN.md Task 4:
+
+- Returns `{ routes: [...] }` with exactly 8 entries.
+- All entries have `method`, `path`, `description` fields.
+- POST and PUT entries include optional `requestBody` and `responseShape` fields.
+- Covers all required routes: `/health`, `/version`, `/help`, `GET|POST /api/notes`, `GET|PUT|DELETE /api/notes/:id`.
+- Route list is statically defined per requirements.
+
+### Phase 2 Tests
+
+**PASS.** 7 new integration tests in `tests/notes.test.ts`:
+
+GET /version (3 tests):
+- Returns 200
+- Body has `name: "fleet-e2e-toy"` and `version: "1.0.0"`
+- Version matches package.json (dynamic cross-check via `require("../package.json")`)
+
+GET /help (4 tests):
+- Returns 200
+- Body has `routes` array
+- Routes array has >= 8 entries
+- Each route entry has `method`, `path`, `description` fields
+
+No redundancy. The package.json cross-check is a valuable test — ensures the endpoint stays in sync with the actual version.
+
+### Requirements.md Issue 1 Acceptance Criteria
+
+| Criterion | Status |
+|-----------|--------|
+| GET /version returns 200 | **PASS** |
+| JSON body `{"name": "fleet-e2e-toy", "version": "1.0.0"}` | **PASS** |
+| Name is product name, not npm name | **PASS** — hardcoded `"fleet-e2e-toy"`, not `"noteapi"` |
+| Version sourced from package.json, not hardcoded | **PASS** — uses `pkg.version` |
+| Integration test covering endpoint | **PASS** (3 tests) |
+| No breakage to existing endpoints | **PASS** |
+
+### Requirements.md Issue 3 Acceptance Criteria
+
+| Criterion | Status |
+|-----------|--------|
+| GET /help returns 200 with application/json | **PASS** |
+| Lists all routes: method, path, description, body shapes | **PASS** |
+| Covers /health, /version, /help, all /api/notes routes | **PASS** (8 routes) |
+| Statically defined | **PASS** |
+| Integration test for 200 + routes array | **PASS** (4 tests) |
+| No breakage to existing endpoints | **PASS** |
 
 ---
 
-## 6. Build and Tests
+## 4. Build and Tests
 
 **PASS.**
 
-- `tsc` compiles with no errors.
-- `npm test` (Jest): **33/33 tests passed**, 2 suites, 0 failures.
-- No regressions in the 24 pre-existing tests.
+- `tsc --noEmit`: compiles with zero errors.
+- `npm test` (Jest): **40/40 tests passed**, 2 suites, 0 failures.
+- No regressions in the 21 pre-existing tests (original suite before any sprint changes).
 
 ---
 
-## 7. File Hygiene
+## 5. File Hygiene
 
-**PASS.** Seven files changed on the branch:
+**PASS.** Eight files changed on the branch:
 
 | File | Justification |
 |------|---------------|
@@ -106,30 +139,37 @@ No overlapping or redundant tests detected. Each test covers a distinct input co
 | `requirements.md` | Sprint requirements — required |
 | `progress.json` | Task tracking — required |
 | `feedback.md` | Review document — required |
-| `src/utils/validation.ts` | Core change for Issue 2 (T1.1) |
-| `tests/validation.test.ts` | Unit tests for T1.2 |
-| `tests/notes.test.ts` | Integration tests for T1.2 |
+| `src/app.ts` | /version and /help endpoints (Issues 1 & 3) |
+| `src/utils/validation.ts` | Validation hardening (Issue 2) |
+| `tests/notes.test.ts` | Integration tests for all phases |
+| `tests/validation.test.ts` | Unit tests for Issue 2 |
 
 No unexpected files. No build artifacts, no config changes, no unrelated modifications.
 
 ---
 
-## 8. Code Quality and Security
+## 6. Code Quality and Security
 
-**PASS.** The validation changes are defensive — they tighten input constraints, which is a security improvement. No new attack surface introduced. The `trim()` approach is safe and idiomatic for whitespace rejection. No use of `any` types, no `console.log`, no raw error objects returned to clients. Code follows existing patterns in the file.
+**PASS.** No issues found:
+
+- No `any` types introduced.
+- No `console.log` in handlers.
+- All responses use `res.json()` — no `res.send()`.
+- Validation changes are defensive (tighten constraints) — security improvement.
+- `trim()` approach is safe and idiomatic.
+- The `pkg` import pattern is standard for `resolveJsonModule`-enabled projects.
+- Static route list in `/help` avoids runtime introspection complexity.
 
 ---
 
-## 9. Regressions in Previously Approved Phases
+## 7. Regressions Check
 
-**PASS.** The prior review (commit `268f832`) approved the implementation plan. That review identified no code to regress against — it was a plan-only review. The current Phase 1 implementation introduces no regressions to the pre-existing codebase: all 24 original tests still pass unchanged.
+**PASS.** Phase 1 code (validation.ts) reviewed again in this cumulative pass — no regressions introduced by Phase 2 changes. Phase 2 adds new routes in `app.ts` without modifying any existing handlers or middleware. The original 21 tests all pass unmodified.
 
 ---
 
 ## Summary
 
-Phase 1 (Input Validation Hardening) is complete and correct. All three tasks (T1.1, T1.2, T1.V) meet their done criteria. The validation logic matches PLAN.md specifications exactly, all requirements.md Issue 2 acceptance criteria are satisfied, tests are comprehensive with no redundancy, build compiles cleanly, and all 33 tests pass. File hygiene is clean — no unexpected changes.
+Both phases are complete and correct. All five implementation tasks meet their PLAN.md done criteria. All three requirements.md issues (1, 2, 3) are fully addressed with appropriate test coverage. The codebase compiles cleanly, all 40 tests pass, file hygiene is clean, and no security concerns exist.
 
-Phase 2 (API Metadata Endpoints) remains pending with tasks T2.1–T2.V at `"pending"` status, which is expected.
-
-**Verdict: APPROVED** — Phase 1 is ready. Proceed to Phase 2.
+**Verdict: APPROVED** — Sprint complete. All issues resolved.
