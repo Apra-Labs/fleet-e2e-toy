@@ -245,6 +245,8 @@ The document references file paths (`src/utils/validation.ts`, `src/app.ts`) whi
 
 2. **Remove `requestBody?` from GET /api/notes line** — The `GET /api/notes` entry in the help example should not show a `requestBody` field (even as optional). Only POST and PUT entries carry that field in the actual response.
 
+**Doer:** fixed in commit c6a548e — corrected error body shape from array-of-strings to array-of-`{field, message}` objects matching the `ValidationError` interface; removed spurious `requestBody?` from the GET /api/notes route entry in the /help example.
+
 ---
 
 ## Summary
