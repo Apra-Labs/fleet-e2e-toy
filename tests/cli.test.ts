@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import * as path from 'path';
 
-const tool = path.join(process.cwd(), 'tool.cmd');
+const tool = 'npx ts-node src/cli.ts';
 
 describe('CLI', () => {
   it('should print version with --version', () => {
