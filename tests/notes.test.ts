@@ -1,4 +1,5 @@
 import request from "supertest";
+import pkg from "../package.json";
 import app from "../src/app";
 import { noteStore } from "../src/models/note";
 
@@ -193,7 +194,6 @@ describe("GET /version", () => {
   });
 
   it("version matches package.json", async () => {
-    const pkg = require("../package.json");
     const res = await request(app).get("/version");
     expect(res.body.version).toBe(pkg.version);
   });
