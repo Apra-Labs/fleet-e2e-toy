@@ -1,32 +1,75 @@
-# Feature: NoteAPI v2 â€” Search, Pagination, and Archiving
+# NoteAPI CLI — Implementation Plan
 
-## Problem Statement
-The API supports basic CRUD but lacks the query features users need for real use: filtering by tag, searching content, paginating large result sets, and archiving old notes without deleting them.
+> Implement a new CLI tool for the NoteAPI project with help command, version flag, and argument validation.
 
-## Approach
-Add four features incrementally. Each feature is independent â€” no ordering dependencies. All use the existing in-memory store (no database changes). Each feature must have tests before it's considered done.
+---
 
-## Phases
+## Tasks
 
-### Phase 1: Tag Filtering
-- [ ] GET /api/notes?tag=work returns only notes with that tag
-- [ ] Tests: single tag, no match, multiple tags on same note
-- Integration test: `curl localhost:3000/api/notes?tag=work`
+### Phase 1: CLI Foundation & Basic Flags
 
-### Phase 2: Full-Text Search
-- [ ] GET /api/notes?q=meeting searches title and content (case-insensitive)
-- [ ] Tests: match in title, match in content, no match, empty query returns all
-- Integration test: `curl localhost:3000/api/notes?q=meeting`
+#### Task 1: Initialize CLI Foundation
+- **Change:** Create src/cli.ts as the main entry point for the CLI. Create a tool executable shim (shell script) that runs the CLI via ts-node.
+- **Files:** src/cli.ts, tool
+- **Tier:** cheap
+- **Done when:** ./tool executes without errors (even if it does nothing yet).
+- **Blockers:** None.
 
-### Phase 3: Pagination
-- [ ] GET /api/notes?page=1&limit=10 returns paginated results
-- [ ] Response format: `{ data: [...], total: N, page: N, limit: N }`
-- [ ] Default: page 1, limit 20
-- Integration test: create 25 notes, verify page 1 has 20, page 2 has 5
+#### Task 2: Implement --version flag (gh-toy-4ef)
+- **Change:** Add logic to src/cli.ts to detect --version or -v flags. If present, print fleet-e2e-toy v1.0.0 and exit with code 0.
+- **Files:** src/cli.ts
+- **Tier:** cheap
+- **Done when:** ./tool --version outputs fleet-e2e-toy v1.0.0 and exits with 0.
+- **Blockers:** None.
 
-### Phase 4: Note Archiving
-- [ ] Add `archived: boolean` field to Note model (default: false)
-- [ ] POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints
-- [ ] GET /api/notes excludes archived by default
-- [ ] GET /api/notes?include_archived=true includes them
-- Integration test: archive a note, verify it's hidden, unarchive, verify it's back
+#### Task 3: Implement help command and --help flag (gh-toy-kbk)
+- **Change:** Add logic to handle help subcommand and --help / -h flags. Print usage information for all available commands and flags.
+- **Files:** src/cli.ts
+- **Tier:** standard
+- **Done when:** ./tool help and ./tool --help print usage info and exit with 0.
+- **Blockers:** None.
+
+#### VERIFY: Phase 1
+- Run ./tool --version
+- Run ./tool --help
+- Run ./tool help
+- Confirm all exit with 0 and show correct output.
+
+---
+
+### Phase 2: Input Validation & Robustness
+
+#### Task 4: Add input validation for blank strings (gh-toy-v6z)
+- **Change:** Add a validation step for CLI arguments to ensure they are not empty or whitespace-only strings.
+- **Files:** src/cli.ts
+- **Tier:** standard
+- **Done when:** Passing an empty string or whitespace-only string to an argument results in a user-friendly error message and a non-zero exit code.
+- **Blockers:** None.
+
+#### Task 5: Add CLI unit and integration tests
+- **Change:** Create tests/cli.test.ts using Jest to test the CLI behavior (version, help, validation).
+- **Files:** tests/cli.test.ts
+- **Tier:** standard
+- **Done when:** npm test runs and passes all CLI-related tests.
+- **Blockers:** None.
+
+#### VERIFY: Phase 2
+- Run npm test
+- Manually verify blank string rejection: ./tool some-arg ""
+- Confirm non-zero exit code on validation failure.
+
+---
+
+## Risk Register
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Script execution permission | med | Ensure tool shim has execute permissions (chmod +x). |
+| Windows/Unix compatibility | low | Use a cross-platform shim or handle both .sh and .ps1 if needed. |
+| Input validation scope | low | Clearly define which arguments require non-empty strings. |
+
+## Notes
+- Each task should result in a git commit
+- Verify tasks are checkpoints — stop and report after each one
+- Base branch: main
+- Implementation branch: e2e-s7.1-25981184634-cli-impl
