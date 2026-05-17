@@ -1,33 +1,20 @@
 # Progress
 
-_Updated by the agent after every significant action. This is how you review its work._
+## Session 3 � 2026-05-17 00:30 UTC (Current Session)
 
-> **NOTE:** The sessions below are a pre-populated example showing what an overnight run leaves behind.
-> feature_list.json is intentionally set to all `passes: false` so the live demo starts fresh.
-> In a real run, the agent would have flipped features 1 & 2 to `true` as described below.
+### Feature: CLI Tool Foundation & Basic Flags
+- Created `src/cli.ts` to handle command-line arguments.
+- Implemented `--version` and `-v` flags printing `fleet-e2e-toy v1.0.0` (Issue gh-toy-4ef).
+- Implemented `help` command and `--help` / `-h` flags (Issue gh-toy-kbk).
+- Added a `tool` (bash) and `tool.cmd` (Windows) shim for easy execution.
+- Added comprehensive integration tests in `tests/cli.test.ts`.
+- All tests passing.
+- Committed and closed gh-toy-4ef and gh-toy-kbk.
 
-## Session 1 — 2026-02-15 22:30 UTC
-
-### Feature: Tag filtering endpoint
-- Reviewed existing GET /api/notes handler — tag filtering already implemented in src/api/notes.ts
-- Added dedicated tests for tag filtering: single tag, no match, multiple tags on same note
-- All 4 new tests pass
-- Committed: feat: add comprehensive tag filtering tests
-- Updated feature_list.json: "Tag filtering endpoint" -> passes: true
-
-SESSION_DONE
-
-## Session 2 — 2026-02-15 22:38 UTC
-
-### Feature: Full-text search
-- Search by ?q= already works for title and content
-- Added edge case tests: empty query returns all, no matches returns empty array, case-insensitive search
-- Found and fixed bug: empty string query was filtering out all notes (now returns all)
-- All 3 new tests pass
-- Committed: feat: add full-text search tests and fix empty query bug
-- Updated feature_list.json: "Full-text search" -> passes: true
-
-SESSION_DONE
+### Feature: CLI Input Validation
+- Added validation to reject empty or whitespace-only strings in CLI arguments (Issue gh-toy-v6z).
+- Added test case in `tests/cli.test.ts` to verify rejection and non-zero exit code.
+- Committed and closed gh-toy-v6z.
 
 ---
-Status after 2 sessions: 2/4 features done, 2 remaining (Pagination, Note archiving)
+Status: 3/3 requested P1 issues completed. Existing NoteAPI tests also passing.
