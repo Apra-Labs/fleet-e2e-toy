@@ -1,32 +1,24 @@
-# Feature: NoteAPI v2 — Search, Pagination, and Archiving
+# Sprint Plan - fleet-e2e-toy
 
-## Problem Statement
-The API supports basic CRUD but lacks the query features users need for real use: filtering by tag, searching content, paginating large result sets, and archiving old notes without deleting them.
+## P1 Issues to Implement:
+1. **gh-toy-kbk: Implement a help command**
+   - Add `help` subcommand and `--help` / `-h` flags.
+   - List all available subcommands and flags.
+   - Exit with code 0.
 
-## Approach
-Add four features incrementally. Each feature is independent — no ordering dependencies. All use the existing in-memory store (no database changes). Each feature must have tests before it's considered done.
+2. **gh-toy-v6z: Add input validation for empty strings**
+   - Reject empty or whitespace-only arguments with a clear error message.
+   - Exit with non-zero code.
+   - Add unit tests.
 
-## Phases
+3. **gh-toy-4ef: Add --version flag to CLI**
+   - Add `--version` / `-v` flag.
+   - Print `fleet-e2e-toy v1.0.0` and exit 0.
 
-### Phase 1: Tag Filtering
-- [ ] GET /api/notes?tag=work returns only notes with that tag
-- [ ] Tests: single tag, no match, multiple tags on same note
-- Integration test: `curl localhost:3000/api/notes?tag=work`
-
-### Phase 2: Full-Text Search
-- [ ] GET /api/notes?q=meeting searches title and content (case-insensitive)
-- [ ] Tests: match in title, match in content, no match, empty query returns all
-- Integration test: `curl localhost:3000/api/notes?q=meeting`
-
-### Phase 3: Pagination
-- [ ] GET /api/notes?page=1&limit=10 returns paginated results
-- [ ] Response format: `{ data: [...], total: N, page: N, limit: N }`
-- [ ] Default: page 1, limit 20
-- Integration test: create 25 notes, verify page 1 has 20, page 2 has 5
-
-### Phase 4: Note Archiving
-- [ ] Add `archived: boolean` field to Note model (default: false)
-- [ ] POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints
-- [ ] GET /api/notes excludes archived by default
-- [ ] GET /api/notes?include_archived=true includes them
-- Integration test: archive a note, verify it's hidden, unarchive, verify it's back
+## Implementation Steps:
+1. Initialize `src/cli.ts` using `yargs`.
+2. Implement `--version` flag.
+3. Implement `help` command and `--help` flag.
+4. Implement `add` command with input validation for the title argument.
+5. Add unit tests in `tests/cli.test.ts`.
+6. Verify all tests pass.
