@@ -20,13 +20,15 @@ export function validateCreateInput(
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
   }
 
-  if (typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (typeof obj.content !== "string" || obj.content.trim().length === 0) {
+    errors.push({ field: "content", message: "Content must be a non-empty string" });
   }
 
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.some((t) => t.trim().length === 0)) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only values" });
     }
   }
 
@@ -57,13 +59,17 @@ export function validateUpdateInput(
     errors.push({ field: "title", message: "Title must be a non-empty string" });
   }
 
-  if (obj.content !== undefined && typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (obj.content !== undefined) {
+    if (typeof obj.content !== "string" || obj.content.trim().length === 0) {
+      errors.push({ field: "content", message: "Content must be a non-empty string" });
+    }
   }
 
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.some((t) => t.trim().length === 0)) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only values" });
     }
   }
 

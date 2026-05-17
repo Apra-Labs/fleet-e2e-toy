@@ -42,6 +42,38 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects empty content", () => {
+    const result = validateCreateInput({ title: "Note", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateCreateInput({ title: "Note", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects tags with empty string", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: [""] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
+
+  it("rejects tags with whitespace-only value mixed with valid tag", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: ["valid", "  "] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -62,5 +94,29 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+
+  it("rejects empty content", () => {
+    const result = validateUpdateInput({ content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateUpdateInput({ content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("rejects tags with empty string mixed with valid", () => {
+    const result = validateUpdateInput({ tags: ["", "ok"] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
   });
 });

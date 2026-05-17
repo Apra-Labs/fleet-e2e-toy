@@ -1,4 +1,5 @@
 import request from "supertest";
+import pkg from "../package.json";
 import app from "../src/app";
 import { noteStore } from "../src/models/note";
 
@@ -87,6 +88,27 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 for empty content", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "" });
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for whitespace-only content", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "   " });
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for empty tag value", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "ok", tags: [""] });
+    expect(res.status).toBe(400);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +131,26 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 for empty content on update", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "Body", tags: [] });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "" });
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for whitespace-only tag on update", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "Body", tags: [] });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["  "] });
+    expect(res.status).toBe(400);
   });
 });
 
@@ -136,5 +178,49 @@ describe("GET /health", () => {
     const res = await request(app).get("/health");
     expect(res.status).toBe(200);
     expect(res.body.status).toBe("ok");
+  });
+});
+
+describe("GET /version", () => {
+  it("returns 200", async () => {
+    const res = await request(app).get("/version");
+    expect(res.status).toBe(200);
+  });
+
+  it("body has name fleet-e2e-toy and version 1.0.0", async () => {
+    const res = await request(app).get("/version");
+    expect(res.body.name).toBe("fleet-e2e-toy");
+    expect(res.body.version).toBe("1.0.0");
+  });
+
+  it("version matches package.json", async () => {
+    const res = await request(app).get("/version");
+    expect(res.body.version).toBe(pkg.version);
+  });
+});
+
+describe("GET /help", () => {
+  it("returns 200", async () => {
+    const res = await request(app).get("/help");
+    expect(res.status).toBe(200);
+  });
+
+  it("body has routes array", async () => {
+    const res = await request(app).get("/help");
+    expect(Array.isArray(res.body.routes)).toBe(true);
+  });
+
+  it("routes array has at least 8 entries", async () => {
+    const res = await request(app).get("/help");
+    expect(res.body.routes.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it("each route entry has method, path, description fields", async () => {
+    const res = await request(app).get("/help");
+    for (const route of res.body.routes) {
+      expect(route).toHaveProperty("method");
+      expect(route).toHaveProperty("path");
+      expect(route).toHaveProperty("description");
+    }
   });
 });
