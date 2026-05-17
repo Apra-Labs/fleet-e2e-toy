@@ -8,6 +8,14 @@ function main() {
     process.exit(0);
   }
 
+  // Check for blank strings in arguments
+  for (const arg of args) {
+    if (arg.trim().length === 0) {
+      console.error("Error: Arguments cannot be empty or blank strings.");
+      process.exit(1);
+    }
+  }
+
   // Basic flag handling
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
