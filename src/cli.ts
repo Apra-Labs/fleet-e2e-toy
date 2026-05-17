@@ -12,14 +12,10 @@ function main() {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--version" || arg === "-v") {
-      // Task 2 will implement this
-    }
-    if (arg === "--help" || arg === "-h" || arg === "help") {
-      // Task 3 will implement this
+      console.log("fleet-e2e-toy v1.0.0");
+      process.exit(0);
     }
   }
-
-  // Task 4 will implement validation
 }
 
 main();
