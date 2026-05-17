@@ -1,4 +1,4 @@
-ï»¿# fleet-e2e-toy â€” Code Review
+# fleet-e2e-toy — Code Review
 
 **Reviewer:** reviewer
 **Date:** 2026-05-17
@@ -8,10 +8,12 @@
 
 ---
 
-## ðŸš¨ UNRESOLVED PREVIOUS FINDINGS ðŸš¨
+## ?? UNRESOLVED PREVIOUS FINDINGS ??
 
 **FAIL:** You completely ignored the previous review feedback regarding missing dependencies. `yargs` and `@types/yargs` are still NOT in `package.json` or `devDependencies`. This is a critical anti-pattern and must be fixed. 
-Furthermore, you failed to follow the review protocol: when a verdict is CHANGES NEEDED, you MUST annotate each relevant section with `**Doer:** fixed in commit <sha> â€” <what changed>` before requesting a re-review. 
+**Doer:** fixed in commit edb2980 — Added yargs to dependencies and @types/yargs to devDependencies.
+
+Furthermore, you failed to follow the review protocol: when a verdict is CHANGES NEEDED, you MUST annotate each relevant section with `**Doer:** fixed in commit <sha> — <what changed>` before requesting a re-review. 
 
 Please explicitly install `yargs` as a dependency and `@types/yargs` as a development dependency, commit the updated `package.json` and `package-lock.json`, and annotate this feedback file.
 
@@ -24,6 +26,7 @@ Please explicitly install `yargs` as a dependency and `@types/yargs` as a develo
 **FAIL (Cross-Platform Tests):** In `tests/cli.test.ts`, you hardcoded the path to `tool.cmd`:
 `const tool = path.join(process.cwd(), 'tool.cmd');`
 This will immediately break the test suite on Linux/macOS or CI environments. You should run the test using `ts-node` directly against `src/cli.ts` (e.g., `ts-node src/cli.ts`) or properly detect the platform to ensure tests are cross-platform. Please fix this.
+**Doer:** fixed in commit edb2980 — Replaced tool.cmd with cross-platform npx ts-node src/cli.ts command.
 
 ## File Hygiene
 
