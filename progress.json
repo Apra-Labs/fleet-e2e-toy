@@ -1,0 +1,70 @@
+{
+  "project": "fleet-e2e-toy",
+  "branch": "e2e-s1.2-25981185129/api-enhancements",
+  "updated_at": "2026-05-17",
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Reject empty/whitespace content and tag values in validation functions",
+      "tier": "cheap",
+      "type": "work",
+      "status": "completed",
+      "notes": "Updated validateCreateInput and validateUpdateInput in src/utils/validation.ts to reject empty/whitespace content (trim check) and empty/whitespace-only tag values."
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Add tests for empty/whitespace content and tag validation",
+      "tier": "standard",
+      "type": "work",
+      "status": "completed",
+      "notes": "Added 4 unit tests to tests/validation.test.ts and 5 integration tests to tests/notes.test.ts covering all new validation cases."
+    },
+    {
+      "id": "T1.V",
+      "phase": 1,
+      "title": "VERIFY: Input Validation Hardening",
+      "tier": "cheap",
+      "type": "verify",
+      "status": "completed",
+      "notes": "npm test: 33/33 tests passed, 2 suites. No regressions. Code pushed to origin."
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Add GET /version endpoint",
+      "tier": "cheap",
+      "type": "work",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T2.2",
+      "phase": 2,
+      "title": "Add GET /help endpoint",
+      "tier": "cheap",
+      "type": "work",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T2.3",
+      "phase": 2,
+      "title": "Add integration tests for /version and /help",
+      "tier": "standard",
+      "type": "work",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "T2.V",
+      "phase": 2,
+      "title": "VERIFY: API Metadata Endpoints",
+      "tier": "cheap",
+      "type": "verify",
+      "status": "pending",
+      "notes": ""
+    }
+  ]
+}
