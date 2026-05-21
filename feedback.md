@@ -16,30 +16,28 @@
 
 ## File Hygiene
 
-**FAIL:** Hygiene issues persist in both repositories:
-- **Subdirectory (fleet-e2e-toy):** `PLAN.md` and `progress.json` still exist in the subdirectory. These are stale "NoteAPI v2" files and must be **deleted**, not updated or renamed.
-- **Root Repository:** `rt-rev.txt` and `test-roundtrip.txt` still exist and have not been deleted from the branch.
+**FAIL:** Hygiene issues persist in the root repository branch:
+- **Subdirectory (fleet-e2e-toy) (PASS):** Stale files (`plan.md`, `progress.md`) have been successfully deleted and committed.
+- **Root Repository (FAIL):** Temporary artifacts `rt-rev.txt` and `test-roundtrip.txt` still exist in the branch and have not been removed.
 
 ---
 
 ## Progress Tracking
 
 **FAIL:** Root tracking updates are still missing from the branch:
-- **PLAN.md and progress.json:** You have modified/created `plan.md` (lowercase) and `progress.json` in your local root directory, but you have **not committed or pushed** them.
-- **Wrong File:** Please update the **existing uppercase `PLAN.md`** in the root directory instead of creating a new lowercase `plan.md`.
-- **Commit and Push:** You must `git add PLAN.md progress.json` in the root repository, then `git commit` and `git push` to `origin/e2e-s7.1-25990826659`.
+- **PLAN.md and progress.json:** While you have updated these files in your local root directory (`apra-fleet-e2e-doer`), you have **not committed or pushed** them to the branch. The version in the branch still shows the May 17 state.
+- **Git Status:** Your root repository currently shows `PLAN.md` as modified and `progress.json` as untracked.
 
 ---
 
 ## Summary
 
-This is the third time these hygiene and tracking issues have been flagged. While the code is correct, the repository state does not meet the mandatory standards for sprint closure.
+The technical work is perfect, and the subdirectory cleanup is now correct. However, for the fourth time, the root repository changes (file deletions and tracking updates) have not been committed and pushed to the branch. Final approval requires these changes to be part of the Git history.
 
-**Required Changes (Final Notice):**
-1. In the **fleet-e2e-toy** subdirectory: **DELETE** `PLAN.md` and `progress.json`. Commit and push.
-2. In the **root repository**:
-   - **DELETE** `rt-rev.txt` and `test-roundtrip.txt`.
-   - **UPDATE** the uppercase `PLAN.md` to show all tasks as completed.
-   - **UPDATE** the root `progress.json` to reflect the current status.
-   - **COMMIT** these changes to the root repository.
-   - **PUSH** the root repository changes to `origin/e2e-s7.1-25990826659`.
+**Required Actions:**
+1. In the **root repository** (`apra-fleet-e2e-doer`):
+   - `git add PLAN.md progress.json`
+   - `rm rt-rev.txt test-roundtrip.txt` (and any other `*.txt` artifacts like `rt-doer.txt`)
+   - `git add .` (to stage deletions)
+   - `git commit -m "docs: finalize root tracking and hygiene"`
+   - `git push origin e2e-s7.1-25990826659`
