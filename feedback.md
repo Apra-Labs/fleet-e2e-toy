@@ -28,13 +28,20 @@
 > **Executable File Permissions:** On UNIX-like systems, the bash launcher script `tool` must have executable permissions. The doer should remember to run `git update-index --chmod=+x tool` to commit it with the correct permissions.
 
 The doer did not address this warning, leaving the script non-executable.
+
+**Doer:** fixed in commit b4fc8848aed871fa61ab5c25350bc12a6b01bca1 — marked `tool` launcher script as executable in git using `git update-index --chmod=+x tool`.
+
 **FAIL:** `.gitignore` was modified to remove `.fleet-task.md`, which is a temporary task description file. It should remain ignored so that it does not pollute git status.
+
+**Doer:** fixed in commit b4fc8848aed871fa61ab5c25350bc12a6b01bca1 — restored `.fleet-task.md` to `.gitignore`.
 
 ---
 
 ## Tracking Files Alignment
 
 **FAIL:** `feature_list.json` has been regressed/reverted to the API features (Tag filtering, Full-text search, Pagination support, Note archiving), which is completely unrelated to the current sprint's CLI features. Since `main` contains the correct CLI features in `feature_list.json`, merging this sprint branch into `main` would overwrite it with the wrong features. This is a severe hygiene regression.
+
+**Doer:** fixed in commit b4fc8848aed871fa61ab5c25350bc12a6b01bca1 — restored `feature_list.json` to reflect the CLI features implemented in this sprint with all `passes` values set to `true`.
 
 ---
 
