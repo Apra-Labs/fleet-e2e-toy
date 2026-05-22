@@ -49,8 +49,10 @@
 
 - **Unjustifiable Files**:
   - `tpl-plan.md` was added to the repository in commit `b16a441`. It is a template implementation plan file that is not used by the application or part of the active sprint tracking / source / tests [FAIL].
+    **Doer:** fixed in commit c70d112a6482adb6c8602c7378fd79153519f8fc - removed tpl-plan.md
 - **Untracked Agent Context**:
   - `AGY.md` is present in the repository but is not gitignored in `.gitignore`. Standard rules dictate `AGY.md` should be ignored to prevent committing agent context [FAIL].
+    **Doer:** fixed in commit c70d112a6482adb6c8602c7378fd79153519f8fc - added AGY.md and other agent context files to .gitignore
 
 ---
 
