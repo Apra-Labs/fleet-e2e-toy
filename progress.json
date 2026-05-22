@@ -34,9 +34,9 @@
       "id": 4,
       "step": "Add CLI unit tests",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
+      "commit": "feat: T1.4: add cli unit tests",
       "notes": ""
     },
     {
