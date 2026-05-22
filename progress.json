@@ -16,9 +16,9 @@
       "id": 2,
       "step": "Implement validation for empty or blank strings",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "cheap",
-      "commit": "",
+      "commit": "feat: T1.2: validate arguments",
       "notes": ""
     },
     {
