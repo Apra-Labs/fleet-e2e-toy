@@ -18,17 +18,17 @@
       "type": "work",
       "status": "completed",
       "tier": "cheap",
-      "commit": "PENDING",
+      "commit": "87a23031b03fdf24cabdab8f72dd57a74b6f7afc",
       "notes": "Argument validation for empty and whitespace-only strings is implemented and verified."
     },
     {
       "id": 3,
       "step": "Implement help command and help flags",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "PENDING",
+      "notes": "Help command and help flags (--help, -h) are implemented and verified."
     },
     {
       "id": 4,
