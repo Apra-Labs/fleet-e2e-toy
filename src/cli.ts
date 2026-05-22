@@ -3,6 +3,13 @@ import * as process from "process";
 function main() {
   const args = process.argv.slice(2);
 
+  for (const arg of args) {
+    if (arg.trim() === "") {
+      console.error("Error: Argument cannot be empty or whitespace-only.");
+      process.exit(1);
+    }
+  }
+
   if (args.length > 0) {
     const firstArg = args[0];
     if (firstArg === "--version" || firstArg === "-v") {
