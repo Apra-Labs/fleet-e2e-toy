@@ -25,9 +25,9 @@
       "id": 3,
       "step": "Implement help command and help flags",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
+      "commit": "feat: T1.3: add help command",
       "notes": ""
     },
     {
