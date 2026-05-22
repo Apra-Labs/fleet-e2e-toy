@@ -11,3 +11,5 @@ coverage/
 *.db
 .beads-credential-key
 AGY.md
+.fleet-task.md
+
