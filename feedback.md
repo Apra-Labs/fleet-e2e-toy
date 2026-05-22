@@ -1,69 +1,46 @@
-﻿# e2e-s8.1-26267163753/sprint â€“ Plan Review
+# e2e-s8.1-26267163753/sprint — Code Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-21 23:55:00-04:00
-**Verdict:** APPROVED
+**Date:** 2026-05-22 04:08:00-04:00
+**Verdict:** CHANGES NEEDED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## Done Criteria & Tasks
+## CLI Functionality and Code Quality
 
-**PASS:** Every task in the plan has clear, actionable, and objective "Done when" criteria. They specify the exact command execution (e.g., `./tool --version`, `./tool ""`, `npm test`), expected output (stdout/stderr contents), and the expected exit codes (0 vs non-zero). This ensures that correctness can be verified automatically and unambiguously.
-
----
-
-## Cohesion & Coupling
-
-**PASS:** The plan exhibits high cohesion within tasks and low coupling between them. Each task targets a single, logical CLI requirement (version flag/launcher setup, input validation, help commands, and unit tests). While tasks are executed sequentially and build on the launcher setup, they remain independent logical modules, preventing cross-task interference.
+**PASS:** The CLI commands (`--version`, `-v`, `--help`, `-h`, `help`) work correctly. Output formats are user-friendly, and the exit codes are correct (0 for success, 1 for errors).
+**PASS:** Input validation for empty or blank string arguments works as expected. Passing `""` or `"   "` (properly quoted in the shell/tests) correctly produces an error and exits with code 1.
+**PASS:** Unknown arguments are correctly rejected with a clear message and exit code 1.
 
 ---
 
-## Earliest Abstractions & Shared Interfaces
+## Automated Tests and Coverage
 
-**PASS:** Key abstractions and shared interfaces are correctly prioritized. Task 1 introduces the base CLI file `src/cli.ts` and the wrappers `tool` and `tool.cmd`. This establishes the core interface layer that all subsequent tasks reuse, satisfying the DRY principle.
-
----
-
-## Risky Assumptions Validation
-
-**PASS:** The riskiest assumptions are validated in the very first task. The primary risk is that launcher scripts cannot properly execute `npx ts-node src/cli.ts` cross-platform (on both bash and cmd) or forward arguments correctly. Setting up the wrappers and testing them immediately with the basic `--version` flag validates this execution path before any complex parsing logic is added.
+**PASS:** Unit tests in `tests/cli.test.ts` cover version, help, validation, and error scenarios. All 31 tests pass, and the project builds successfully.
 
 ---
 
-## Phase Boundaries & Cohesion
+## Git Hygiene and Permissions
 
-**PASS:** The plan has a single phase ("Phase 1: CLI Interface"), which is a highly coherent unit. The boundaries of the phase encompass all CLI-related behaviors, producing a reviewable, testable, and complete CLI implementation.
+**FAIL:** The launcher script `tool` does not have executable permissions in git (mode is still `100644`). This was explicitly noted in the implementation plan review feedback:
+> **Executable File Permissions:** On UNIX-like systems, the bash launcher script `tool` must have executable permissions. The doer should remember to run `git update-index --chmod=+x tool` to commit it with the correct permissions.
 
----
-
-## Monotonically Non-Decreasing Tiers
-
-**PASS:** Tiers are monotonically non-decreasing. Tasks progress from `cheap` (Task 1 & Task 2) to `standard` (Task 3 & Task 4). This guarantees that effort increases as the complexity of the feature grows.
+The doer did not address this warning, leaving the script non-executable.
+**FAIL:** `.gitignore` was modified to remove `.fleet-task.md`, which is a temporary task description file. It should remain ignored so that it does not pollute git status.
 
 ---
 
-## Completableness & Dependencies
+## Tracking Files Alignment
 
-**PASS:** Each task is small and straightforward enough to be completed within a single session. Dependencies are logically satisfied, moving from framework setup and basic flags to argument validation, subcommand handling, and finally programmatic unit testing.
-
----
-
-## Clarity & Edge Cases
-
-**PASS with Recommendations:** The tasks are well-defined, but there are minor ambiguities that the doer should be aware of to ensure robust implementation:
-- **Zero Arguments Handling:** The validation in Task 2 checks if any argument is empty/blank. If no arguments are passed at all, the argument list is empty. The developer should ensure that running `./tool` with zero arguments is also handled gracefully (either triggering the validation error and exiting with code 1, or displaying help/usage).
-- **Executable File Permissions:** On UNIX-like systems, the bash launcher script `tool` must have executable permissions. The doer should remember to run `git update-index --chmod=+x tool` to commit it with the correct permissions.
-
----
-
-## Risk Register & Alignment
-
-**PASS:** The plan includes a detailed risk register that identifies valid technical risks (launcher script execution, argument stripping, test process exits) and provides sensible mitigations (cross-platform node runners, Jest wrapper executions, `execSync` isolation). The plan aligns perfectly with the goal of adding usability and validation checks to the `fleet-e2e-toy` CLI.
+**FAIL:** `feature_list.json` has been regressed/reverted to the API features (Tag filtering, Full-text search, Pagination support, Note archiving), which is completely unrelated to the current sprint's CLI features. Since `main` contains the correct CLI features in `feature_list.json`, merging this sprint branch into `main` would overwrite it with the wrong features. This is a severe hygiene regression.
 
 ---
 
 ## Summary
 
-The implementation plan is well-structured, logical, and complete. All 13 check items are satisfied. The doer is approved to proceed, keeping the recommendations regarding zero-argument handling and executable file permissions in mind.
+The core implementation of the CLI features and tests is solid and functional. However, there are critical hygiene issues that must be fixed before approval:
+1. Make the `tool` launcher script executable in git (`git update-index --chmod=+x tool`).
+2. Keep `.fleet-task.md` ignored in `.gitignore`.
+3. Restore `feature_list.json` to the CLI features with `passes` set to `true`.
