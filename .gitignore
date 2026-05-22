@@ -10,3 +10,12 @@ coverage/
 .dolt/
 *.db
 .beads-credential-key
+
+# Agent context files
+AGY.md
+GEMINI.md
+CLAUDE.md
+AGENTS.md
+COPILOT.md
+.claude/
+.gemini/
