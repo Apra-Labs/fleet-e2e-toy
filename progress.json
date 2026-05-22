@@ -27,17 +27,17 @@
       "type": "work",
       "status": "completed",
       "tier": "standard",
-      "commit": "PENDING",
+      "commit": "ce35313ca012603b3485f91aad8575e0536edc0f",
       "notes": "Help command and help flags (--help, -h) are implemented and verified."
     },
     {
       "id": 4,
       "step": "Add CLI unit tests",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "PENDING",
+      "notes": "CLI unit tests have been added to tests/cli.test.ts and verify version, help, and validation behaviors."
     },
     {
       "id": 5,
