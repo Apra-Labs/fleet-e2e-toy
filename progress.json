@@ -1,0 +1,51 @@
+{
+  "project": "fleet-e2e-toy",
+  "plan_file": "PLAN.md",
+  "created": "2026-05-22T21:10:00Z",
+  "tasks": [
+    {
+      "id": 1,
+      "step": "Add --version / -v flag to CLI and create tool launcher scripts",
+      "type": "work",
+      "status": "completed",
+      "tier": "cheap",
+      "commit": "753114aa9f80f422c3df150d7ad5c3cb03de41a3",
+      "notes": "Version flags and launcher scripts are implemented and verified."
+    },
+    {
+      "id": 2,
+      "step": "Implement validation for empty or blank strings",
+      "type": "work",
+      "status": "pending",
+      "tier": "cheap",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "step": "Implement help command and help flags",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 4,
+      "step": "Add CLI unit tests",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 5,
+      "step": "VERIFY: CLI Interface",
+      "type": "verify",
+      "status": "pending",
+      "commit": "",
+      "notes": ""
+    }
+  ]
+}
