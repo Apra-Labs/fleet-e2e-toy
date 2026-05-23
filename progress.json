@@ -1,0 +1,51 @@
+{
+  "project": "fleet-e2e-toy",
+  "plan_file": "PLAN.md",
+  "created": "2026-05-23T01:00:00Z",
+  "tasks": [
+    {
+      "id": 1,
+      "step": "Add --version flag",
+      "type": "work",
+      "status": "completed",
+      "tier": "standard",
+      "commit": "ffc3f5efb77076c3a119f7ed3ef3a69d602d9f15",
+      "notes": "Added --version and -v flags handling at the start of src/index.ts."
+    },
+    {
+      "id": 2,
+      "step": "Implement a help command",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "step": "Add input validation for empty or blank strings",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 4,
+      "step": "Add CLI test suite",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 5,
+      "step": "VERIFY: CLI Enhancements",
+      "type": "verify",
+      "status": "pending",
+      "commit": "",
+      "notes": ""
+    }
+  ]
+}
