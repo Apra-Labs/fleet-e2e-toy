@@ -7,10 +7,10 @@
       "id": 1,
       "step": "Add --version / -v flag to CLI and create tool launcher scripts",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "cheap",
-      "commit": "",
-      "notes": ""
+      "commit": "feat: add CLI entry point and tool launcher scripts",
+      "notes": "Added src/cli.ts supporting --version and -v, created tool and tool.cmd launcher scripts."
     },
     {
       "id": 2,
