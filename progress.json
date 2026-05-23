@@ -16,10 +16,10 @@
       "id": 2,
       "step": "Implement a help command",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "d487ec553422a832006e93ba4965181e5566be10",
+      "notes": "Implemented help command and help flags in src/index.ts."
     },
     {
       "id": 3,
