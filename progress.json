@@ -34,16 +34,17 @@
       "id": 4,
       "step": "Add CLI test suite",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "d6a70027e47fc8ae499ba7b7a0657d329cde4279",
+      "notes": "Added Jest integration tests in tests/cli.test.ts to verify version, help, and validation behavior."
     },
     {
       "id": 5,
       "step": "VERIFY: CLI Enhancements",
       "type": "verify",
       "status": "pending",
+      "tier": "standard",
       "commit": "",
       "notes": ""
     }
