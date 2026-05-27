@@ -27,17 +27,17 @@
       "type": "work",
       "status": "completed",
       "tier": "standard",
-      "commit": "e622436d49e422be55c47a001681ea882fe5afbd",
+      "commit": "f72867fb8ad5b89de2d358dbd09293965b540fec",
       "notes": "Implemented help command and help flags (--help and -h) in src/cli.ts to display usage instructions and exit 0."
     },
     {
       "id": 4,
       "step": "Add CLI unit tests",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "f7994026b41f6ce7e5553db539b79273b8b5e158",
+      "notes": "Added comprehensive Jest test suite in tests/cli.test.ts testing version/help flags, validation logic, and add/serve stubs."
     },
     {
       "id": 5,
