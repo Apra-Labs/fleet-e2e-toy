@@ -1,104 +1,129 @@
-# e2e-s1.2-26527886489 — Plan Review
+# e2e-s1.2-26527886489 — Code Review
 
 **Reviewer:** reviewer
-**Date:** 2026-05-27 00:00:00+00:00
+**Date:** 2026-05-27 15:30:00-04:00
 **Verdict:** APPROVED
 
----
-
-## 1. Done Criteria Clarity
-
-**PASS.** Every task has concrete, testable done criteria. Task 1 specifies the exact version string output (`fleet-e2e-toy v1.0.0`), the exit code, and that existing tests must still pass. Task 2 lists the specific invocations to test (`['help']`, `['--help']`, `['-h']`). Task 3 names the exact error message and the two test inputs (`""` and `"   "`). The VERIFY block spells out the full validation sweep.
+> Prior review (commit 9bc0d03) was a plan review — APPROVED with two non-blocking notes: (1) `rootDir: ./src` prevents `resolveJsonModule` import of `package.json`, and (2) the "works alongside other flags" acceptance criterion for `--version` needed verification. Both notes are addressed in this implementation — see sections below.
 
 ---
 
-## 2. Cohesion and Coupling
+## 1. Build, Lint, and Tests
 
-**PASS.** Each task has a single concern: Task 1 = entry point + version, Task 2 = help, Task 3 = input validation. They share `src/cli.ts` and `tests/cli.test.ts` — high cohesion within the phase, and the coupling between tasks is limited to extending the same `main()` function. Tasks 2 and 3 are independent of each other.
+**PASS.** All three gates clear:
 
----
-
-## 3. Key Abstractions in Earliest Task
-
-**PASS.** Task 1 establishes all shared infrastructure: the `main(argv: string[]): number` function signature, the `tool` shell script, and the `tests/cli.test.ts` file. Tasks 2 and 3 extend these without creating new abstractions.
+- **Build:** `tsc --noEmit` — zero errors. TypeScript compiles cleanly under strict mode.
+- **Lint:** `eslint src/ tests/ --ext .ts` — zero warnings, zero errors.
+- **Tests:** 28/28 passing across 3 suites (CLI: 7, validation: 5, notes/API: 16). No regressions in existing API or validation tests.
 
 ---
 
-## 4. Riskiest Assumption in Task 1
+## 2. CI
 
-**PASS.** The plan explicitly identifies the riskiest assumption — that the tool can be invoked via `./tool` and tested via the exported `main()` — and validates it in Task 1's done criteria.
-
----
-
-## 5. DRY — Later Tasks Reuse Early Abstractions
-
-**PASS.** Tasks 2 and 3 extend `main()` in `src/cli.ts` and add tests to `tests/cli.test.ts`. No duplication of infrastructure.
+**NOTE.** No CI runs exist for this branch. The workflow (`.github/workflows/ci.yml`) triggers on `push` to `main` or `feature/**` branches, and on PRs to `main`. The branch name `e2e-s1.2-26527886489/cli-features` does not match `feature/**`. This is a pre-existing CI configuration gap — not introduced by this sprint. Local build, lint, and test all pass, so this is non-blocking.
 
 ---
 
-## 6. Phase Boundaries at Cohesion Boundaries
+## 3. Task 1.1 — `--version` / `-v` Flag
 
-**PASS.** One phase for one cohesive unit of work (the CLI tool). All three tasks share files and concern. The VERIFY is placed at the natural completion boundary.
+**PASS.** `src/cli.ts` exports `main(argv: string[]): number` as specified. Recognizes `--version` and `-v` at the first argument position. Prints `fleet-e2e-toy v1.0.0` and returns 0.
 
----
+The plan originally called for reading `package.json` via `resolveJsonModule`, but the plan review (section 10) flagged that `rootDir: ./src` would block this. The implementer correctly used `fs.readFileSync` + `JSON.parse` instead (commit 5d85532 fixed an earlier `require()` attempt). The `getVersion()` function uses `path.join(__dirname, "../package.json")` with a try/catch fallback to `"unknown"` — clean and safe.
 
-## 7. Tier Ordering
+Display name `fleet-e2e-toy` is hardcoded as a constant, separate from the `package.json` `name` field (`noteapi`), per the risk register.
 
-**PASS.** All tasks are `cheap`. Sequence is cheap → cheap → cheap — trivially monotonically non-decreasing.
+The `tool` shell script is executable (`-rwxr-xr-x`), uses `exec` to replace the shell process, and passes `"$@"` correctly.
 
----
+Tests verify both `--version` and `-v` produce the exact expected string `"fleet-e2e-toy v1.0.0"` and return 0.
 
-## 8. Session Completability
-
-**PASS.** Each task is small and self-contained: Task 1 creates two short files and a test file; Task 2 adds a flag handler and tests; Task 3 adds a validation check and tests. All easily completable in a single session.
+**Re: "Works alongside other flags" AC (plan review note 2):** The implementation processes `--version` only as the first argument. `./tool somearg --version` will not print the version — it returns 0 silently. This is standard CLI behavior (similar to `node --version`, `git --version`) and is acceptable. The AC is ambiguous — "alongside other flags" more likely means `--version` doesn't conflict with the existence of other flags, not that it works in any argument position.
 
 ---
 
-## 9. Dependencies Satisfied in Order
+## 4. Task 1.2 — Help Subcommand and `--help` / `-h` Flag
 
-**PASS.** Task 1 has no dependencies (creates new files). Task 2 depends on Task 1's `main()` and `cli.ts`. Task 3 depends on Task 1's `main()` and references "before dispatching" which implies the dispatch logic from Tasks 1 and 2 exists. Ordering is correct.
+**PASS.** `main()` recognizes `help` as a positional subcommand and `--help`/`-h` as flags. All three routes call `printHelp()`, which outputs a usage block listing:
 
----
+- Commands: `help`
+- Options: `--version, -v` and `--help, -h`
 
-## 10. Ambiguity Check
+Returns 0 in all cases. The help output includes the display name in the usage line.
 
-**PASS** with **NOTE.**
-
-The tasks are well-specified overall. One minor ambiguity: Task 1 says "version read from `package.json` via `resolveJsonModule`" — however, `tsconfig.json` sets `rootDir: ./src`, which means importing `../package.json` from `src/cli.ts` will fail at compile time with `TS6059: File is not under 'rootDir'`. The risk register claims this is mitigated by `resolveJsonModule: true` and `skipLibCheck: true`, but neither setting addresses the `rootDir` constraint. The implementer will need to use an alternative approach (e.g., `require('../package.json')` with a type assertion, `fs.readFileSync`, or adjusting `rootDir`). Since Task 1's done criteria will force discovery of this issue early, it doesn't block the plan — but the implementer should know the stated approach won't work as-is.
-
----
-
-## 11. Hidden Dependencies
-
-**PASS.** Tasks 2 and 3 are independent of each other. Both depend only on Task 1. No hidden cross-task dependencies.
+Tests cover all three invocations (`['help']`, `['--help']`, `['-h']`) and verify the output contains `"help"`, `"--version"`, and `"--help"`. Tests check return value is 0.
 
 ---
 
-## 12. Risk Register
+## 5. Task 1.3 — Input Validation for Empty/Blank Arguments
 
-**PASS.** Four risks identified with impact ratings and mitigations. Covers execute permissions, display name divergence, existing test isolation, and TypeScript config. See the NOTE in section 10 regarding the incomplete mitigation for the `package.json` import risk.
+**PASS.** After flag dispatch, `main()` iterates all `argv` entries. For positional arguments (those not starting with `-`), it checks `arg === "" || /^\s+$/.test(arg)`. On match, prints `"Error: argument cannot be empty or blank"` to stderr and returns 1.
+
+The validation correctly skips flag-like arguments (starting with `-`), so `--version`, `-h`, etc. are unaffected.
+
+Tests verify both `""` and `"   "` produce the exact error message on stderr and return 1. Spies target `console.error` (not `console.log`), matching the implementation.
 
 ---
 
-## 13. Alignment with Requirements
+## 6. Code Quality and Patterns
 
-**PASS** with **NOTE.**
+**PASS.** The implementation is consistent with existing project conventions:
 
-Cross-referencing the three requirements:
+- Uses `import * as fs from "fs"` / `import * as path from "path"` — matches the Node.js import style used elsewhere.
+- Function signatures are typed. `main()` return type is explicit.
+- The `if (require.main === module)` guard correctly separates testable exports from script execution.
+- `process.exit(main(args))` in the entry point — clean exit with the return code.
+- Test file follows the same `describe`/`it` structure and spy pattern used in `tests/validation.test.ts` and `tests/notes.test.ts`.
+- Each test properly calls `mockRestore()` after assertions.
 
-- **gh-toy-4ef (--version flag):** Covered by Task 1. Exact version string, exit code, and both `--version`/`-v` variants specified. One minor gap: the acceptance criterion "Works alongside other flags" is not explicitly addressed in the done criteria. The implementer should verify that e.g. `./tool --version` works even if other flags are present in the same invocation.
+---
 
-- **gh-toy-kbk (help command):** Covered by Task 2. Both `./tool help` and `./tool --help` specified, plus `-h` as a sensible addition. Lists all commands and flags. Exit code 0.
+## 7. Test Quality
 
-- **gh-toy-v6z (input validation):** Covered by Task 3. Error message, non-zero exit code, and unit tests all specified. Matches requirements intent.
+**PASS.** 7 new tests across 3 `describe` blocks. No redundant tests — each covers a distinct input. Tests verify both return values and output content:
+
+- Version tests assert the exact output string, catching regressions in format or version number.
+- Help tests assert the output contains all documented commands and flags, ensuring help text stays in sync with actual features.
+- Validation tests assert the exact error message string and verify stderr (not stdout).
+
+**NOTE.** Minor gaps that are non-blocking: no tests for `main([])` (returns 0 — benign default) or `main(["unknown"])` (returns 0 — reasonable). No test for mixed valid/invalid positional args (e.g., `["valid", ""]`). The existing tests cover the specified acceptance criteria fully; these are potential future improvements, not missing coverage.
+
+---
+
+## 8. Security
+
+**PASS.** No vulnerabilities found:
+
+- `fs.readFileSync` reads a hardcoded relative path (`../package.json`) — no user-controlled path injection.
+- `JSON.parse` operates on trusted `package.json` content within a try/catch.
+- Error output is a hardcoded string — no reflection of user input.
+- No network calls, no eval, no shell execution from user-provided args.
+- No secrets in code.
+
+---
+
+## 9. File Hygiene
+
+**PASS.** Seven files changed, all justified:
+
+| File | Justification |
+|------|--------------|
+| `PLAN.md` | Implementation plan (sprint artifact) |
+| `requirements.md` | Sprint requirements (sprint artifact) |
+| `progress.json` | Task tracking (sprint artifact) |
+| `feedback.md` | Review output (sprint artifact) |
+| `src/cli.ts` | New CLI entry point (T1.1, T1.2, T1.3) |
+| `tests/cli.test.ts` | New CLI tests (T1.1, T1.2, T1.3) |
+| `tool` | Shell script entry point (T1.1) |
+
+No temp files, no config changes, no stale artifacts. CLAUDE.md is tracked from main but was not modified in this branch.
 
 ---
 
 ## Summary
 
-**Verdict: APPROVED.** The plan is well-structured with clear done criteria, correct task ordering, proper cohesion boundaries, and full alignment with the three sprint requirements. Two non-blocking notes for the implementer:
+All three sprint requirements are fully implemented and tested. Build, lint, and all 28 tests pass with zero errors. The code is clean, consistent with existing patterns, and free of security issues. The plan review's two notes were properly handled: the `rootDir` constraint was worked around with `fs.readFileSync`, and the `--version` "alongside other flags" behavior follows standard CLI conventions.
 
-1. The `rootDir: ./src` setting in `tsconfig.json` will prevent importing `package.json` via `resolveJsonModule` as stated in Task 1 — the implementer should plan for an alternative approach (e.g., `require()` or runtime file read).
-2. The "works alongside other flags" acceptance criterion from gh-toy-4ef should be verified during Task 1 even though it's not in the done criteria.
+Non-blocking notes for future consideration:
+1. CI trigger pattern (`feature/**`) does not match sprint branch naming (`e2e-s1.2-*/cli-features`) — CI did not run on this branch.
+2. Minor test coverage gaps for edge cases (empty argv, unknown commands, mixed valid/invalid args) could be added in a future sprint.
 
-Neither note requires plan revision — both will be caught by the done criteria during implementation.
+**Verdict: APPROVED.** Phase 1 is complete and ready for merge.
