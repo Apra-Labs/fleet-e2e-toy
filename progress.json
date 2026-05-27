@@ -1,0 +1,41 @@
+{
+  "project": "fleet-e2e-toy",
+  "sprint": "e2e-s1.2-26527886489",
+  "branch": "e2e-s1.2-26527886489/cli-features",
+  "updated": "2026-05-27",
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create CLI entry point and implement --version / -v flag",
+      "tier": "cheap",
+      "status": "completed",
+      "notes": "src/cli.ts created with main() function; tool executable created and marked with chmod +x; tests for --version and -v passing"
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Implement help subcommand and --help / -h flag",
+      "tier": "cheap",
+      "status": "completed",
+      "notes": "Extended main() to recognize help subcommand and --help/-h flags; prints usage with all commands and flags; tests passing"
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Add input validation for empty or blank string arguments",
+      "tier": "cheap",
+      "status": "completed",
+      "notes": "Added validation for empty/whitespace-only positional args; returns 1 with error message; tests for empty string and whitespace passing"
+    },
+    {
+      "id": "T1.V",
+      "phase": 1,
+      "type": "verify",
+      "title": "VERIFY: CLI Tool",
+      "tier": "cheap",
+      "status": "completed",
+      "notes": "Build: ✓ passed; Lint: ✓ passed (fixed fs.readFileSync); Tests: 28 passed (all API, validation, CLI suites); All prior tasks verified working correctly"
+    }
+  ]
+}
