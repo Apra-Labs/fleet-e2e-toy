@@ -1,0 +1,67 @@
+{
+  "project": "fleet-e2e-toy",
+  "sprint": "e2e-s1.1-26544203024",
+  "plan_file": "plan.md",
+  "created": "2026-05-27",
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "step": "Create CLI entry point and wrapper scripts",
+      "type": "work",
+      "status": "completed",
+      "tier": "cheap",
+      "commit": "f62c91d",
+      "notes": "Created src/cli.ts with argument parsing skeleton, tool (Unix wrapper), and tool.cmd (Windows wrapper). LF line endings enforced via .gitattributes."
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "step": "Implement --version / -v flag",
+      "type": "work",
+      "status": "pending",
+      "tier": "cheap",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "step": "Implement help subcommand and --help / -h flag",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": "T1.4",
+      "phase": 1,
+      "step": "Add input validation for empty/blank string arguments",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": "T1.5",
+      "phase": 1,
+      "step": "Add CLI unit tests",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": "VERIFY-1",
+      "phase": 1,
+      "step": "VERIFY: Phase 1 - CLI Features",
+      "type": "verify",
+      "status": "pending",
+      "commit": "",
+      "notes": ""
+    }
+  ]
+}
