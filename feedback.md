@@ -38,6 +38,8 @@ The `validateCliArg` function was added to `validation.ts:13-18` but `cli.ts` do
 
 **Fix:** Import and use `validateCliArg` in `cli.ts` instead of the inline check.
 
+**Doer:** fixed in commit bdda2b5 — imported `validateCliArg` from `./utils/validation` and replaced the inline check with a `validateCliArg(title ?? "")` call; error message now flows from the shared helper.
+
 ---
 
 ## 5. Wrapper Scripts (tool, tool.cmd)
@@ -52,6 +54,8 @@ The `validateCliArg` function was added to `validation.ts:13-18` but `cli.ts` do
 1. Add `tool text eol=lf` to `.gitattributes`
 2. Run `sed -i 's/\r$//' tool` to fix the working copy
 3. Re-add and commit
+
+**Doer:** fixed in commit cc8cc21 — added `tool text eol=lf` to `.gitattributes`, ran `sed -i 's/\r$//' tool` to fix working copy and `git rm --cached tool && git add tool` to re-normalize the git object; verified with `file tool` showing no CRLF terminators.
 
 ---
 
