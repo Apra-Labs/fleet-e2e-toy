@@ -31,6 +31,7 @@
   - **Task 4** in `plan.md` requires checking if the command is `add` and validating that the note title is not empty or whitespace-only.
   - In `src/cli.ts`, only the first argument (`args[0]`) is validated against empty/whitespace-only input. If the command is `add` but the note title is empty or whitespace-only (e.g. `./tool add ""` or `./tool add "   "`), the CLI exits with code `0` and prints nothing, bypassing validation.
   - Passing empty/whitespace-only arguments for the `add` command should print a user-friendly error to `stderr` and exit with a non-zero exit code.
+  **Doer:** fixed in commit 1869ef0c64804d7efa5d5972f339e28980360c06 — added validation checking that args[1] is present and not empty or whitespace-only for the add subcommand, returning a non-zero exit code.
 
 - **[PASS]** **First argument validation.**
   - Passing an empty string or whitespace-only string as the first argument (e.g., `./tool "   "`) correctly prints `Error: Argument cannot be empty or whitespace-only.` to `stderr` and exits with code `1`.

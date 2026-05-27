@@ -35,8 +35,11 @@ async function main() {
   }
 
   if (firstArg === 'add') {
-    const title = args.slice(1).join(' '); // or args[1]? Let's see what is standard. The plan says "add <title> should print 'Note added: <title>'". If <title> can be passed as a single arg, args[1] is fine. Let's do args[1] || ''.
-    const titleVal = args[1] || '';
+    const titleVal = args[1];
+    if (titleVal === undefined || titleVal.trim() === '') {
+      console.error('Error: Note title cannot be empty or whitespace-only.');
+      process.exit(1);
+    }
     console.log(`Note added: ${titleVal}`);
     process.exit(0);
   }
