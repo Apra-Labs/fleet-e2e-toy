@@ -31,6 +31,20 @@ if (args.includes('help') || args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
+// Handle add subcommand
+if (args.length > 0 && args[0] === 'add') {
+  const title = args[1];
+
+  // Validate title argument
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
+    console.error('Error: Title argument is required and must be a non-empty string');
+    process.exit(1);
+  }
+
+  // If validation passes, continue (placeholder for actual add logic)
+  process.exit(0);
+}
+
 if (args.length === 0) {
   process.exit(0);
 }

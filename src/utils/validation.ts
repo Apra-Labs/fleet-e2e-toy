@@ -5,6 +5,18 @@ export interface ValidationError {
   message: string;
 }
 
+export interface CliArgValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+export function validateCliArg(value: string): CliArgValidationResult {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return { valid: false, error: "Argument must be a non-empty string" };
+  }
+  return { valid: true };
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
