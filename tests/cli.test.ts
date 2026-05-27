@@ -2,10 +2,10 @@ import { spawnSync } from "child_process";
 import * as path from "path";
 
 const projectRoot = path.join(__dirname, "..");
-const toolPath = process.platform === "win32" ? path.join(projectRoot, "tool.cmd") : path.join(projectRoot, "tool");
 
 function runTool(...args: string[]) {
-  const result = spawnSync(toolPath, args, {
+  const cliPath = path.join(projectRoot, "src", "cli.ts");
+  const result = spawnSync("npx", ["ts-node", cliPath, ...args], {
     cwd: projectRoot,
     encoding: "utf-8",
   });
