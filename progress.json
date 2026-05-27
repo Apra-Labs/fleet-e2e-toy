@@ -49,13 +49,40 @@
       "notes": "Added Jest CLI tests verifying stdout, stderr, and exit codes for version flags, help command, and validation checks."
     },
     {
-      "id": 6,
-      "step": "VERIFY: CLI Features",
-      "type": "verify",
+      "id": 7,
+      "step": "T1.7: Fix: Implement/stub add and serve commands",
+      "type": "work",
       "status": "completed",
       "tier": "standard",
+      "commit": "9c479bd017194a4c07c129822cd553346f64f3e5",
+      "notes": "Implemented stub add and serve subcommands, updated printHelp usage."
+    },
+    {
+      "id": 8,
+      "step": "T1.8: Fix: Validate note title for add command",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
       "commit": "",
-      "notes": "Verified that all 29 tests (including the new CLI tests for version, help, and empty/whitespace input validation) pass successfully, TypeScript build compiles without errors, and ESLint check passes."
+      "notes": ""
+    },
+    {
+      "id": 9,
+      "step": "T1.9: Fix: Add test coverage for add/serve commands and validation",
+      "type": "work",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    },
+    {
+      "id": 10,
+      "step": "VERIFY: CLI Features",
+      "type": "verify",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
     }
   ]
 }

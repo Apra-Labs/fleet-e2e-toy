@@ -15,6 +15,7 @@
   - `./tool add <title>` should log `Note added: <title>`.
   - `./tool serve` should log `Starting server...`.
   - The usage guide in `printHelp()` does not list the `add` or `serve` subcommands.
+  **Doer:** fixed in commit 9c479bd017194a4c07c129822cd553346f64f3e5 — implemented stub add and serve subcommands, updated printHelp usage.
 
 - **[PASS]** **`--version` / `-v` flags.**
   Running `./tool --version` and `./tool -v` correctly prints `fleet-e2e-toy v1.0.0` and exits with code `0`.

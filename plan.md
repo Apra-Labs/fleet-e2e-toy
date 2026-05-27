@@ -43,6 +43,27 @@
 - **Done when:** The CLI test suite is successfully executed via `npm test` and all tests pass.
 - **Blockers:** Task 2, Task 3, Task 4
 
+#### Task 7: Fix: Implement/stub add and serve commands
+- **Change:** Stub `add` and `serve` commands in `src/cli.ts`. `add <title>` should print "Note added: <title>" to stdout and exit 0. `serve` should print "Starting server..." to stdout and exit 0. Also add these subcommands to printHelp output.
+- **Files:** [MODIFY] [cli.ts](file:///C:/Users/akhil/git/apra-fleet-e2e-doer/src/cli.ts)
+- **Tier:** standard
+- **Done when:** `./tool add "hello"` prints "Note added: hello", `./tool serve` prints "Starting server...", both exit 0.
+- **Blockers:** Task 1
+
+#### Task 8: Fix: Validate note title for add command
+- **Change:** Validate that the note title for `add` subcommand is not empty or whitespace-only. Print a user-friendly error to stderr and exit with non-zero exit code.
+- **Files:** [MODIFY] [cli.ts](file:///C:/Users/akhil/git/apra-fleet-e2e-doer/src/cli.ts)
+- **Tier:** standard
+- **Done when:** Running `./tool add ""` or `./tool add "   "` prints a user-friendly error to stderr and exits with a non-zero exit code.
+- **Blockers:** Task 7
+
+#### Task 9: Fix: Add test coverage for add/serve commands and validation
+- **Change:** Add unit tests to `tests/cli.test.ts` for verifying `add` and `serve` stubs, as well as validation on the note title.
+- **Files:** [MODIFY] [cli.test.ts](file:///C:/Users/akhil/git/apra-fleet-e2e-doer/tests/cli.test.ts)
+- **Tier:** standard
+- **Done when:** Running `npm test` passes all tests.
+- **Blockers:** Task 8
+
 #### VERIFY: CLI Features
 - Run full test suite (`npm test`)
 - Confirm all Phase 1 changes work together

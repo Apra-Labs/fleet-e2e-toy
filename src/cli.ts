@@ -1,6 +1,8 @@
 function printHelp() {
   console.log("Usage: fleet-e2e-toy [command] [options]\n");
   console.log("Commands:");
+  console.log("  add <title>      Add a new note");
+  console.log("  serve            Start the API server");
   console.log("  help             Show this help message\n");
   console.log("Options:");
   console.log("  --version, -v    Show version information");
@@ -29,6 +31,18 @@ async function main() {
 
   if (firstArg === 'help' || firstArg === '--help' || firstArg === '-h') {
     printHelp();
+    process.exit(0);
+  }
+
+  if (firstArg === 'add') {
+    const title = args.slice(1).join(' '); // or args[1]? Let's see what is standard. The plan says "add <title> should print 'Note added: <title>'". If <title> can be passed as a single arg, args[1] is fine. Let's do args[1] || ''.
+    const titleVal = args[1] || '';
+    console.log(`Note added: ${titleVal}`);
+    process.exit(0);
+  }
+
+  if (firstArg === 'serve') {
+    console.log('Starting server...');
     process.exit(0);
   }
 }

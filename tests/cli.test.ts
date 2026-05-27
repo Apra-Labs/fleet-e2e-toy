@@ -47,6 +47,8 @@ describe("CLI Tool", () => {
     const expectedHelpText = 
       "Usage: fleet-e2e-toy [command] [options]\n\n" +
       "Commands:\n" +
+      "  add <title>      Add a new note\n" +
+      "  serve            Start the API server\n" +
       "  help             Show this help message\n\n" +
       "Options:\n" +
       "  --version, -v    Show version information\n" +
