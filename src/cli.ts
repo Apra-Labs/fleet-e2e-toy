@@ -15,7 +15,17 @@ async function main() {
     process.exit(0);
   }
 
+  if (args.length === 0) {
+    printHelp();
+    process.exit(0);
+  }
+
   const firstArg = args[0];
+
+  if (firstArg.trim() === '') {
+    console.error('Error: Argument cannot be empty or whitespace-only.');
+    process.exit(1);
+  }
 
   if (firstArg === 'help' || firstArg === '--help' || firstArg === '-h') {
     printHelp();
