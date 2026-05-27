@@ -1,0 +1,61 @@
+{
+  "project": "fleet-e2e-toy",
+  "plan_file": "plan.md",
+  "created": "2026-05-27",
+  "tasks": [
+    {
+      "id": 1,
+      "step": "T1.1: Add CLI entry point and wrapper scripts",
+      "type": "work",
+      "status": "completed",
+      "tier": "cheap",
+      "commit": "2af89e9255c8fd9750ba40de064a50fadfd6f1dd",
+      "notes": "Added CLI entry point src/cli.ts and wrapper scripts tool and tool.ps1"
+    },
+    {
+      "id": 2,
+      "step": "T1.2: Implement version flag",
+      "type": "work",
+      "status": "completed",
+      "tier": "cheap",
+      "commit": "cce89b1784aa384de356dc8773effe134dc188bf",
+      "notes": "Implemented --version and -v flags"
+    },
+    {
+      "id": 3,
+      "step": "T1.3: Implement help subcommand and flags",
+      "type": "work",
+      "status": "completed",
+      "tier": "cheap",
+      "commit": "793808f2baea22a89e5a313210bc6c5d2c038698",
+      "notes": "Implemented help subcommand and --help/-h flags"
+    },
+    {
+      "id": 4,
+      "step": "T1.4: Add input validation for empty or blank strings",
+      "type": "work",
+      "status": "completed",
+      "tier": "standard",
+      "commit": "11e8f63330047d283aff5f76613ca02860711170",
+      "notes": "Added empty and whitespace validation check with user-friendly error and non-zero exit"
+    },
+    {
+      "id": 5,
+      "step": "T1.5: Add CLI unit tests",
+      "type": "work",
+      "status": "completed",
+      "tier": "standard",
+      "commit": "f20d77b3e8e965a06cb4b9d64b7207f8c9969e5e",
+      "notes": "Added Jest CLI tests verifying stdout, stderr, and exit codes for version flags, help command, and validation checks."
+    },
+    {
+      "id": 6,
+      "step": "VERIFY: CLI Features",
+      "type": "verify",
+      "status": "pending",
+      "tier": "standard",
+      "commit": "",
+      "notes": ""
+    }
+  ]
+}
