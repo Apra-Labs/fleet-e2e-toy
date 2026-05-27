@@ -42,6 +42,16 @@ export function main(argv: string[]): number {
     return 0;
   }
 
+  // Validate positional arguments (those not beginning with -)
+  for (const arg of argv) {
+    if (!arg.startsWith("-")) {
+      if (arg === "" || /^\s+$/.test(arg)) {
+        console.error("Error: argument cannot be empty or blank");
+        return 1;
+      }
+    }
+  }
+
   return 0;
 }
 

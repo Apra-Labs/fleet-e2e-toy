@@ -56,4 +56,22 @@ describe("CLI", () => {
       consoleLogSpy.mockRestore();
     });
   });
+
+  describe("input validation", () => {
+    it("should return 1 and print error for empty string argument", () => {
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+      const result = main([""]);
+      expect(result).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Error: argument cannot be empty or blank");
+      consoleErrorSpy.mockRestore();
+    });
+
+    it("should return 1 and print error for whitespace-only argument", () => {
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+      const result = main(["   "]);
+      expect(result).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Error: argument cannot be empty or blank");
+      consoleErrorSpy.mockRestore();
+    });
+  });
 });
