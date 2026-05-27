@@ -1,10 +1,15 @@
+import * as fs from "fs";
+import * as path from "path";
+
 const DISPLAY_NAME = "fleet-e2e-toy";
 
 function getVersion(): string {
   try {
-    const pkg = require("../package.json");
+    const pkgPath = path.join(__dirname, "../package.json");
+    const content = fs.readFileSync(pkgPath, "utf-8");
+    const pkg = JSON.parse(content);
     return pkg.version;
-  } catch (e) {
+  } catch {
     return "unknown";
   }
 }
