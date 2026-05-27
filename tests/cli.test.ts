@@ -18,4 +18,42 @@ describe("CLI", () => {
       consoleLogSpy.mockRestore();
     });
   });
+
+  describe("help command and flags", () => {
+    it("should return 0 and print help for 'help' subcommand", () => {
+      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+      const result = main(["help"]);
+      expect(result).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain("help");
+      expect(output).toContain("--version");
+      expect(output).toContain("--help");
+      consoleLogSpy.mockRestore();
+    });
+
+    it("should return 0 and print help on --help flag", () => {
+      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+      const result = main(["--help"]);
+      expect(result).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain("help");
+      expect(output).toContain("--version");
+      expect(output).toContain("--help");
+      consoleLogSpy.mockRestore();
+    });
+
+    it("should return 0 and print help on -h flag", () => {
+      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+      const result = main(["-h"]);
+      expect(result).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain("help");
+      expect(output).toContain("--version");
+      expect(output).toContain("--help");
+      consoleLogSpy.mockRestore();
+    });
+  });
 });
