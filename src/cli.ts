@@ -1,14 +1,6 @@
 const args = process.argv.slice(2);
 
-// Check version flags first
-if (args.includes("--version") || args.includes("-v")) {
-  console.log("fleet-e2e-toy v1.0.0");
-  process.exit(0);
-}
-
-// Check help flags and help command
-if (args.includes("--help") || args.includes("-h") || args.includes("help")) {
-  console.log(`Usage:
+const HELP_TEXT = `Usage:
   tool <command> [arguments]
 
 Commands:
@@ -18,30 +10,45 @@ Commands:
 
 Flags:
   -v, --version Show version details
-  -h, --help    Show help details`);
+  -h, --help    Show help details`;
+
+if (args.length === 0) {
+  console.log(HELP_TEXT);
+  process.exit(0);
+}
+
+const firstArg = args[0];
+
+// Check version flags as first argument
+if (firstArg === "--version" || firstArg === "-v") {
+  console.log("fleet-e2e-toy v1.0.0");
+  process.exit(0);
+}
+
+// Check help flags/command as first argument
+if (firstArg === "--help" || firstArg === "-h" || firstArg === "help") {
+  console.log(HELP_TEXT);
   process.exit(0);
 }
 
 // Validate first argument is not empty or whitespace-only
-if (args.length === 0 || args[0].trim().length === 0) {
+if (firstArg.trim().length === 0) {
   console.error("Error: Command or argument cannot be empty or whitespace-only.");
   process.exit(1);
 }
 
-const command = args[0];
-
-if (command === "add") {
+if (firstArg === "add") {
   const title = args[1];
-  if (!title || title.trim().length === 0) {
+  if (title === undefined || title.trim().length === 0) {
     console.error("Error: Note title cannot be empty or whitespace-only.");
     process.exit(1);
   }
   console.log(`Note added: ${title}`);
   process.exit(0);
-} else if (command === "serve") {
+} else if (firstArg === "serve") {
   console.log("Starting server...");
   process.exit(0);
 } else {
-  console.error(`Error: Unknown command: ${command}`);
+  console.error(`Error: Unknown command: ${firstArg}`);
   process.exit(1);
 }

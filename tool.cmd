@@ -1,1 +1,1 @@
-npx ts-node src/cli.ts %*
+@npx ts-node src/cli.ts %*

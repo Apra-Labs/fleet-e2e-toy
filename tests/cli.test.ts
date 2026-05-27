@@ -90,4 +90,42 @@ describe("CLI Tests", () => {
     expect(result.status).toBe(0);
     expect(result.stdout.trim()).toBe("Starting server...");
   });
+
+  it("displays help and exits 0 for no arguments", () => {
+    const result = runCLI("");
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("Usage:");
+    expect(result.stdout).toContain("Commands:");
+  });
+
+  it("adds note with title mimicking version short flag", () => {
+    const result = runCLI('add "-v"');
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim()).toBe("Note added: -v");
+  });
+
+  it("adds note with title mimicking version long flag", () => {
+    const result = runCLI('add "--version"');
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim()).toBe("Note added: --version");
+  });
+
+  it("adds note with title mimicking help command", () => {
+    const result = runCLI('add "help"');
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim()).toBe("Note added: help");
+  });
+
+  it("adds note with title mimicking help short flag", () => {
+    const result = runCLI('add "-h"');
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim()).toBe("Note added: -h");
+  });
+
+  it("adds note with title mimicking help long flag", () => {
+    const result = runCLI('add "--help"');
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim()).toBe("Note added: --help");
+  });
 });
+
