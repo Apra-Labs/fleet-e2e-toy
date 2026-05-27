@@ -19,40 +19,40 @@
       "phase": 1,
       "step": "Implement --version / -v flag",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "cheap",
-      "commit": "",
-      "notes": ""
+      "commit": "ea7ca86",
+      "notes": "Reads version from package.json, prints 'fleet-e2e-toy vX.X.X', exits 0. Handles both --version and -v."
     },
     {
       "id": "T1.3",
       "phase": 1,
       "step": "Implement help subcommand and --help / -h flag",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "e55a85a",
+      "notes": "Handles help subcommand, --help, and -h flags. Prints usage text with all commands and flags. Exits 0."
     },
     {
       "id": "T1.4",
       "phase": 1,
       "step": "Add input validation for empty/blank string arguments",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "0e61bac",
+      "notes": "Added validateCliArg to validation.ts. Implemented 'add <title>' subcommand with validation. Rejects empty/whitespace strings, exits non-zero on error."
     },
     {
       "id": "T1.5",
       "phase": 1,
       "step": "Add CLI unit tests",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "664e5ad",
+      "notes": "Created tests/cli.test.ts with end-to-end tests using spawnSync. Tests cover --version, -v, help, --help, -h, and add validation."
     },
     {
       "id": "VERIFY-1",
