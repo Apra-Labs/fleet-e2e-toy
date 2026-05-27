@@ -9,17 +9,17 @@
       "type": "work",
       "status": "completed",
       "tier": "cheap",
-      "commit": "3d997f5ea21b2af87d04abe84ba1e086bf39b268",
+      "commit": "a98300d27c428c995ba6982dfd05fed6bb7027ef",
       "notes": "Created src/cli.ts supporting version flags and created launcher scripts: tool, tool.ps1, tool.cmd"
     },
     {
       "id": 2,
       "step": "Implement validation for empty or blank strings",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "cheap",
-      "commit": "",
-      "notes": ""
+      "commit": "d3c714628e79281c22eec5f807f5f93540edf31b",
+      "notes": "Implemented validation checks in src/cli.ts to reject empty and whitespace-only command or arguments (specifically for add command)."
     },
     {
       "id": 3,
