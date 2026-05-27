@@ -4,6 +4,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { validateCliArg } from "./utils/validation";
 
 const args = process.argv.slice(2);
 
@@ -36,8 +37,9 @@ if (args.length > 0 && args[0] === "add") {
   const title = args[1];
 
   // Validate title argument
-  if (!title || typeof title !== "string" || title.trim().length === 0) {
-    console.error("Error: Title argument is required and must be a non-empty string");
+  const validation = validateCliArg(title ?? "");
+  if (!validation.valid) {
+    console.error(`Error: ${validation.error}`);
     process.exit(1);
   }
 
