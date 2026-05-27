@@ -70,10 +70,10 @@
       "id": 9,
       "step": "T1.9: Fix: Add test coverage for add/serve commands and validation",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "tier": "standard",
-      "commit": "",
-      "notes": ""
+      "commit": "76402fe08a6e27da25992dd404063137333c84ce",
+      "notes": "Added tests in tests/cli.test.ts covering add/serve and title validation."
     },
     {
       "id": 10,

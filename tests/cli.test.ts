@@ -98,4 +98,41 @@ describe("CLI Tool", () => {
       expect(result.stderr).toBe("");
     });
   });
+
+  describe("Subcommands (add/serve)", () => {
+    it("should log Starting server... and exit 0 for serve command", async () => {
+      const result = await runCli(["serve"]);
+      expect(result.code).toBe(0);
+      expect(result.stdout).toBe("Starting server...");
+      expect(result.stderr).toBe("");
+    });
+
+    it("should log Note added: <title> and exit 0 for add command with valid title", async () => {
+      const result = await runCli(["add", "my new note"]);
+      expect(result.code).toBe(0);
+      expect(result.stdout).toBe("Note added: my new note");
+      expect(result.stderr).toBe("");
+    });
+
+    it("should fail and exit 1 for add command with missing title", async () => {
+      const result = await runCli(["add"]);
+      expect(result.code).toBe(1);
+      expect(result.stderr).toContain("Error: Note title cannot be empty or whitespace-only.");
+      expect(result.stdout).toBe("");
+    });
+
+    it("should fail and exit 1 for add command with empty string title", async () => {
+      const result = await runCli(["add", ""]);
+      expect(result.code).toBe(1);
+      expect(result.stderr).toContain("Error: Note title cannot be empty or whitespace-only.");
+      expect(result.stdout).toBe("");
+    });
+
+    it("should fail and exit 1 for add command with whitespace-only title", async () => {
+      const result = await runCli(["add", "   "]);
+      expect(result.code).toBe(1);
+      expect(result.stderr).toContain("Error: Note title cannot be empty or whitespace-only.");
+      expect(result.stdout).toBe("");
+    });
+  });
 });

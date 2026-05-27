@@ -46,6 +46,7 @@
     - Validating that `add <title>` logs `Note added: <title>` and exits 0.
     - Validating that `serve` logs `Starting server...` and exits 0.
   - Current unit tests only cover the version flags, general help commands/flags, and validation of the first argument.
+  **Doer:** fixed in commit 76402fe08a6e27da25992dd404063137333c84ce — added unit tests covering add and serve commands, as well as note title validation check.
 
 ---
 
