@@ -1,6 +1,10 @@
 async function main() {
   const args = process.argv.slice(2);
-  console.log("CLI args:", args);
+
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log('fleet-e2e-toy v1.0.0');
+    process.exit(0);
+  }
 }
 
 main().catch((err) => {
