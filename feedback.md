@@ -1,96 +1,91 @@
-# fleet-e2e-toy e2e-s1.1-26544203024 — Plan Review
+# fleet-e2e-toy e2e-s1.1-26544203024 - Code Review
 
-**Reviewer:** E2E Tester
-**Date:** 2026-05-27 00:00:00+00:00
-**Verdict:** APPROVED
-
-> See the recent git history of this file to understand the context of this review.
+**Reviewer:** reviewer
+**Date:** 2026-05-27 18:00:00+00:00
+**Verdict:** CHANGES NEEDED
 
 ---
 
-## 1. Clear "Done" Criteria
+## 1. Tests and Quality Gates
 
-**PASS.** Every task (T1.1 through T1.5) has a concrete "Done when" section specifying exact CLI invocations, expected output strings, and expected exit codes. The VERIFY checkpoint adds a manual integration check on top of the automated tests. No task leaves ambiguity about what "finished" means.
-
----
-
-## 2. Cohesion and Coupling
-
-**PASS.** Each task has a single responsibility: T1.1 is scaffolding, T1.2-T1.4 each add one feature, T1.5 covers testing. The plan explicitly acknowledges that T1.2-T1.4 all modify `src/cli.ts` and justifies keeping them in one phase rather than splitting into separate phases that would touch the same file repeatedly. This is the right call — the coupling is inherent to the shared entry point, and the sequential ordering within the phase manages it cleanly.
+All 29 tests pass (8 validation, 11 notes API, 8 CLI). Lint is clean. TypeScript build succeeds with no errors. **PASS.**
 
 ---
 
-## 3. Key Abstractions in Earliest Tasks
+## 2. Feature: --version / -v (Issue gh-toy-4ef)
 
-**PASS.** T1.1 creates the CLI entry point (`src/cli.ts`) and wrapper scripts (`tool`, `tool.cmd`) which every subsequent task depends on. The shared argument-parsing skeleton is established before any feature logic is added.
-
----
-
-## 4. Riskiest Assumption Validated in Task 1
-
-**PASS.** T1.1 validates the most fundamental assumption: that `ts-node` can execute a CLI entry point via wrapper scripts on both Unix and Windows. If this fails, nothing else works. The done criteria require the wrapper to execute without error, which surfaces any path, shebang, or runtime issues immediately.
+`src/cli.ts:21-26` correctly detects `--version` and `-v`, reads version from `package.json` at runtime (avoiding drift), prints `fleet-e2e-toy v1.0.0`, and exits 0. Version check runs before command dispatch as specified. Tests verify both flags, output string, and exit code. **PASS.**
 
 ---
 
-## 5. Later Tasks Reuse Early Abstractions (DRY)
+## 3. Feature: help / --help / -h (Issue gh-toy-kbk)
 
-**PASS.** T1.2-T1.4 all build on the `src/cli.ts` skeleton from T1.1. T1.4 extends the existing `src/utils/validation.ts` rather than creating a parallel validator. T1.5 tests through the wrapper scripts established in T1.1. No duplicated abstractions.
-
----
-
-## 6. Phase Boundaries at Cohesion Boundaries
-
-**PASS.** A single phase is appropriate here. All three features share `src/cli.ts` as their entry point, and the plan correctly argues that splitting into multiple phases would produce non-functional intermediate commits. The phase boundary is drawn after all CLI features and their tests are complete, which is the natural cohesion boundary.
+`src/cli.ts:29-32` handles all three triggers. Help text lists both subcommands (`help`, `add`) and both flag pairs (`--version/-v`, `--help/-h`). Exit code 0. Tests verify all three triggers and assert presence of every subcommand and flag in output. **PASS.**
 
 ---
 
-## 7. Tiers Monotonically Non-Decreasing
+## 4. Feature: Input Validation (Issue gh-toy-v6z)
 
-**PASS.** The tier sequence is: cheap (T1.1) -> cheap (T1.2) -> standard (T1.3) -> standard (T1.4) -> standard (T1.5). Strictly non-decreasing.
+`src/cli.ts:35-46` implements the `add` subcommand with inline validation — empty and whitespace-only titles print an error to stderr and exit 1; valid titles exit 0. Tests cover all three cases. **FAIL — deviation from plan.**
 
----
+Plan T1.4 specifies: "Add `validateCliArg(value: string)` to `src/utils/validation.ts`" and "Add a minimal `add <title>` subcommand to `src/cli.ts` that accepts a title argument and **calls this helper**."
 
-## 8. Each Task Completable in One Session
+The `validateCliArg` function was added to `validation.ts:13-18` but `cli.ts` does not import or call it — it duplicates the logic inline. This means:
 
-**PASS.** All tasks are small and well-scoped: creating a file with a few dozen lines (T1.1), adding a flag check (T1.2), printing help text (T1.3), adding a validation function (T1.4), and writing tests (T1.5). None of these would take more than a single session.
+- The exported `validateCliArg` function is dead code with zero callers.
+- The validation logic exists in two places (cli.ts inline and validation.ts helper), violating DRY.
+- Future CLI commands that need the same validation won't reuse the helper if the pattern is inline checks.
 
----
-
-## 9. Dependencies Satisfied in Order
-
-**PASS.** The ordering is correct: T1.1 (no blockers) creates the entry point; T1.2-T1.4 (each depends on T1.1) add features to that entry point; T1.5 (depends on T1.2-T1.4) tests all features. The "Blockers" field in each task is accurate.
+**Fix:** Import and use `validateCliArg` in `cli.ts` instead of the inline check.
 
 ---
 
-## 10. Vague Tasks
+## 5. Wrapper Scripts (tool, tool.cmd)
 
-**PASS.** No vague tasks found. Every task specifies exact file paths, the nature of the change, and measurable done criteria. Two developers given this plan would produce functionally equivalent implementations.
+`tool` is a 2-line bash wrapper invoking `npx ts-node src/cli.ts "$@"`. `tool.cmd` is the Windows equivalent. Both are correct. **FAIL — CRLF line endings on `tool`.**
 
----
+`file tool` reports: `Bourne-Again shell script, ASCII text executable, with CRLF line terminators`. This will break on Linux/macOS CI — bash will see `\r` in the shebang and fail with `bad interpreter` or similar errors.
 
-## 11. Hidden Dependencies
+**Root cause:** `.gitattributes` contains `*.sh text eol=lf` but the `tool` script has no `.sh` extension, so it is not covered by the rule. Git's autocrlf on Windows converted it to CRLF.
 
-**NOTE.** One minor observation: T1.2 lists `resolveJsonModule: true` as a potential blocker for reading `package.json` at runtime. The current `tsconfig.json` already has `resolveJsonModule: true` (line 12). The Phase 0 exploration table could have verified this assumption alongside the others it checked — it verified `ts-node` in devDependencies and the version string but missed this tsconfig flag. This is not a plan defect (the mitigation is correct: "check before implementing"), but the exploration was incomplete. No action required since the risk is already mitigated.
-
----
-
-## 12. Risk Register
-
-**PASS.** The risk register covers five risks with impact ratings and concrete mitigations: Windows CI compatibility (tool.cmd + platform-conditional tests), resolveJsonModule (check or hardcode), CRLF line endings (.gitattributes + sed), backward compatibility (new entry point, no API changes), and partial failure (test assertions catch incomplete output). The CRLF risk is particularly well-handled given the Windows development environment.
+**Fix:**
+1. Add `tool text eol=lf` to `.gitattributes`
+2. Run `sed -i 's/\r$//' tool` to fix the working copy
+3. Re-add and commit
 
 ---
 
-## 13. Alignment with Requirements
+## 6. Test Quality
 
-**PASS.** Each requirement maps directly to a plan task:
-- Issue 1 (gh-toy-4ef: --version flag) -> T1.2, with exact output format and exit code matching acceptance criteria
-- Issue 2 (gh-toy-v6z: input validation) -> T1.4, covering empty string, whitespace-only, and valid input cases
-- Issue 3 (gh-toy-kbk: help command) -> T1.3, covering `help` subcommand, `--help`, and `-h`
+Tests use `spawnSync` for true end-to-end CLI testing — correct approach. Platform handling uses `node -r ts-node/register` directly rather than the wrapper scripts, which avoids the CRLF issue in tests but means the wrapper scripts themselves are not tested. **NOTE** — the wrappers are thin enough that this is acceptable, but worth noting.
 
-All acceptance criteria from requirements.md are reflected in the plan's done criteria. The plan adds appropriate scaffolding (T1.1) and testing (T1.5) that requirements imply but don't explicitly state.
+The `NODE_OPTIONS: "--loader ts-node/esm"` env var in the test helper is unnecessary since the `-r ts-node/register` flag already handles module loading, but it doesn't cause failures. Minor cleanup opportunity.
+
+---
+
+## 7. File Hygiene
+
+Changed files: `src/cli.ts`, `src/utils/validation.ts`, `tests/cli.test.ts`, `tool`, `tool.cmd`, `plan.md`, `requirements.md`, `progress.json`, `feedback.md`. All are justified by sprint requirements. No spurious files, no CLAUDE.md committed. **PASS.**
+
+---
+
+## 8. Existing Behavior Regression
+
+No existing API routes, exports, or tests were modified. All 21 pre-existing tests still pass. `src/cli.ts` is a new entry point with no coupling to the REST API. **PASS.**
+
+---
+
+## 9. Security
+
+No injection vectors — CLI args are used for string comparison only, not interpolated into shell commands or eval'd. `fs.readFileSync` reads a known local file (`package.json`). No secrets in code. **PASS.**
 
 ---
 
 ## Summary
 
-**Verdict: APPROVED.** The plan passes all 13 checklist items. It is well-structured with a single cohesive phase, clear done criteria, correct task ordering, a thorough risk register, and full alignment with the sprint requirements. The only observation is that Phase 0 exploration could have verified the `resolveJsonModule` tsconfig flag (it's already set, so the T1.2 blocker note is conservative but not wrong). No changes needed — the plan is ready for implementation.
+**Two issues require changes before approval:**
+
+1. **CRLF on `tool` script** (blocking) — will break on any Unix-based CI runner. Fix `.gitattributes` to cover `tool` (not just `*.sh`) and convert to LF.
+2. **`validateCliArg` not used** (code quality) — `cli.ts` duplicates validation inline instead of calling the helper added to `validation.ts` per plan T1.4. Import and use it.
+
+Everything else is solid: all tests pass, features work as specified, file hygiene is clean, no regressions, no security issues. Once the two items above are fixed, this is ready to approve.
