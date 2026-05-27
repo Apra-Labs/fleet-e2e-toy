@@ -5,9 +5,10 @@ const projectRoot = path.join(__dirname, "..");
 
 function runTool(...args: string[]) {
   const cliPath = path.join(projectRoot, "src", "cli.ts");
-  const result = spawnSync("npx", ["ts-node", cliPath, ...args], {
+  const result = spawnSync("node", ["-r", "ts-node/register", cliPath, ...args], {
     cwd: projectRoot,
     encoding: "utf-8",
+    env: { ...process.env, NODE_OPTIONS: "--loader ts-node/esm" },
   });
   return {
     stdout: result.stdout || "",
