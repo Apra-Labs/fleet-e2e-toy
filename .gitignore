@@ -10,3 +10,6 @@ coverage/
 .dolt/
 *.db
 .beads-credential-key
+
+# Agent context file — role-specific, not shared
+CLAUDE.md
