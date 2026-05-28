@@ -1,4 +1,18 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, isBlankOrEmpty } from "../src/utils/validation";
+
+describe("isBlankOrEmpty", () => {
+  it("returns true for empty string", () => {
+    expect(isBlankOrEmpty("")).toBe(true);
+  });
+
+  it("returns true for whitespace-only string", () => {
+    expect(isBlankOrEmpty("   ")).toBe(true);
+  });
+
+  it("returns false for valid non-blank string", () => {
+    expect(isBlankOrEmpty("hello")).toBe(false);
+  });
+});
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {

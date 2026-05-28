@@ -1,5 +1,9 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+export function isBlankOrEmpty(s: string): boolean {
+  return s.trim().length === 0;
+}
+
 export interface ValidationError {
   field: string;
   message: string;
