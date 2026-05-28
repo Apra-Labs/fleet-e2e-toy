@@ -1,0 +1,43 @@
+{
+  "tasks": [
+    {
+      "id": "task-1",
+      "title": "Add CLAUDE.md to .gitignore",
+      "type": "work",
+      "tier": "cheap",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "task-2",
+      "title": "Add blank string validation helper and unit test (gh-toy-v6z)",
+      "type": "work",
+      "tier": "cheap",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "task-3",
+      "title": "Add --version flag to CLI entry point (gh-toy-4ef)",
+      "type": "work",
+      "tier": "standard",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "task-4",
+      "title": "Add help command and --help flag (gh-toy-kbk)",
+      "type": "work",
+      "tier": "standard",
+      "status": "pending",
+      "notes": ""
+    },
+    {
+      "id": "verify-1",
+      "title": "VERIFY: Phase 1 — CLI Features & Input Validation",
+      "type": "verify",
+      "status": "pending",
+      "notes": ""
+    }
+  ]
+}
