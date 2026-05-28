@@ -5,32 +5,32 @@
       "title": "Add CLAUDE.md to .gitignore",
       "type": "work",
       "tier": "cheap",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "Added CLAUDE.md to .gitignore. Note: file is already tracked in git, so git check-ignore returns non-zero for tracked files, but .gitignore entry is in place to prevent future accidental commits."
     },
     {
       "id": "task-2",
       "title": "Add blank string validation helper and unit test (gh-toy-v6z)",
       "type": "work",
       "tier": "cheap",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "Added isBlankOrEmpty(s: string): boolean to validation.ts. Added 3 test cases covering empty string, whitespace-only, and valid non-blank string. All 24 tests pass."
     },
     {
       "id": "task-3",
       "title": "Add --version flag to CLI entry point (gh-toy-4ef)",
       "type": "work",
       "tier": "standard",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "Added --version and -v flag check in src/index.ts. Prints 'fleet-e2e-toy v1.0.0' and exits 0. All 24 tests still pass."
     },
     {
       "id": "task-4",
       "title": "Add help command and --help flag (gh-toy-kbk)",
       "type": "work",
       "tier": "standard",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "Added help command and --help/-h flag. All tests pass."
     },
     {
       "id": "verify-1",
