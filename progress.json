@@ -36,8 +36,8 @@
       "id": "verify-1",
       "title": "VERIFY: Phase 1 — CLI Features & Input Validation",
       "type": "verify",
-      "status": "pending",
-      "notes": ""
+      "status": "completed",
+      "notes": "build: pass. lint: pass. tests: 24/24 pass (2 suites). CLI: --version/v prints 'fleet-e2e-toy v1.0.0' exit 0; --help/-h/help prints usage exit 0. No regressions."
     }
   ]
 }
