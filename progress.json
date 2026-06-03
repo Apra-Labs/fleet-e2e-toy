@@ -80,10 +80,10 @@
       "title": "Add blank-input tests to validation and notes test files",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-kix.6",
-      "commit": null,
-      "notes": ""
+      "commit": "982684d",
+      "notes": "Extended validation.test.ts with 4 new tests for blank content validation (whitespace-only and empty strings in create/update). Extended notes.test.ts with 3 new tests for POST blank content and GET with blank query params. All 41 tests pass (7 new), lint and build clean."
     },
     {
       "id": "T2.V",
@@ -91,10 +91,10 @@
       "title": "VERIFY Phase 2: npm test passes all tests",
       "model": "claude-haiku-4-5-20251001",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
-      "commit": null,
-      "notes": ""
+      "commit": "982684d",
+      "notes": "npm test: 41 tests passed (all test suites: cli.test.ts, notes.test.ts, validation.test.ts). npm run lint: clean. npm run build: clean. All Phase 2 acceptance criteria met."
     }
   ],
   "dispatches": []
