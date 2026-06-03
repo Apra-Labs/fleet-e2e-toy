@@ -31,3 +31,7 @@ Since the project currently does not have a CLI interface or a launcher script `
 - We need to create a runner script `./tool` in the root of the repository.
 - The `./tool` script must be executable and delegate command execution to the typescript CLI entrypoint (either via `ts-node` directly or after compiling).
 - Ensure linting and tests are fully functional and pass.
+
+## Design Note
+No formal `design.md` is needed for this sprint, as the CLI implementation follows standard Unix CLI conventions and integrates directly into the existing in-memory store architecture.
+
