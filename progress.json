@@ -58,10 +58,10 @@
       "title": "Extend validation.ts to reject blank content",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-kix.4",
-      "commit": null,
-      "notes": ""
+      "commit": "6cc143b1eecc91d8ede115bb335c01dd09d78cc4",
+      "notes": "Updated validateCreateInput and validateUpdateInput to check obj.content.trim().length === 0 in addition to typeof check. Error message changed to 'Content must not be blank'. tsc --noEmit passes."
     },
     {
       "id": "T2.2",
