@@ -5,22 +5,24 @@
     {
       "id": "phase-1",
       "title": "Foundations: shared validation helpers",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         {
           "id": "1.1",
           "title": "Add isBlankString and validateNonBlankString helpers",
           "files": ["src/utils/validation.ts"],
           "model": "claude-haiku-4-5-20251001",
-          "status": "pending"
+          "status": "completed",
+          "commit": "9d9e037"
         },
         {
           "id": "1.2",
           "title": "Unit tests for the new validation helpers",
           "files": ["tests/validation.test.ts"],
           "model": "claude-haiku-4-5-20251001",
-          "status": "pending",
-          "depends_on": ["1.1"]
+          "status": "completed",
+          "depends_on": ["1.1"],
+          "commit": "6b4a74b"
         }
       ]
     },
