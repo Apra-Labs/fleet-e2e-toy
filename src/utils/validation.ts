@@ -5,6 +5,23 @@ export interface ValidationError {
   message: string;
 }
 
+export function isBlankString(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return true;
+  }
+  return value.trim().length === 0;
+}
+
+export function validateNonBlankString(value: unknown, field: string): ValidationError | null {
+  if (isBlankString(value)) {
+    return {
+      field,
+      message: `${field} must be a non-empty, non-whitespace string`,
+    };
+  }
+  return null;
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
