@@ -42,6 +42,23 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects whitespace-only content", () => {
+    const result = validateCreateInput({ title: "t", content: "   " });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+      expect(result.errors[0].message).toBe("Content must not be blank");
+    }
+  });
+
+  it("rejects empty-string content", () => {
+    const result = validateCreateInput({ title: "t", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -61,6 +78,16 @@ describe("validateUpdateInput", () => {
 
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
+    expect(result.valid).toBe(true);
+  });
+
+  it("rejects whitespace-only content on update", () => {
+    const result = validateUpdateInput({ content: "   " });
+    expect(result.valid).toBe(false);
+  });
+
+  it("accepts update with non-blank content", () => {
+    const result = validateUpdateInput({ content: "valid" });
     expect(result.valid).toBe(true);
   });
 });

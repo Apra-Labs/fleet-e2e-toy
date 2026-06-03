@@ -53,6 +53,32 @@ describe("GET /api/notes", () => {
   });
 });
 
+describe("GET /api/notes — blank query params", () => {
+  it("returns all notes when q is whitespace-only", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "First", content: "Content 1", tags: [] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Second", content: "Content 2", tags: [] });
+
+    const res = await request(app).get("/api/notes?q=%20%20");
+    expect(res.body).toHaveLength(2);
+  });
+
+  it("returns all notes when tag is whitespace-only", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "First", content: "Content 1", tags: ["a"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Second", content: "Content 2", tags: ["b"] });
+
+    const res = await request(app).get("/api/notes?tag=%20");
+    expect(res.body).toHaveLength(2);
+  });
+});
+
 describe("GET /api/notes/:id", () => {
   it("returns 404 for non-existent note", async () => {
     const res = await request(app).get("/api/notes/does-not-exist");
@@ -86,6 +112,14 @@ describe("POST /api/notes", () => {
     const res = await request(app).post("/api/notes").send({ content: "No title" });
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
+  });
+
+  it("returns 400 for whitespace-only content", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "t", content: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors[0].field).toBe("content");
   });
 });
 
