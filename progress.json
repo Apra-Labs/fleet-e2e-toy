@@ -36,10 +36,10 @@
       "title": "Implement Help Command and Flags",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-9ts.3",
-      "commit": null,
-      "notes": ""
+      "commit": "bbb3c683eb54c44ca09595a5dcb5e365f7f1bbdd",
+      "notes": "Help command and flags implemented in src/index.ts, and unit tests added in tests/cli.test.ts."
     },
     {
       "id": "T2.2",
@@ -47,10 +47,10 @@
       "title": "Verify Phase 2",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-9ts.4",
-      "commit": null,
-      "notes": ""
+      "commit": "bbb3c683eb54c44ca09595a5dcb5e365f7f1bbdd",
+      "notes": "Build compiled successfully, ESLint check passed, and all 28 unit tests passed."
     },
     {
       "id": "T3.1",
