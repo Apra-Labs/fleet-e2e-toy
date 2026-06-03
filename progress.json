@@ -14,10 +14,10 @@
       "title": "Create src/cli.ts with runCli flag logic",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-kix.1",
-      "commit": null,
-      "notes": ""
+      "commit": "2c883a430753c333ef5740d794e8ccdea7561706",
+      "notes": "Created src/cli.ts exporting runCli(argv). Uses runtime require('../package.json') to avoid TS6059 rootDir constraint. Handles --help/-h/positional-help and --version/-v. tsc --noEmit passes."
     },
     {
       "id": "T1.2",
