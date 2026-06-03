@@ -1,0 +1,100 @@
+{
+  "sprint": "fleet-e2e-toy-sprint-s8.2",
+  "track": "sprint",
+  "branch": "pmlite-e2e/s8.2-1780469255782",
+  "base": "main",
+  "worktree": "/tmp/pmlite-e2e-s8.2-FBp3Vf/repo-wt/sprint",
+  "transport": "remote",
+  "epic": "gh-toy-9ts",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Implement CLI Wrapper and Version Flag",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-9ts.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Verify Phase 1",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-9ts.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Implement Help Command and Flags",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-9ts.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.2",
+      "phase": 2,
+      "title": "Verify Phase 2",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-9ts.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.1",
+      "phase": 3,
+      "title": "Implement Input Validation for Empty/Blank Strings",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-9ts.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.2",
+      "phase": 3,
+      "title": "Verify Phase 3",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-9ts.6",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": [
+    {
+      "seq": 1,
+      "role": "planner",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    },
+    {
+      "seq": 2,
+      "role": "plan-reviewer",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    }
+  ]
+}
