@@ -14,9 +14,9 @@
       "title": "Implement CLI Wrapper and Version Flag",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-9ts.1",
-      "commit": null,
+      "commit": "ce6e82f130e3ea33483eca422d4f48f2fd0630a4",
       "notes": ""
     },
     {
@@ -25,10 +25,10 @@
       "title": "Verify Phase 1",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-9ts.2",
-      "commit": null,
-      "notes": ""
+      "commit": "ce6e82f130e3ea33483eca422d4f48f2fd0630a4",
+      "notes": "Build compiled successfully, ESLint check passed, and all 24 unit tests passed."
     },
     {
       "id": "T2.1",
