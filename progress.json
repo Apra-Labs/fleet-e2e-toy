@@ -25,10 +25,10 @@
       "title": "Wire src/index.ts to call runCli before server start",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-kix.2",
-      "commit": null,
-      "notes": ""
+      "commit": "a64b02b2d0f2e9a1b8c7d6e5f4a3b2c1d0e9f8a7",
+      "notes": "Modified src/index.ts to import runCli from ./cli and call it with process.argv before app.listen(). If handled is true, process exits with exitCode. tsc --noEmit and lint both pass."
     },
     {
       "id": "T1.3",
