@@ -1,0 +1,101 @@
+{
+  "sprint": "cli-features-p1",
+  "track": "track-1",
+  "branch": "pmlite-e2e/s1.1-1780516662518",
+  "base": "main",
+  "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1.1-hcoOou/repo-wt/track-1",
+  "transport": "remote",
+  "epic": "repo-kix",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create src/cli.ts with runCli flag logic",
+      "model": "claude-sonnet-4-6",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Wire src/index.ts to call runCli before server start",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Add CLI tests in tests/cli.test.ts",
+      "model": "claude-sonnet-4-6",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.V",
+      "phase": 1,
+      "title": "VERIFY Phase 1: npm test passes all CLI tests",
+      "model": "claude-sonnet-4-6",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Extend validation.ts to reject blank content",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.2",
+      "phase": 2,
+      "title": "Trim blank query params in src/api/notes.ts",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.3",
+      "phase": 2,
+      "title": "Add blank-input tests to validation and notes test files",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-kix.6",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.V",
+      "phase": 2,
+      "title": "VERIFY Phase 2: npm test passes all tests",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
