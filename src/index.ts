@@ -1,9 +1,15 @@
 import app from "./app";
+import { validateCliArguments } from "./utils/validation";
 
 const args = process.argv.slice(2);
 const isCli = process.env.RUNNING_AS_CLI === "true" || args.length > 0;
 
 if (isCli) {
+  if (!validateCliArguments(args)) {
+    console.error("Error: CLI arguments cannot be empty or blank.");
+    process.exit(1);
+  }
+
   if (args.includes("help") || args.includes("--help") || args.includes("-h")) {
     console.log("Usage: fleet-e2e-toy [command|options]");
     console.log("");

@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateCliArguments } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -62,5 +62,23 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+});
+
+describe("validateCliArguments", () => {
+  it("accepts empty array", () => {
+    expect(validateCliArguments([])).toBe(true);
+  });
+
+  it("accepts valid arguments without empty/blank strings", () => {
+    expect(validateCliArguments(["--version", "help", "notes"])).toBe(true);
+  });
+
+  it("rejects arguments containing an empty string", () => {
+    expect(validateCliArguments(["--version", ""])).toBe(false);
+  });
+
+  it("rejects arguments containing a whitespace-only string", () => {
+    expect(validateCliArguments(["   ", "notes"])).toBe(false);
   });
 });

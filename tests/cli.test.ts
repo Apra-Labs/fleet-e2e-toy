@@ -54,3 +54,45 @@ describe("Help Command and Flags", () => {
   });
 });
 
+describe("CLI Argument Validation", () => {
+  it("rejects empty argument and exits with non-zero code", () => {
+    let threw = false;
+    try {
+      execSync(`"${TOOL_PATH}" ""`, { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] });
+    } catch (error) {
+      const err = error as { status: number; stderr: string };
+      threw = true;
+      expect(err.status).not.toBe(0);
+      expect(err.stderr).toContain("Error: CLI arguments cannot be empty or blank.");
+    }
+    expect(threw).toBe(true);
+  });
+
+  it("rejects whitespace-only argument and exits with non-zero code", () => {
+    let threw = false;
+    try {
+      execSync(`"${TOOL_PATH}" "   "`, { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] });
+    } catch (error) {
+      const err = error as { status: number; stderr: string };
+      threw = true;
+      expect(err.status).not.toBe(0);
+      expect(err.stderr).toContain("Error: CLI arguments cannot be empty or blank.");
+    }
+    expect(threw).toBe(true);
+  });
+
+  it("rejects empty argument mixed with valid arguments", () => {
+    let threw = false;
+    try {
+      execSync(`"${TOOL_PATH}" --version ""`, { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] });
+    } catch (error) {
+      const err = error as { status: number; stderr: string };
+      threw = true;
+      expect(err.status).not.toBe(0);
+      expect(err.stderr).toContain("Error: CLI arguments cannot be empty or blank.");
+    }
+    expect(threw).toBe(true);
+  });
+});
+
+

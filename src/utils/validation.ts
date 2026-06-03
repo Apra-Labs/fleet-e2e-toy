@@ -76,3 +76,8 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateCliArguments(args: string[]): boolean {
+  return !args.some((arg) => arg.trim() === "");
+}
+
