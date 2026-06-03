@@ -6,7 +6,7 @@
   "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1.1-DJDtF2/repo-wt/track-1",
   "transport": "remote",
   "epic": "repo-7ik",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 3,
   "tasks": [
     {
       "id": "T1.1",
@@ -36,10 +36,10 @@
       "title": "Add GET /version endpoint",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-7ik.3",
-      "commit": null,
-      "notes": ""
+      "commit": "6a7be2e",
+      "notes": "Created src/api/version.ts, mounted at /version in app.ts, added tests/version.test.ts; all 27 tests pass"
     },
     {
       "id": "T3.2",
@@ -47,10 +47,10 @@
       "title": "Add GET /api/help endpoint",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-7ik.4",
       "commit": null,
-      "notes": ""
+      "notes": "Created src/api/help.ts with 8 hardcoded endpoints, mounted at /api/help in app.ts, added tests/help.test.ts with 3 tests; all 30 tests pass"
     },
     {
       "id": "T4.1",
