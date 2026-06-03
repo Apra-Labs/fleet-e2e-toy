@@ -14,12 +14,12 @@ const router = Router();
 router.get("/", (req: Request, res: Response) => {
   let notes = noteStore.getAll();
 
-  const tag = req.query.tag as string | undefined;
+  const tag = ((req.query.tag as string | undefined) ?? "").trim() || undefined;
   if (tag) {
     notes = notes.filter((n) => n.tags.includes(tag));
   }
 
-  const q = req.query.q as string | undefined;
+  const q = ((req.query.q as string | undefined) ?? "").trim() || undefined;
   if (q) {
     const lower = q.toLowerCase();
     notes = notes.filter(
