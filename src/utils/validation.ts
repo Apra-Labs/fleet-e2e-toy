@@ -20,8 +20,8 @@ export function validateCreateInput(
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
   }
 
-  if (typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (typeof obj.content !== "string" || obj.content.trim().length === 0) {
+    errors.push({ field: "content", message: "Content must not be blank" });
   }
 
   if (obj.tags !== undefined) {
@@ -57,8 +57,8 @@ export function validateUpdateInput(
     errors.push({ field: "title", message: "Title must be a non-empty string" });
   }
 
-  if (obj.content !== undefined && typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (obj.content !== undefined && (typeof obj.content !== "string" || obj.content.trim().length === 0)) {
+    errors.push({ field: "content", message: "Content must not be blank" });
   }
 
   if (obj.tags !== undefined) {
