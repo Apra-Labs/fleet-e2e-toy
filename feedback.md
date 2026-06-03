@@ -1,110 +1,151 @@
-# s1.1 -- Plan Review
+# s1.1 -- Code Review
 
-**Reviewer:** Opus 4.7 (plan-reviewer)
-**Date:** 2026-06-03 (review pass 1)
+**Reviewer:** Opus 4.7 (code-reviewer)
+**Date:** 2026-06-03
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## 1. Done criteria per task
+## Context recovery
 
-PASS. Every task has explicit, executable "Done when" criteria:
+Prior feedback (commit `4a64df3`) was a plan-review APPROVAL for sprint s1.1. No prior code-review findings to incorporate -- this is the first code review pass for the implementation phases.
 
-- Task 1.1: `./node_modules/.bin/jest` exists and baseline ~21 tests pass.
-- Task 2.1: Specific jest invocations (`tests/validation.test.ts` and full suite) must be green, with a named commit message.
-- Tasks 3.1 / 3.2: Same pattern -- targeted jest run plus full suite, with named commit messages.
-- Task 4.1: Exit code 0 from full suite, exact test count (30 = 21 + 5 + 1 + 3), and presence of all three issue-tag commits on the branch.
+Branch `pmlite-e2e/s1.1-1780467215566` from base `main` contains 8 commits since branching, with the implementation work in:
 
-The Phase 4 verification even spells out the arithmetic, which makes the verification objectively checkable rather than vibes-based.
+- `21ae615` fix(validation): reject blank content and blank tag entries (gh-toy-v6z)
+- `6a7be2e` feat(api): add GET /version endpoint (gh-toy-4ef)
+- `1b7a9ba` feat(api): add GET /api/help endpoint (gh-toy-kbk)
+- `f1e30fa` chore: update progress.json with T3.2 commit hash
 
-## 2. Cohesion within tasks, coupling between tasks
+`progress.json` marks T1.1, T2.1, T3.1, T3.2 as completed. T4.1 (final verify) remains pending; this review effectively performs that verification.
 
-PASS. Each task touches a narrowly scoped set of files:
+---
 
-- Task 2.1 is one logical change (blank-string hardening) spanning validator + tests -- this is correctly cohesive.
-- Task 3.1 is `/version` end-to-end (handler, mount, test).
-- Task 3.2 is `/api/help` end-to-end.
+## 1. Working tree, build, lint, tests
 
-Coupling between tasks is limited to file overlap on `src/app.ts` (Tasks 3.1 and 3.2 both edit it), which is unavoidable and small. The plan batches them into a single sonnet dispatch so the second task sees the first task's edit -- correct mitigation.
+PASS. `git status --porcelain` returns empty -- the branch is fully committed with no stray files. All commands run from a clean tree:
 
-## 3. Shared interfaces / abstractions in earliest tasks
+- **Build:** `./node_modules/.bin/tsc --noEmit` -- exit 0, no errors. `./node_modules/.bin/tsc` produces `dist/api/{help,version,notes}.{js,d.ts}` (dist was then removed to keep the tree clean for this review).
+- **Lint:** `./node_modules/.bin/eslint src/ tests/ --ext .ts` -- exit 0, zero warnings.
+- **Tests:** `./node_modules/.bin/jest --verbose` -- `Test Suites: 4 passed, 4 total / Tests: 30 passed, 30 total`. Matches PLAN.md's expected count exactly (21 baseline + 5 + 1 + 3).
 
-PASS. There is no new abstraction needed -- both endpoints are independent routers added next to the existing `/api/notes` router. The cross-cutting policy decisions that ARE shared (jest invocation form, error response shape, mount points, package.json read strategy) are correctly captured in the "Cross-cutting constraints" preamble before any task, so every doer dispatch sees the same rules.
+CI workflow `.github/workflows/ci.yml` only triggers on `push` to `main`/`feature/**` or PR to `main`. The branch name `pmlite-e2e/s1.1-...` does not match either trigger and no PR is open, so there is no CI run to consult. The local suite is the authoritative signal here, and it is green.
 
-## 4. Riskiest assumption validated in Task 1
+## 2. File hygiene
 
-PARTIAL PASS / NOTE. The reviewer prompt asked whether "validation changes before new endpoints" is front-loaded -- it is: Phase 2 (gh-toy-v6z) comes before Phase 3 (the new endpoints). The plan's own justification ("highest-risk task ... modifies existing logic that the existing test suite depends on") is sound.
+PASS. `git diff --name-only main...HEAD` lists:
 
-The TRULY riskiest assumption in the plan, however, is R1 (the `package.json` runtime path resolution under `ts-jest`), and that is only validated indirectly in Task 3.1, not in Task 1.1. This is acceptable because (a) the test cost of validating it earlier is the same as Task 3.1 itself, (b) the fallback (`process.cwd()`) is documented in the risk register, and (c) `__dirname` under ts-jest preserves the source-file path so the resolution will succeed. NOTE only, not a blocker.
+```
+PLAN.md         (renamed from lowercase plan.md -- net new content)
+feedback.md     (sprint tracking)
+plan.md         (deleted -- replaced by uppercase PLAN.md)
+progress.json   (sprint tracking)
+requirements.md (sprint tracking)
+src/api/help.ts
+src/api/version.ts
+src/app.ts
+src/utils/validation.ts
+tests/help.test.ts
+tests/validation.test.ts
+tests/version.test.ts
+```
 
-## 5. Later tasks reuse early abstractions (DRY)
+Every entry justifies against the sprint: 4 sprint-tracking docs, plus 4 source/test files and the 2 source/test edits called for in PLAN.md Phases 2-3, plus `src/app.ts` mount edits. No temp/scratch, no harness config, no unrelated artifacts. The `plan.md` -> `PLAN.md` rename is a Windows case-folding artifact handled by git; only `PLAN.md` exists in the worktree now.
 
-PASS. The validation hardening in Task 2.1 is implicitly reused by Task 3.2's help endpoint description (which advertises POST/PUT field semantics), and the cross-cutting jest invocation, error shape, and mount conventions are reused verbatim by every later task. No duplicated logic appears across tasks.
+## 3. gh-toy-v6z -- validation hardening (Phase 2 / Task 2.1)
 
-## 6. Phase boundaries at cohesion boundaries
+PASS. `src/utils/validation.ts` matches the PLAN.md spec exactly:
 
-PASS. Phase 1 = environment setup, Phase 2 = validation change (one file pair), Phase 3 = additive endpoints (no behavior change to existing routes), Phase 4 = verification. Each phase is independently reviewable; rolling back any single phase leaves the previous phases in a coherent state. Phase 3 contains two tasks that share a code path (`src/app.ts` mount block) and a "discoverability" theme -- a reasonable single-phase grouping.
+- **createInput content** (lines 23-27): `else if (obj.content.trim().length === 0)` placed AFTER the type check, so the existing `typeof obj.content !== "string"` failure path is preserved with its original wording. New error string matches spec: `"Content must be a non-empty string"`.
+- **createInput tags** (lines 29-35): `else if ((obj.tags as string[]).some((t) => t.trim().length === 0))` placed AFTER the `Array.isArray && every(typeof === "string")` check. Critically, this preserves the ordering invariant required by the existing `"rejects non-string tags"` test (line 38-44 of `tests/validation.test.ts`) which asserts `errors[0].field === "tags"` with the original "must be an array of strings" message. Confirmed by running the existing test -- still green.
+- **updateInput content** (lines 64-70): correctly guarded by `obj.content !== undefined`. Same two-check structure preserves type-error wording.
+- **updateInput tags** (lines 72-78): mirrors createInput, also guarded by `obj.tags !== undefined`.
 
-## 7. Model assignments and dispatch streaks
+New tests (`tests/validation.test.ts` lines 46-68 and 91-99): all 5 added cases present with the exact `it()` names and inputs specified in PLAN.md. No existing test was deleted or modified.
 
-PASS. Haiku is used for the two mechanical tasks (`npm install` and "run the suite, assert exit 0"); sonnet is used for the three tasks that require reading existing code, preserving error ordering, and crafting test cases. The dispatch streak hint correctly clusters the two sonnet endpoint tasks (3.1 -> 3.2) into one dispatch C and keeps haiku tasks separate. Context budget for dispatch C is bounded (`src/app.ts` + 2 new src files + 2 new test files) -- well within sonnet's budget.
+Regression check: `tests/notes.test.ts` line 85-89 sends `{content: "No title"}` and expects HTTP 400 with `res.body.errors` defined -- still passes because missing title still fires its error first, and the response shape is unchanged.
 
-## 8. One-dispatch completability
+## 4. gh-toy-4ef -- GET /version (Phase 3 / Task 3.1)
 
-PASS. Each task's file list is small (max 2-3 files per task), and the test commands are precisely specified. No task asks the doer to make architectural decisions or read large portions of the codebase.
+PASS. `src/api/version.ts` implements the runtime `package.json` read exactly as PLAN.md mandates:
 
-## 9. Dependency ordering
+```ts
+const pkgPath = path.join(__dirname, "..", "..", "package.json");
+const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as { version: string };
+```
 
-PASS. Stated dependencies are: 1.1 -> 2.1, 1.1 -> 3.1, 1.1 + 3.1 -> 3.2, and all -> 4.1. The 3.1 -> 3.2 link is explicitly justified ("the help list advertises `/version`"). The dispatch streak order (A, B, C [3.1 then 3.2], D) respects every dependency edge.
+This honors the `tsconfig.json` `rootDir: "./src"` constraint -- no JSON import that would escape rootDir. Verified the path resolution works for both ts-jest (where `__dirname` resolves to source dir) and compiled `dist/` (verified by running `tsc` then loading `dist/api/version.js` via Node -- module loads cleanly). The cached parse at module load matches the spec.
 
-## 10. Vague tasks
+Mount in `src/app.ts` line 10: `app.use("/version", versionRouter)` -- correctly NOT under `/api`, placed next to other top-level mounts. Response shape `{ version: pkg.version }` with status 200 matches contract.
 
-PASS. Every task has the test cases enumerated, the exact error message strings quoted, and even the exact 8 entries for the help endpoint are hand-listed. Two independent doers given Task 3.2 would produce byte-identical handler bodies modulo whitespace. Task 2.1 even pre-emptively addresses an ordering subtlety (input `{title:"Note", content:"Body", tags:[1,2]}` must still surface tags-field-error first) by quoting the existing test line number that would break.
+Test `tests/version.test.ts`: asserts status 200, `typeof res.body.version === "string"`, and `res.body.version === "1.0.0"`. Passes. Uses `supertest` against the exported app (no server started) -- conforms to project convention.
 
-## 11. Hidden dependencies
+NOTE (non-blocking): the version literal `"1.0.0"` is hard-asserted in the test rather than read from `package.json`. If the project bumps to `1.0.1`, this single test will fail loudly -- arguably the right tradeoff (intentional contract check) but worth flagging for the next sprint if version bumps become routine.
 
-PASS / NOTE. One subtle dependency the plan handles correctly: the new `it("rejects whitespace-only title")` test under `validateCreateInput` is actually a NO-OP against the new code (the existing validator already rejects whitespace-only titles at line 19 of `src/utils/validation.ts` via `obj.title.trim().length === 0`). It's a redundant test, not a missing implementation -- the plan doesn't ask the doer to add new title-blank logic, only to add a confirming test. Worth a comment in the implementation but not a blocker; the test is harmless and matches the requirements.md acceptance phrasing.
+## 5. gh-toy-kbk -- GET /api/help (Phase 3 / Task 3.2)
 
-A second hidden dependency: Task 3.1 mounts `/version` on the app, which means the existing `GET /api/notes` and `GET /health` tests must continue to pass. They will, since the new mount is a non-overlapping path. The plan explicitly calls out "Routing order does not matter for non-overlapping paths" -- good defensive note.
+PASS. `src/api/help.ts` contains exactly the 8 entries enumerated in PLAN.md, in the specified order, with matching `method`/`path`/`description` strings byte-for-byte:
 
-## 12. Risk register
+1. GET /version, GET /health, GET /api/help
+2. GET /api/notes, GET /api/notes/:id, POST /api/notes, PUT /api/notes/:id, DELETE /api/notes/:id
 
-PASS. R1 (path resolution), R2 (validation test ordering), R3 (npm install network failure) cover the three real risks. Adding to the register from a reviewer perspective:
+Mount in `src/app.ts` line 11: `app.use("/api/help", helpRouter)` -- correctly under `/api`.
 
-- **R4 (additional, not blocking):** The help endpoint's hand-maintained list will drift from reality the next time a route is added or removed. The plan correctly defers this to "out of scope" but the next sprint should consider either a registry pattern or an Express introspection helper. NOTE only.
-- **R5 (additional, not blocking):** ts-jest module-load-time `fs.readFileSync` happens once per test file -- if jest's worker model spawns multiple workers, each will read the file. Not a correctness issue, just an observation. NOTE only.
+Tests `tests/help.test.ts` (44 lines, 3 `it()` blocks):
 
-## 13. Alignment with requirements.md intent
+- length-8 assertion: present (`expect(res.body.endpoints).toHaveLength(8)`).
+- every-route assertion: uses a single `for...of` loop with `expect.arrayContaining` -- matches PLAN.md's "single `it` with a loop, NOT eight separate `it` blocks" requirement.
+- per-entry non-empty-strings assertion: validates `method`, `path`, `description` are all non-empty strings.
 
-PASS. The three issues from requirements.md map 1:1 to Phase 2 / Phase 3 tasks:
+All three pass. The hand-maintained list is correct and exhaustive for the current route set (verified by cross-referencing `src/app.ts` plus `src/api/notes.ts` route definitions).
 
-- gh-toy-4ef: response shape `{"version": "1.0.0"}`, version sourced from `package.json`, integration test -- matches Task 3.1.
-- gh-toy-v6z: blank `content` rejected, blank tag entries rejected, `validateUpdateInput` also enforces it, new test in `tests/validation.test.ts` -- matches Task 2.1.
-- gh-toy-kbk: `GET /api/help` returns machine-readable JSON listing all routes, integration test verifies all routes present -- matches Task 3.2.
+NOTE (non-blocking, also called out as R4 in the plan): the list will drift the next time a route is added. Plan correctly defers automation to a future sprint.
 
-The plan does not over-reach: the four `// TODO:` comments in `src/api/notes.ts` are explicitly noted as out of scope, which is correct.
+## 6. Test quality
 
-## TypeScript rootDir constraint
+PASS.
 
-PASS. The plan correctly identifies that `import pkg from "../../package.json"` would escape `rootDir: "./src"` (see `tsconfig.json` line 7) and instead reads `package.json` at runtime via `fs.readFileSync`. The `__dirname`-based path is correct under both ts-jest (source-file resolution) and compiled `dist/` (one level under repo root). `resolveJsonModule` is `true` in tsconfig but that only enables JSON imports, not rootDir exemption, so the runtime-read approach is the right call.
+- **Coverage of new behavior:** every new branch in `validateCreateInput`/`validateUpdateInput` has a dedicated test. `/version` has one focused test. `/api/help` has three tests covering shape, completeness, and per-entry well-formedness.
+- **No redundant/overlapping tests:** the `rejects whitespace-only title` test under createInput is a no-op against pre-existing logic (the validator already rejected this), but it was explicitly called out in the PLAN as a confirming/contract assertion and matches the requirements.md acceptance phrasing -- not a regression, intentional.
+- **Untested surfaces:** `/version` and `/api/help` are not negative-tested (e.g., POST /version returning 404) -- minor, since Express default behavior covers this and the PLAN did not require it.
+- **Style consistency:** all new tests use `supertest` against `app`, matching `tests/notes.test.ts` conventions. The `if (!result.valid)` narrowing pattern in validation tests matches the existing style.
+
+## 7. Conventions and consistency
+
+PASS.
+
+- Error response shape unchanged for existing endpoints (`{errors: [...]}` for validation failures), per project convention in `CLAUDE.md`.
+- New handlers use `res.status(N).json(...)` -- never `res.send()`, per convention.
+- No `any` types introduced; new code uses proper interfaces or `unknown` with narrowing.
+- No `console.log` in handlers.
+- No new dependencies, no `package.json` changes, no `tsconfig.json` changes -- matches "Out of scope" in PLAN.md.
+- New files placed under `src/api/` per the "one file per resource" convention.
+
+## 8. Security and correctness
+
+PASS. No injection vectors, no authentication surface touched, no secrets in code. `package.json` is read via a constant path under `__dirname` -- not user-influenced, so no path-traversal risk. The hand-maintained help list contains only static metadata.
+
+## 9. Regression check on previously approved work
+
+PASS. The 13 pre-existing `tests/notes.test.ts` cases all still pass. The pre-existing `tests/validation.test.ts` cases all still pass with their original assertions intact. The error ordering invariant for `tags: [1,2]` (PLAN.md R2) is preserved.
 
 ---
 
 ## Summary
 
-The plan is precise, dependency-correct, and risk-aware. Every task has objective done criteria, exact code-level specs (error strings, mount paths, test names, expected counts), and a sensible model assignment. The cross-cutting constraints preamble correctly hoists the few shared decisions (jest invocation, error shape, rootDir-safe package.json read) above the task list so every dispatch inherits them.
+All three P1 issues are implemented per the locked specs in PLAN.md:
 
-Notable strengths:
-- Front-loads the riskier validation change (Phase 2) before additive endpoints (Phase 3), so regression risk surfaces before new contracts are layered on.
-- Phase 4 specifies the exact expected test count (30), making verification objective.
-- Risk register is present and reasonable; the rootDir trap is explicitly identified and the runtime-read mitigation is correctly documented.
-- Dispatch streaks minimize dispatches (4 total) and keep sonnet context budgets small.
+- **gh-toy-v6z** -- blank-string validation added in both create and update validators with the exact error messages, exact ordering, and exact 5 new test cases. Regression-safe against existing tests.
+- **gh-toy-4ef** -- `/version` endpoint with runtime `package.json` read (respects rootDir), correct mount, correct response shape, one focused test.
+- **gh-toy-kbk** -- `/api/help` endpoint with all 8 hand-listed entries, mounted under `/api`, with three well-targeted tests including the explicitly-required single-loop check.
 
-Notes (non-blocking):
-- The new "rejects whitespace-only title" test is redundant against existing behavior -- harmless, just a documentation/coverage assertion rather than new logic.
-- R1 (`__dirname` resolution under ts-jest) is validated only at Task 3.1, not earlier; acceptable given the cheap fallback.
-- The hand-maintained help list will drift; out-of-scope this sprint but should be on a future backlog.
+Quality gates: clean working tree, TypeScript compiles, ESLint clean, all 30 tests pass (= 21 baseline + 5 + 1 + 3 as specified). File hygiene is clean. No regressions in existing notes API behavior.
 
-Verdict: APPROVED. The doer can proceed with Dispatch A through D as specified.
+Non-blocking observations:
+- `/version` test hard-codes `"1.0.0"` -- intentional contract check, but coupled to package version bumps.
+- Help list will drift on future route additions -- already noted as out-of-scope in the plan's risk register (R4).
+- The redundant whitespace-title test under createInput is intentional (matches requirements.md acceptance phrasing), not a bug.
+
+Verdict: APPROVED. Phase 4 (T4.1 verification) can close on the strength of this review's local test run.
