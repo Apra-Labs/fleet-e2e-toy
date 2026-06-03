@@ -29,7 +29,7 @@
     {
       "id": "phase-2",
       "title": "Strengthen note input validation (gh-toy-v6z)",
-      "status": "in_progress",
+      "status": "blocked",
       "tasks": [
         {
           "id": "2.1",
@@ -39,7 +39,7 @@
           "status": "completed",
           "depends_on": ["1.1"],
           "commit": "d7d1f21",
-          "notes": "Extended validateCreateInput and validateUpdateInput to reject blank content and blank/whitespace-only tag entries. Tags are trimmed in returned data."
+          "notes": "Extended validateCreateInput and validateUpdateInput to reject blank content and blank/whitespace-only tag entries. Tags are trimmed in returned data. Used isBlankString helper throughout, no inline trim checks."
         },
         {
           "id": "2.2",
@@ -58,62 +58,72 @@
           "model": "claude-sonnet-4-6",
           "status": "blocked",
           "depends_on": ["2.1", "2.2"],
-          "notes": "Tests written but cannot be verified. Both `npm install` and `npm test` require sandbox approval. node_modules not present in worktree. Cannot run tests to verify they pass."
+          "commit": "80272c6",
+          "notes": "Tests written and committed but UNVERIFIED. npm install and npm test both require sandbox approval. node_modules not present in worktree. Cannot run tests to verify they pass. Code review required."
         },
         {
           "id": "2.4",
           "title": "Wire validateListQuery into GET /api/notes",
           "files": ["src/api/notes.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["2.2"]
+          "status": "completed",
+          "depends_on": ["2.2"],
+          "commit": "cdcafaf",
+          "notes": "Wired validateListQuery into GET / handler. Returns 400 with errors array on invalid query params. Uses trimmed values from result.data."
         },
         {
           "id": "2.5",
           "title": "Integration tests for blank-string rejection across note endpoints",
           "files": ["tests/notes.test.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["2.1", "2.4"]
+          "status": "blocked",
+          "depends_on": ["2.1", "2.4"],
+          "commit": "8d7504f",
+          "notes": "Tests written and committed but UNVERIFIED due to missing node_modules."
         }
       ],
-      "verify": "VERIFY 2 — npm test and npm run build both succeed; new error paths return 400 with documented JSON shape"
+      "verify": "VERIFY 2 — BLOCKED: npm test and npm run build cannot run because node_modules not present and all npm commands require sandbox approval"
     },
     {
       "id": "phase-3",
       "title": "/version and /help endpoints (gh-toy-4ef and gh-toy-kbk)",
-      "status": "pending",
+      "status": "blocked",
       "tasks": [
         {
           "id": "3.1",
           "title": "Create src/api/meta.ts exporting a router for /version and /help",
           "files": ["src/api/meta.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed",
+          "commit": "9726977",
+          "notes": "Created meta.ts with NAME and VERSION constants, GET /version and GET /help handlers. No any types, no package.json import."
         },
         {
           "id": "3.2",
           "title": "Mount the meta router in src/app.ts and add integration tests",
           "files": ["src/app.ts", "tests/meta.test.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["3.1"]
+          "status": "blocked",
+          "depends_on": ["3.1"],
+          "commit": "0011787",
+          "notes": "Mounted metaRouter at app root. Created tests/meta.test.ts with version and help endpoint tests. UNVERIFIED: cannot run npm test."
         }
       ],
-      "verify": "VERIFY 3 — Both new endpoints respond 200 with documented JSON. npm test is green."
+      "verify": "VERIFY 3 — BLOCKED: Cannot run npm test due to missing node_modules and sandbox restrictions on npm commands"
     },
     {
       "id": "phase-4",
       "title": "Final verification",
-      "status": "pending",
+      "status": "blocked",
       "tasks": [
         {
           "id": "4.1",
           "title": "Run the full test suite, build, and lint",
           "files": [],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["2.5", "3.2"]
+          "status": "blocked",
+          "depends_on": ["2.5", "3.2"],
+          "notes": "Blocked by inability to run npm commands in sandbox. All code implemented and committed. Requires orchestrator to run: npm install, npm run build, npm test, npm run lint."
         }
       ]
     }
