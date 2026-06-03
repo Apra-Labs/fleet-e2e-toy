@@ -22,3 +22,35 @@ describe("CLI Wrapper and Version Flag", () => {
     expect(stdout2.trim()).toBe("fleet-e2e-toy v1.0.0");
   });
 });
+
+describe("Help Command and Flags", () => {
+  const expectedHelpSubstr = "Usage: fleet-e2e-toy [command|options]";
+
+  it("prints help with help subcommand", () => {
+    const stdout = execSync(`"${TOOL_PATH}" help`, { encoding: "utf8" });
+    expect(stdout).toContain(expectedHelpSubstr);
+    expect(stdout).toContain("Commands:");
+    expect(stdout).toContain("help");
+    expect(stdout).toContain("Options:");
+    expect(stdout).toContain("-h, --help");
+    expect(stdout).toContain("-v, --version");
+  });
+
+  it("prints help with --help flag", () => {
+    const stdout = execSync(`"${TOOL_PATH}" --help`, { encoding: "utf8" });
+    expect(stdout).toContain(expectedHelpSubstr);
+  });
+
+  it("prints help with -h flag", () => {
+    const stdout = execSync(`"${TOOL_PATH}" -h`, { encoding: "utf8" });
+    expect(stdout).toContain(expectedHelpSubstr);
+  });
+
+  it("exits with code 0 on help", () => {
+    // execSync throws if exit code is non-zero, so successful run means exit code 0
+    expect(() => {
+      execSync(`"${TOOL_PATH}" -h`);
+    }).not.toThrow();
+  });
+});
+
