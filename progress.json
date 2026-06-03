@@ -36,10 +36,10 @@
       "title": "CLI Launcher and Versioning verification",
       "model": "gemini-2.5-flash",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
-      "commit": null,
-      "notes": ""
+      "commit": "21a82e92c68a416a928db64188dd61ea68379207",
+      "notes": "build: pass. lint: pass. tests: 21/21 pass. CLI: --version and -v print 'fleet-e2e-toy v1.0.0' and exit 0."
     },
     {
       "id": "T2.1",
