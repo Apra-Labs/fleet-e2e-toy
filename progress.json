@@ -1,0 +1,101 @@
+{
+  "sprint": "pmlite-e2e",
+  "track": "track",
+  "branch": "pmlite-e2e/s8.2-1780516661220",
+  "base": "main",
+  "worktree": "/tmp/pmlite-e2e-s8.2-EoRaab/repo-wt/track",
+  "transport": "remote",
+  "epic": "gh_toy-vp2",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create launcher script and CLI entrypoint skeleton",
+      "model": "gemini-2.5-flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-vp2.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Implement --version and -v flag",
+      "model": "gemini-2.5-flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-vp2.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "V1",
+      "phase": 1,
+      "title": "CLI Launcher and Versioning verification",
+      "model": "gemini-2.5-flash",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Implement help subcommand and --help / -h flags",
+      "model": "gemini-2.5-pro",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-vp2.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "V2",
+      "phase": 2,
+      "title": "Help System verification",
+      "model": "gemini-2.5-pro",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.1",
+      "phase": 3,
+      "title": "Add blank string validation",
+      "model": "gemini-2.5-pro",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-vp2.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.2",
+      "phase": 3,
+      "title": "Implement CLI Unit Tests",
+      "model": "gemini-2.5-pro",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-vp2.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "V3",
+      "phase": 3,
+      "title": "Input Validation and Unit Tests verification",
+      "model": "gemini-2.5-pro",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
