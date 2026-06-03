@@ -1,0 +1,114 @@
+{
+  "sprint": "pmlite-e2e/s1.1-1780465073891",
+  "status": "in_progress",
+  "phases": [
+    {
+      "id": "phase-1",
+      "title": "Foundations: shared validation helpers",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Add isBlankString and validateNonBlankString helpers",
+          "files": ["src/utils/validation.ts"],
+          "model": "claude-haiku-4-5-20251001",
+          "status": "pending"
+        },
+        {
+          "id": "1.2",
+          "title": "Unit tests for the new validation helpers",
+          "files": ["tests/validation.test.ts"],
+          "model": "claude-haiku-4-5-20251001",
+          "status": "pending",
+          "depends_on": ["1.1"]
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "title": "Strengthen note input validation (gh-toy-v6z)",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Extend validateCreateInput and validateUpdateInput for blank content and blank tag entries",
+          "files": ["src/utils/validation.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["1.1"]
+        },
+        {
+          "id": "2.2",
+          "title": "Add list/search query-string and path-param validation helpers",
+          "files": ["src/utils/validation.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["1.1"]
+        },
+        {
+          "id": "2.3",
+          "title": "Unit tests for the extended validators",
+          "files": ["tests/validation.test.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["2.1", "2.2"]
+        },
+        {
+          "id": "2.4",
+          "title": "Wire validateListQuery into GET /api/notes",
+          "files": ["src/api/notes.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["2.2"]
+        },
+        {
+          "id": "2.5",
+          "title": "Integration tests for blank-string rejection across note endpoints",
+          "files": ["tests/notes.test.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["2.1", "2.4"]
+        }
+      ],
+      "verify": "VERIFY 2 — npm test and npm run build both succeed; new error paths return 400 with documented JSON shape"
+    },
+    {
+      "id": "phase-3",
+      "title": "/version and /help endpoints (gh-toy-4ef and gh-toy-kbk)",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Create src/api/meta.ts exporting a router for /version and /help",
+          "files": ["src/api/meta.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending"
+        },
+        {
+          "id": "3.2",
+          "title": "Mount the meta router in src/app.ts and add integration tests",
+          "files": ["src/app.ts", "tests/meta.test.ts"],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["3.1"]
+        }
+      ],
+      "verify": "VERIFY 3 — Both new endpoints respond 200 with documented JSON. npm test is green."
+    },
+    {
+      "id": "phase-4",
+      "title": "Final verification",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "4.1",
+          "title": "Run the full test suite, build, and lint",
+          "files": [],
+          "model": "claude-sonnet-4-6",
+          "status": "pending",
+          "depends_on": ["2.5", "3.2"]
+        }
+      ]
+    }
+  ]
+}
