@@ -14,10 +14,10 @@
       "title": "Create launcher script and CLI entrypoint skeleton",
       "model": "gemini-2.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-vp2.1",
-      "commit": null,
-      "notes": ""
+      "commit": "144712c61aa235c8d144466cae9f8a611dce3b56",
+      "notes": "Created executable ./tool, Windows companion ./tool.cmd, and skeleton CLI entrypoint at src/cli.ts."
     },
     {
       "id": "T1.2",
