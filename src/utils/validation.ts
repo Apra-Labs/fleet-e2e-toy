@@ -33,17 +33,21 @@ export function validateCreateInput(
 
   const obj = body as Record<string, unknown>;
 
-  if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
+  if (isBlankString(obj.title)) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
   }
 
   if (typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (isBlankString(obj.content)) {
+    errors.push({ field: "content", message: "Content must be a non-empty, non-whitespace string" });
   }
 
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.some((t) => isBlankString(t))) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only strings" });
     }
   }
 
@@ -54,7 +58,7 @@ export function validateCreateInput(
     data: {
       title: (obj.title as string).trim(),
       content: obj.content as string,
-      tags: (obj.tags as string[] | undefined) ?? [],
+      tags: ((obj.tags as string[] | undefined) ?? []).map((t) => t.trim()),
     },
   };
 }
@@ -70,17 +74,23 @@ export function validateUpdateInput(
 
   const obj = body as Record<string, unknown>;
 
-  if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
+  if (obj.title !== undefined && isBlankString(obj.title)) {
     errors.push({ field: "title", message: "Title must be a non-empty string" });
   }
 
-  if (obj.content !== undefined && typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (obj.content !== undefined) {
+    if (typeof obj.content !== "string") {
+      errors.push({ field: "content", message: "Content must be a string" });
+    } else if (isBlankString(obj.content)) {
+      errors.push({ field: "content", message: "Content must be a non-empty, non-whitespace string" });
+    }
   }
 
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.some((t) => isBlankString(t))) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only strings" });
     }
   }
 
@@ -89,7 +99,7 @@ export function validateUpdateInput(
   const data: UpdateNoteInput = {};
   if (obj.title !== undefined) data.title = (obj.title as string).trim();
   if (obj.content !== undefined) data.content = obj.content as string;
-  if (obj.tags !== undefined) data.tags = obj.tags as string[];
+  if (obj.tags !== undefined) data.tags = (obj.tags as string[]).map((t) => t.trim());
 
   return { valid: true, data };
 }
