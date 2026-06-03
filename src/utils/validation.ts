@@ -103,3 +103,40 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateListQuery(
+  query: Record<string, unknown>
+): { valid: true; data: { tag?: string; q?: string } } | { valid: false; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+
+  if (query.tag !== undefined) {
+    if (typeof query.tag !== "string") {
+      errors.push({ field: "tag", message: "tag query parameter must be a non-empty, non-whitespace string" });
+    } else if (isBlankString(query.tag)) {
+      errors.push({ field: "tag", message: "tag query parameter must be a non-empty, non-whitespace string" });
+    }
+  }
+
+  if (query.q !== undefined) {
+    if (typeof query.q !== "string") {
+      errors.push({ field: "q", message: "q query parameter must be a non-empty, non-whitespace string" });
+    } else if (isBlankString(query.q)) {
+      errors.push({ field: "q", message: "q query parameter must be a non-empty, non-whitespace string" });
+    }
+  }
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const data: { tag?: string; q?: string } = {};
+  if (query.tag !== undefined) data.tag = (query.tag as string).trim();
+  if (query.q !== undefined) data.q = (query.q as string).trim();
+
+  return { valid: true, data };
+}
+
+export function validateIdParam(id: unknown): ValidationError | null {
+  if (isBlankString(id)) {
+    return { field: "id", message: "id path parameter must be a non-empty, non-whitespace string" };
+  }
+  return null;
+}
