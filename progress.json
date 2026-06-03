@@ -1,0 +1,68 @@
+{
+  "sprint": "fleet-e2e-toy P1 issues",
+  "track": "track-1",
+  "branch": "pmlite-e2e/s1.1-1780467215566",
+  "base": "main",
+  "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1.1-DJDtF2/repo-wt/track-1",
+  "transport": "remote",
+  "epic": "repo-7ik",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Install npm dependencies",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-7ik.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Reject blank content and tags in validation",
+      "model": "claude-sonnet-4-6",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-7ik.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.1",
+      "phase": 3,
+      "title": "Add GET /version endpoint",
+      "model": "claude-sonnet-4-6",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-7ik.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.2",
+      "phase": 3,
+      "title": "Add GET /api/help endpoint",
+      "model": "claude-sonnet-4-6",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-7ik.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T4.1",
+      "phase": 4,
+      "title": "VERIFY full test suite",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "verify",
+      "status": "pending",
+      "bead": "repo-7ik.5",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
