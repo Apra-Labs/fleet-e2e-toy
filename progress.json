@@ -14,10 +14,10 @@
       "title": "Install npm dependencies",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-7ik.1",
       "commit": null,
-      "notes": ""
+      "notes": "npm install succeeded; jest exists at node_modules/.bin/jest; all 21 baseline tests pass"
     },
     {
       "id": "T2.1",
