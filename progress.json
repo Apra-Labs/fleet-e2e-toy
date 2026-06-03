@@ -36,10 +36,10 @@
       "title": "Add CLI tests in tests/cli.test.ts",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-kix.3",
-      "commit": null,
-      "notes": ""
+      "commit": "8e194dc",
+      "notes": "Created tests/cli.test.ts with 7 unit tests for runCli synthetic argv, 2 stdout content tests via console.log spy, and 4 spawnSync smoke tests. Used shell:true and platform-aware .cmd suffix for Windows compatibility. All 34 tests pass (npm test). Linter clean."
     },
     {
       "id": "T1.V",
@@ -47,10 +47,10 @@
       "title": "VERIFY Phase 1: npm test passes all CLI tests",
       "model": "claude-sonnet-4-6",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
-      "commit": null,
-      "notes": ""
+      "commit": "8e194dc",
+      "notes": "npm test: 34 tests passed across 3 suites (cli.test.ts, notes.test.ts, validation.test.ts). npm run lint: clean. tsc --noEmit: passes. All Phase 1 acceptance criteria met."
     },
     {
       "id": "T2.1",
