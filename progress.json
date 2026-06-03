@@ -25,10 +25,10 @@
       "title": "Implement --version and -v flag",
       "model": "gemini-2.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-vp2.2",
-      "commit": null,
-      "notes": ""
+      "commit": "98557c7ecb4720bc9c9e1c433aaa6024e049231c",
+      "notes": "Added CLI support for --version and -v flags, printing fleet-e2e-toy v1.0.0 and exiting with code 0."
     },
     {
       "id": "V1",
