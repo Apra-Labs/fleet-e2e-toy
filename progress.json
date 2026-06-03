@@ -69,10 +69,10 @@
       "title": "Add blank string validation",
       "model": "gemini-2.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-vp2.4",
-      "commit": null,
-      "notes": ""
+      "commit": "d0e451b97093812b8afcea667fcaeecf28c37bac",
+      "notes": "Added argument validation check to cli.ts to reject empty or whitespace-only arguments with a clear error message to stderr and a non-zero exit code."
     },
     {
       "id": "T3.2",
