@@ -47,10 +47,10 @@
       "title": "Implement help subcommand and --help / -h flags",
       "model": "gemini-2.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-vp2.3",
-      "commit": null,
-      "notes": ""
+      "commit": "bd7231bc5c1bf7d91da03bb7b15262bd432fe0b8",
+      "notes": "Implemented CLI support for help subcommand, --help, and -h flags, printing comprehensive usage details and exiting with code 0."
     },
     {
       "id": "V2",
