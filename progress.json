@@ -80,10 +80,10 @@
       "title": "Implement CLI Unit Tests",
       "model": "gemini-2.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-vp2.5",
-      "commit": null,
-      "notes": ""
+      "commit": "0ecec4c915793f1e81e6b22ae83a67d4770684cb",
+      "notes": "Created tests/cli.test.ts to verify the CLI flags (--version, -v, --help, -h, help) and input validation for empty/blank strings using child_process.execSync."
     },
     {
       "id": "V3",
