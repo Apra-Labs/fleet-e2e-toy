@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { noteStore, Note } from "../models/note";
-import { validateCreateInput, validateUpdateInput } from "../utils/validation";
+import { validateCreateInput, validateUpdateInput, validateListQuery } from "../utils/validation";
 
 const router = Router();
 
@@ -12,14 +12,19 @@ const router = Router();
 
 // List all notes, with optional tag filter and search
 router.get("/", (req: Request, res: Response) => {
+  const queryResult = validateListQuery(req.query as Record<string, unknown>);
+  if (!queryResult.valid) {
+    res.status(400).json({ errors: queryResult.errors });
+    return;
+  }
+
   let notes = noteStore.getAll();
 
-  const tag = req.query.tag as string | undefined;
+  const { tag, q } = queryResult.data;
   if (tag) {
     notes = notes.filter((n) => n.tags.includes(tag));
   }
 
-  const q = req.query.q as string | undefined;
   if (q) {
     const lower = q.toLowerCase();
     notes = notes.filter(
