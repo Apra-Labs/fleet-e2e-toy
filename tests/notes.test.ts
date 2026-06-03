@@ -138,3 +138,82 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("Blank-string rejection — POST /api/notes (task 2.5)", () => {
+  it("rejects blank title with 400 and errors array containing title field", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "   ", content: "x" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors.some((e: { field: string }) => e.field === "title")).toBe(true);
+  });
+
+  it("rejects blank content with 400 and errors array containing content field", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "x", content: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors.some((e: { field: string }) => e.field === "content")).toBe(true);
+  });
+
+  it("rejects tags array with blank entry with 400 and errors array containing tags field", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "x", content: "y", tags: ["ok", "  "] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors.some((e: { field: string }) => e.field === "tags")).toBe(true);
+  });
+
+  it("trims tags and returns 201 when tags have surrounding whitespace", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "x", content: "y", tags: [" trim "] });
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual(["trim"]);
+  });
+});
+
+describe("Blank-string rejection — PUT /api/notes/:id (task 2.5)", () => {
+  it("rejects blank title with 400", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "content", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
+
+  it("rejects blank content with 400", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "content", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+  });
+});
+
+describe("Blank-string rejection — GET /api/notes query params (task 2.5)", () => {
+  it("rejects empty q param with 400 and q error", async () => {
+    const res = await request(app).get("/api/notes?q=");
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors.some((e: { field: string }) => e.field === "q")).toBe(true);
+  });
+
+  it("rejects blank tag param (URL encoded space) with 400 and tag error", async () => {
+    const res = await request(app).get("/api/notes?tag=%20");
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors.some((e: { field: string }) => e.field === "tag")).toBe(true);
+  });
+});
