@@ -9,11 +9,12 @@
 
 ## Verified Assumptions
 
-1. **resolveJsonModule** — `tsconfig.json` has `"resolveJsonModule": true` and `"esModuleInterop": true`. Importing `package.json` directly is safe.
-2. **No CLI parsing library** — `package.json` lists no commander/yargs/meow. `process.argv` parsing inline is the correct approach.
-3. **`validateCreateInput` does not reject blank content** — confirmed in `src/utils/validation.ts` line 23: only checks `typeof obj.content !== "string"`, not `.trim().length`. Extension is additive.
-4. **Query params `tag` and `q` are passed through unchecked** — confirmed in `src/api/notes.ts` lines 17-28; truthy check on raw string value does not strip whitespace.
-5. **Test file paths** — `tests/notes.test.ts` and `tests/validation.test.ts` already exist. New tests go into these exact files.
+1. **resolveJsonModule** — `tsconfig.json` has `"resolveJsonModule": true` and `"esModuleInterop": true`. These flags are necessary but not sufficient for a static `import` of `package.json` from `src/cli.ts`.
+2. **rootDir constraint** — `tsconfig.json` sets `"rootDir": "./src"`. A static `import pkg from "../package.json"` from `src/cli.ts` references a path outside `rootDir` and will trigger TS6059 ("File is not under 'rootDir'"). Therefore, `package.json` must be read at runtime using `const pkg = require("../package.json") as { name: string; version: string }` (CommonJS `require` bypasses tsc's `rootDir` static analysis check). This is the chosen approach.
+3. **No CLI parsing library** — `package.json` lists no commander/yargs/meow. `process.argv` parsing inline is the correct approach.
+4. **`validateCreateInput` does not reject blank content** — confirmed in `src/utils/validation.ts` line 23: only checks `typeof obj.content !== "string"`, not `.trim().length`. Extension is additive.
+5. **Query params `tag` and `q` are passed through unchecked** — confirmed in `src/api/notes.ts` lines 17-28; truthy check on raw string value does not strip whitespace.
+6. **Test file paths** — `tests/notes.test.ts` and `tests/validation.test.ts` already exist. New tests go into these exact files.
 
 ## Decisions Resolved from Requirements
 
@@ -22,6 +23,8 @@
 - **Blank vs empty content:** Both `""` and `"   "` fail validation because `"".trim().length === 0`. A single `content.trim().length === 0` check covers both; no separate "empty" path needed.
 - **Test strategy for CLI:** Unit-test `runCli()` with synthetic argv arrays (fast). One `spawnSync` smoke test per acceptance criterion with `jest.setTimeout(20000)` to handle ts-node cold-start on Windows.
 - **`validateUpdateInput` blank content:** Also tightened symmetrically — if `content` is provided it must not be blank, consistent with create.
+- **spawnSync command resolution:** Smoke tests invoke `node_modules/.bin/ts-node` (or `npx ts-node` as fallback) rather than a bare `ts-node` command, so the tests work in CI environments where `ts-node` is not globally installed.
+- **Stdout comparison in smoke tests:** Use `.toString().trim()` for equality comparisons and `.includes()` / regex for content assertions, to avoid `\r\n` vs `\n` failures on Windows.
 
 ---
 
@@ -33,25 +36,28 @@
 
 **What it does:**
 - Exports `runCli(argv: string[]): { handled: boolean; exitCode: number }`.
-- Imports `name` and `version` from `../../package.json` (resolveJsonModule is confirmed enabled).
+- Reads `name` and `version` from `package.json` at runtime using `const pkg = require("../package.json") as { name: string; version: string }`. This avoids the TS6059 error that a static `import` would trigger because `package.json` is outside `rootDir: "./src"`.
 - Argv scan (checks `argv.slice(2)`):
   - If any element is `"--help"` or `"-h"`, OR if `argv[2] === "help"` (positional subcommand) → print help text to stdout, return `{ handled: true, exitCode: 0 }`.
   - Else if any element is `"--version"` or `"-v"` → print `noteapi v<version>` to stdout (version from package.json), return `{ handled: true, exitCode: 0 }`.
   - Otherwise → return `{ handled: false, exitCode: 0 }`.
-- Help text printed is exactly:
-  ```
-  noteapi — REST API for managing notes with tags and search
+- Help text printed is the following literal string (no markdown formatting; indentation below is the actual output — leading spaces are part of the output string):
 
-  Usage:
-    ts-node src/index.ts [options]
+```
+noteapi — REST API for managing notes with tags and search
 
-  Options:
-    --help, -h       Show this help message and exit
-    --version, -v    Print version and exit
+Usage:
+  ts-node src/index.ts [options]
 
-  Environment:
-    PORT             Port to listen on (default: 3000)
-  ```
+Options:
+  --help, -h       Show this help message and exit
+  --version, -v    Print version and exit
+
+Environment:
+  PORT             Port to listen on (default: 3000)
+```
+
+  Specifically: the "Usage:" header and "Options:" and "Environment:" headers have NO leading spaces (column 0). The `ts-node src/index.ts [options]` line has exactly 2 leading spaces. Each option entry (`--help, -h ...` etc.) has exactly 2 leading spaces. Each environment entry (`PORT ...`) has exactly 2 leading spaces.
 
 **Done criteria:**
 - File compiles without TypeScript errors (`tsc --noEmit` passes).
@@ -124,11 +130,13 @@ Stdout content tests (spy on `process.stdout.write` or `console.log`):
 - `--help` output includes `--help`, `--version`, and `PORT`.
 
 Smoke tests (spawnSync, each in a describe block with `jest.setTimeout(20000)`):
-- `ts-node src/index.ts --version` exits code 0 and stdout equals `noteapi v1.0.0\n`.
-- `ts-node src/index.ts -v` exits code 0 and stdout equals `noteapi v1.0.0\n`.
+- Invocation command: use `node_modules/.bin/ts-node` as the executable (not bare `ts-node`) so tests pass in CI environments where `ts-node` is not globally installed. Pass `src/index.ts` as the script argument.
+- `spawnSync` called with `cwd` set to the repo root so `src/index.ts` and `node_modules` resolve correctly.
+- Stdout assertions use `.toString().trim()` for equality comparisons (handles `\r\n` on Windows) and `.includes()` for multi-line content assertions (avoids exact newline format dependency).
+- `ts-node src/index.ts --version` exits code 0 and `stdout.toString().trim() === "noteapi v1.0.0"`.
+- `ts-node src/index.ts -v` exits code 0 and `stdout.toString().trim() === "noteapi v1.0.0"`.
 - `ts-node src/index.ts --help` exits code 0 and stdout includes `noteapi`, `--help`, `--version`, `PORT`.
 - `ts-node src/index.ts -h` exits code 0 and stdout includes `noteapi`, `--help`, `--version`, `PORT`.
-- spawnSync called with `cwd` set to the repo root so `src/index.ts` resolves correctly.
 
 **Done criteria:**
 - `npm test` passes with all new tests green.
@@ -260,11 +268,13 @@ Add a new `GET /api/notes — blank query params` describe block:
 
 ## Risk Register
 
-| Risk | Mitigation |
-|------|-----------|
-| ts-node slow cold start makes spawnSync tests flaky on Windows | Explicit 20000ms timeout on all spawnSync smoke tests |
-| TypeScript may infer `any` for JSON import field `version` | Cast explicitly: `(pkg as { name: string; version: string }).version` |
-| Jest `testMatch` glob may not pick up `tests/cli.test.ts` | Existing config picks up `tests/notes.test.ts` and `tests/validation.test.ts` via same pattern; `tests/cli.test.ts` follows the same convention |
+| Risk | Severity | Mitigation |
+|------|----------|-----------|
+| ts-node slow cold start makes spawnSync tests flaky on Windows | MEDIUM | Explicit 20000ms timeout on all spawnSync smoke tests |
+| TypeScript may infer `any` for JSON import field `version` | LOW | Cast explicitly: `(pkg as { name: string; version: string }).version` |
+| `rootDir: "./src"` blocks static JSON import from `src/cli.ts` | HIGH | Use runtime `require("../package.json")` (CommonJS) instead of static `import`. `require` is not subject to tsc's `rootDir` static analysis check. See Verified Assumptions item 2. |
+| Windows CRLF in stdout comparison | MEDIUM | All smoke test stdout equality comparisons use `.toString().trim()`; multi-line content checks use `.includes()` or regex — never strict `\n`-terminated equality. |
+| `ts-node` not globally installed in CI (spawnSync command not found) | MEDIUM | Smoke tests invoke `node_modules/.bin/ts-node` explicitly (not bare `ts-node`). Since `ts-node` is a devDependency it is always present in `node_modules/.bin` after `npm install`. |
 
 ---
 
