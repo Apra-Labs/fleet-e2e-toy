@@ -29,31 +29,36 @@
     {
       "id": "phase-2",
       "title": "Strengthen note input validation (gh-toy-v6z)",
-      "status": "pending",
+      "status": "in_progress",
       "tasks": [
         {
           "id": "2.1",
           "title": "Extend validateCreateInput and validateUpdateInput for blank content and blank tag entries",
           "files": ["src/utils/validation.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["1.1"]
+          "status": "completed",
+          "depends_on": ["1.1"],
+          "commit": "d7d1f21",
+          "notes": "Extended validateCreateInput and validateUpdateInput to reject blank content and blank/whitespace-only tag entries. Tags are trimmed in returned data."
         },
         {
           "id": "2.2",
           "title": "Add list/search query-string and path-param validation helpers",
           "files": ["src/utils/validation.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["1.1"]
+          "status": "completed",
+          "depends_on": ["1.1"],
+          "commit": "a62d518",
+          "notes": "Added validateListQuery and validateIdParam exports to validation.ts."
         },
         {
           "id": "2.3",
           "title": "Unit tests for the extended validators",
           "files": ["tests/validation.test.ts"],
           "model": "claude-sonnet-4-6",
-          "status": "pending",
-          "depends_on": ["2.1", "2.2"]
+          "status": "blocked",
+          "depends_on": ["2.1", "2.2"],
+          "notes": "Tests written but cannot be verified. Both `npm install` and `npm test` require sandbox approval. node_modules not present in worktree. Cannot run tests to verify they pass."
         },
         {
           "id": "2.4",
