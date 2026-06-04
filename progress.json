@@ -14,9 +14,9 @@
       "title": "Add isBlankOrEmpty helper + unit tests",
       "model": "gemini-3.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-neh.1",
-      "commit": null,
+      "commit": "1b714d78e8635ef464627e12db32a2e84082b86f",
       "notes": ""
     },
     {
