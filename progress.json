@@ -47,10 +47,10 @@
       "title": "Implement Shell and Batch wrappers",
       "model": "gemini-3.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-neh.3",
-      "commit": null,
-      "notes": ""
+      "commit": "8502e9801d0c4612061bf75a90497c81cc48d396",
+      "notes": "Created `./tool` shell script and `./tool.cmd` batch script, made `./tool` executable, and verified version/help output."
     },
     {
       "id": "V2",
@@ -58,10 +58,10 @@
       "title": "VERIFY Phase 2",
       "model": "gemini-3.5-pro",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
-      "commit": null,
-      "notes": ""
+      "commit": "8502e9801d0c4612061bf75a90497c81cc48d396",
+      "notes": "Verified build succeeds, eslint has no lint warnings, and all 29 tests pass successfully. Manually verified CLI wrappers."
     }
   ],
   "dispatches": []
