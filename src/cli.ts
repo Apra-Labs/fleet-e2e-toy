@@ -16,6 +16,14 @@ function printHelp() {
 function main() {
   const args = process.argv.slice(2);
 
+  // Validate that no command line argument is empty or whitespace-only
+  for (const arg of args) {
+    if (arg.trim() === '') {
+      console.error('Error: Empty or whitespace-only arguments are not allowed.');
+      process.exit(1);
+    }
+  }
+
   if (args.includes('--version') || args.includes('-v')) {
     console.log('fleet-e2e-toy v1.0.0');
     process.exit(0);
@@ -24,6 +32,15 @@ function main() {
   if (args.includes('--help') || args.includes('-h') || args[0] === 'help') {
     printHelp();
     process.exit(0);
+  }
+
+  // Validate that the title argument is present and non-blank when using 'add'
+  if (args[0] === 'add') {
+    const title = args[1];
+    if (title === undefined || title.trim() === '') {
+      console.error('Error: The title argument is required for the "add" command and cannot be blank.');
+      process.exit(1);
+    }
   }
 }
 
