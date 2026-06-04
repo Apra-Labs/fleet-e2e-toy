@@ -47,10 +47,10 @@
       "title": "VERIFY: Phase 1 checks",
       "model": "claude-haiku-4-5-20251001",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfv.4",
-      "commit": null,
-      "notes": "npm test, npm run lint, CLI smoke checks (--version, -v, help, --help, -h, no-args), git status clean"
+      "commit": "3d2d208",
+      "notes": "VERIFY PASSED: npm test (25/25 tests passing), npm run lint (clean), npx ts-node src/index.ts --version (OK), npx ts-node src/index.ts -v (OK), npx ts-node src/index.ts help (OK), npx ts-node src/index.ts --help (OK), npx ts-node src/index.ts -h (OK), npx ts-node src/index.ts (server starts on port 3000). All 3 commits created: e834fb7, e4ec44d, 2a202dd"
     }
   ],
   "dispatches": []
