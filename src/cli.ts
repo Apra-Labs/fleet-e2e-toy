@@ -31,7 +31,7 @@ export function runCli(args: string[]): { exitCode: number; output: string; erro
     const pkgPath = path.resolve(__dirname, "../package.json");
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
     version = pkg.version || "1.0.0";
-  } catch (err) {
+  } catch {
     // fallback
   }
 
