@@ -25,10 +25,10 @@
       "title": "Create CLI Entry Point src/cli.ts",
       "model": "gemini-3.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-neh.2",
-      "commit": null,
-      "notes": ""
+      "commit": "f926a3d6c6310619ff8698719a3a41827c04dda2",
+      "notes": "CLI entrypoint created with input validation, version flag, help flag, and server startup. Added automated CLI tests."
     },
     {
       "id": "V1",
@@ -36,10 +36,10 @@
       "title": "VERIFY Phase 1",
       "model": "gemini-3.5-pro",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
-      "commit": null,
-      "notes": ""
+      "commit": "f926a3d6c6310619ff8698719a3a41827c04dda2",
+      "notes": "Build and lint passed. Test suite executed successfully (29/29 tests passed)."
     },
     {
       "id": "T2.1",
