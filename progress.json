@@ -1,0 +1,79 @@
+{
+  "sprint": "pmlite-e2e-s8.2-1780546411229",
+  "track": "default",
+  "branch": "pmlite-e2e/s8.2-1780546411229",
+  "base": "main",
+  "worktree": "/tmp/pmlite-e2e-s8.2-uidT4K/repo-wt/default",
+  "transport": "remote",
+  "epic": "repo-4k7",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create CLI Entry Point Skeleton and Launcher Scripts",
+      "model": "Gemini 3.5 Flash (Low)",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-4k7.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Implement version flag",
+      "model": "Gemini 3.5 Flash (Low)",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-4k7.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Implement help subcommand and flags",
+      "model": "Gemini 3.5 Flash (Low)",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-4k7.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.4",
+      "phase": 1,
+      "title": "Add input validation for empty or blank strings",
+      "model": "Gemini 3.1 Pro (High)",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-4k7.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.5",
+      "phase": 1,
+      "title": "Add CLI unit tests",
+      "model": "Gemini 3.1 Pro (High)",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-4k7.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.6",
+      "phase": 1,
+      "title": "VERIFY: CLI Features & Input Validation",
+      "model": "Gemini 3.1 Pro (High)",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
