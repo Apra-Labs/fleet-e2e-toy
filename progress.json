@@ -25,10 +25,10 @@
       "title": "Create wrapper scripts tool and tool.cmd",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.2",
-      "commit": null,
-      "notes": ""
+      "commit": "01ce682738044bdc2675390767adfd170cf7ad7f",
+      "notes": "Created the Unix executable wrapper script 'tool' and the Windows batch wrapper script 'tool.cmd' in the root directory to forward CLI arguments."
     },
     {
       "id": "T1.3",
