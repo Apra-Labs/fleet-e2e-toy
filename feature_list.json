@@ -2,7 +2,7 @@
   {
     "name": "Create CLI wrapper and version flag",
     "description": "gh-toy-4ef",
-    "passes": false
+    "passes": true
   },
   {
     "name": "Implement help subcommand and flags",
