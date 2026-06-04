@@ -14,9 +14,9 @@
       "title": "Create CLI Entry Point Skeleton and Launcher Scripts",
       "model": "Gemini 3.5 Flash (Low)",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "repo-4k7.1",
-      "commit": null,
+      "commit": "618bd58c93656570dbb6b53f47af2e45502000d3",
       "notes": ""
     },
     {
@@ -25,7 +25,7 @@
       "title": "Implement version flag",
       "model": "Gemini 3.5 Flash (Low)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "repo-4k7.2",
       "commit": null,
       "notes": ""
