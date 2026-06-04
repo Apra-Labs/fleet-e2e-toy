@@ -47,9 +47,9 @@
       "title": "Add CLI unit and integration tests",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-cuu.4",
-      "commit": null,
+      "commit": "2bb19fb648f4fb8726ffb9c3bca3fa08da91f71a",
       "notes": ""
     },
     {
