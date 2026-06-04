@@ -14,9 +14,9 @@
       "title": "Create CLI entry point, wrapper scripts, and version flag (gh-toy-4ef)",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-cuu.1",
-      "commit": null,
+      "commit": "bff9f131a5d4b1ce4442ed4c5576f511eed5481e",
       "notes": ""
     },
     {
