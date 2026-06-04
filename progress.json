@@ -47,10 +47,10 @@
       "title": "Task 3: Add input validation for empty or blank string arguments",
       "model": "gemini-3.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-p9k.4",
-      "commit": null,
-      "notes": ""
+      "commit": "3d72b0d65d26b496ffd3336429bb0a4e1052835d",
+      "notes": "Added CLI positional arguments validation for empty/blank strings, bypassed by help/version flags, and added integration tests."
     },
     {
       "id": "T4",
