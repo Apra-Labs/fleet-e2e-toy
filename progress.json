@@ -47,9 +47,9 @@
       "title": "Add input validation for empty or blank strings",
       "model": "Gemini 3.1 Pro (High)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "repo-4k7.4",
-      "commit": null,
+      "commit": "1a055f50075b8a7b3b17cf6f91e5c0a530380af1",
       "notes": ""
     },
     {
@@ -58,9 +58,9 @@
       "title": "Add CLI unit tests",
       "model": "Gemini 3.1 Pro (High)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "repo-4k7.5",
-      "commit": null,
+      "commit": "e9eaa63360c56062565fe123db6e9f55d368aa52",
       "notes": ""
     },
     {
@@ -69,10 +69,10 @@
       "title": "VERIFY: CLI Features & Input Validation",
       "model": "Gemini 3.1 Pro (High)",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
       "commit": null,
-      "notes": ""
+      "notes": "Verified build, linter, and full test suite passing."
     }
   ],
   "dispatches": []
