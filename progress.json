@@ -14,10 +14,10 @@
       "title": "Create basic CLI entry point src/cli.ts",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.1",
-      "commit": null,
-      "notes": ""
+      "commit": "dc830e86f238f355425d876f0aa6926a4b328c32",
+      "notes": "Created basic CLI entry point src/cli.ts that prints CLI initialization message and logs inputs."
     },
     {
       "id": "T1.2",
