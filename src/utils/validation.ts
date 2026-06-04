@@ -76,3 +76,11 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateCliArg(value: string): { valid: boolean; error?: string } {
+  if (!value || value.trim().length === 0) {
+    return { valid: false, error: "Argument cannot be empty or blank string" };
+  }
+  return { valid: true };
+}
+

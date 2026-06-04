@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateCliArg } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -64,3 +64,23 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("validateCliArg", () => {
+  it("accepts non-blank strings", () => {
+    expect(validateCliArg("hello").valid).toBe(true);
+    expect(validateCliArg("a").valid).toBe(true);
+  });
+
+  it("rejects empty string", () => {
+    const result = validateCliArg("");
+    expect(result.valid).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it("rejects whitespace-only string", () => {
+    const result = validateCliArg("   ");
+    expect(result.valid).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+});
+
