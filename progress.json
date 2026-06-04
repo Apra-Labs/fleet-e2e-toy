@@ -58,9 +58,9 @@
       "title": "Phase 1 Verification",
       "model": "Gemini 3.5 Pro",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-1j2.5",
-      "commit": null,
+      "commit": "dd5f26350c0132089af0f3e5dfb669b1f4223a29",
       "notes": ""
     }
   ],
