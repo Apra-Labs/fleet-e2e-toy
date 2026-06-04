@@ -6,7 +6,7 @@
   "worktree": "/var/folders/b1/x3gsm3fn4pj4n7kjxb0wg5d80000gn/T/pmlite-e2e-s8.3-4kUZYK/repo-wt/sprint-track",
   "transport": "remote",
   "epic": "gh_toy-cuu",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "T1.1",
@@ -14,7 +14,7 @@
       "title": "Create CLI entry point, wrapper scripts, and version flag (gh-toy-4ef)",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-cuu.1",
       "commit": null,
       "notes": ""
