@@ -25,10 +25,10 @@
       "title": "Task 1: Create CLI wrapper and version flag",
       "model": "gemini-3.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-p9k.2",
-      "commit": null,
-      "notes": ""
+      "commit": "4ca57364949630fb3cda8af87c4d888e362d87bd",
+      "notes": "Implemented CLI wrapper and version flags (-v and --version)"
     },
     {
       "id": "T2",
