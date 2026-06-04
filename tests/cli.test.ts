@@ -32,3 +32,42 @@ describe("CLI version flag", () => {
     expect(result.output).toContain("fleet-e2e-toy v1.0.0");
   });
 });
+
+describe("CLI help command and flags", () => {
+  let logSpy: jest.SpyInstance;
+  let errorSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  const assertHelpOutput = (result: { exitCode: number; output: string }) => {
+    expect(result.exitCode).toBe(0);
+    expect(result.output).toContain("Usage: fleet-e2e-toy [command] [options]");
+    expect(result.output).toContain("help");
+    expect(result.output).toContain("-h, --help");
+    expect(result.output).toContain("-v, --version");
+  };
+
+  it("prints help with help subcommand", () => {
+    const result = runCli(["help"]);
+    assertHelpOutput(result);
+  });
+
+  it("prints help with --help flag", () => {
+    const result = runCli(["--help"]);
+    assertHelpOutput(result);
+  });
+
+  it("prints help with -h flag", () => {
+    const result = runCli(["-h"]);
+    assertHelpOutput(result);
+  });
+});
+

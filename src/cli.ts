@@ -20,8 +20,22 @@ export function runCli(args: string[]): { exitCode: number; output: string; erro
     // fallback
   }
 
+  // Version check should take precedence or work alongside other flags.
   if (args.includes("--version") || args.includes("-v")) {
     log(`fleet-e2e-toy v${version}`);
+    return { exitCode: 0, output, errorOutput };
+  }
+
+  // Help check: detect help subcommand or --help/-h flags.
+  if (args.includes("help") || args.includes("--help") || args.includes("-h")) {
+    log("Usage: fleet-e2e-toy [command] [options]");
+    log("");
+    log("Commands:");
+    log("  help           Display usage information");
+    log("");
+    log("Options:");
+    log("  -h, --help     Display usage information");
+    log("  -v, --version  Display version information");
     return { exitCode: 0, output, errorOutput };
   }
 
