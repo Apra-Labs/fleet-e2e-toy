@@ -76,3 +76,7 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function isBlankOrEmpty(s: string): boolean {
+  return s.trim().length === 0;
+}
