@@ -36,10 +36,10 @@
       "title": "Task 2: Implement help subcommand and flags",
       "model": "gemini-3.5-pro",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-p9k.3",
-      "commit": null,
-      "notes": ""
+      "commit": "d930affe23e21ce90aad785285aa63cf7e18e7f6",
+      "notes": "Implemented help subcommand, --help, and -h flags, and added integration tests."
     },
     {
       "id": "T3",
