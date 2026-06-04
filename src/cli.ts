@@ -17,6 +17,13 @@ export function main(args: string[]): void {
     console.log("fleet-e2e-toy v1.0.0");
     process.exit(0);
   }
+
+  const positionalArgs = args.filter(arg => !arg.startsWith("-"));
+  const hasEmptyOrBlank = positionalArgs.some(arg => arg.trim().length === 0);
+  if (hasEmptyOrBlank) {
+    console.error("Error: argument cannot be empty or blank");
+    process.exit(1);
+  }
 }
 
 if (require.main === module) {
