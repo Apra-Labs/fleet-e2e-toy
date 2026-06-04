@@ -2,6 +2,14 @@
 
 function main() {
   const args = process.argv.slice(2);
+
+  for (const arg of args) {
+    if (arg.trim() === '') {
+      console.error('Error: Empty or whitespace-only arguments are not allowed.');
+      process.exit(1);
+    }
+  }
+
   const firstArg = args[0];
 
   if (firstArg === '--version' || firstArg === '-v') {
