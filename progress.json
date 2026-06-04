@@ -47,10 +47,10 @@
       "title": "Implement Version Flag (gh-toy-4ef)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.4",
-      "commit": null,
-      "notes": ""
+      "commit": "f3eb1d04630fe8690895666e45efcab5a822c536",
+      "notes": "Implemented support for --version and -v flags which print fleet-e2e-toy v1.0.0 and exit with 0."
     },
     {
       "id": "T2.2",
