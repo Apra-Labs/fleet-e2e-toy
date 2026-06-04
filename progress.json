@@ -1,0 +1,112 @@
+{
+  "sprint": "sprint: pmlite-e2e/s8.2-1780544870254",
+  "track": "track-1",
+  "branch": "pmlite-e2e/s8.2-1780544870254",
+  "base": "main",
+  "worktree": "/tmp/pmlite-e2e-s8.2-TIL9QN/repo-wt/track-1",
+  "transport": "remote",
+  "epic": "gh_toy-atl",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create basic CLI entry point src/cli.ts",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Create wrapper scripts tool and tool.cmd",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Verify CLI wrappers and entry point",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh_toy-atl.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Implement Version Flag (gh-toy-4ef)",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.2",
+      "phase": 2,
+      "title": "Implement Help Command (gh-toy-kbk)",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.3",
+      "phase": 2,
+      "title": "Implement Input Validation (gh-toy-v6z)",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.6",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.4",
+      "phase": 2,
+      "title": "Verify CLI features manually",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh_toy-atl.7",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.1",
+      "phase": 3,
+      "title": "Add automated tests in tests/cli.test.ts",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-atl.8",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3.2",
+      "phase": 3,
+      "title": "Verify quality gates",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh_toy-atl.9",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
