@@ -1,14 +1,29 @@
 import * as fs from "fs";
 import * as path from "path";
+import { validateCliArg } from "./utils/validation";
 
 export function runCli(args: string[]): { exitCode: number; output: string; errorOutput: string } {
   let output = "";
-  const errorOutput = "";
+  let errorOutput = "";
 
   const log = (msg: string) => {
     output += msg + "\n";
     console.log(msg);
   };
+
+  const logError = (msg: string) => {
+    errorOutput += msg + "\n";
+    console.error(msg);
+  };
+
+  // Validate all incoming arguments
+  for (const arg of args) {
+    const check = validateCliArg(arg);
+    if (!check.valid) {
+      logError(check.error || "Argument cannot be empty or blank string");
+      return { exitCode: 1, output, errorOutput };
+    }
+  }
 
   // Read package.json version
   let version = "1.0.0";

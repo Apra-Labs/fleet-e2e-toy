@@ -71,3 +71,37 @@ describe("CLI help command and flags", () => {
   });
 });
 
+describe("CLI argument validation", () => {
+  let logSpy: jest.SpyInstance;
+  let errorSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it("rejects empty string argument", () => {
+    const result = runCli([""]);
+    expect(result.exitCode).toBe(1);
+    expect(result.errorOutput).toContain("Argument cannot be empty or blank string");
+  });
+
+  it("rejects whitespace-only string argument", () => {
+    const result = runCli(["   "]);
+    expect(result.exitCode).toBe(1);
+    expect(result.errorOutput).toContain("Argument cannot be empty or blank string");
+  });
+
+  it("rejects empty string in a list of arguments", () => {
+    const result = runCli(["help", ""]);
+    expect(result.exitCode).toBe(1);
+    expect(result.errorOutput).toContain("Argument cannot be empty or blank string");
+  });
+});
+
+
