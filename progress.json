@@ -1,0 +1,68 @@
+{
+  "sprint": "s8.3-1780537970446",
+  "track": "s8.3",
+  "branch": "pmlite-e2e/s8.3-1780537970446",
+  "base": "main",
+  "worktree": "/var/folders/b1/x3gsm3fn4pj4n7kjxb0wg5d80000gn/T/pmlite-e2e-s8.3-VLM5hF/repo-wt/s8.3",
+  "transport": "remote",
+  "epic": "repo-neh",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Add isBlankOrEmpty helper + unit tests",
+      "model": "gemini-3.5-flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-neh.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Create CLI Entry Point src/cli.ts",
+      "model": "gemini-3.5-pro",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-neh.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "V1",
+      "phase": 1,
+      "title": "VERIFY Phase 1",
+      "model": "gemini-3.5-pro",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2.1",
+      "phase": 2,
+      "title": "Implement Shell and Batch wrappers",
+      "model": "gemini-3.5-flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "repo-neh.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "V2",
+      "phase": 2,
+      "title": "VERIFY Phase 2",
+      "model": "gemini-3.5-pro",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
