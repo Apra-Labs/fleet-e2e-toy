@@ -12,6 +12,6 @@
   {
     "name": "Add input validation for empty or blank string arguments",
     "description": "gh-toy-v6z",
-    "passes": false
+    "passes": true
   }
 ]
