@@ -6,7 +6,7 @@
   "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1.1-IK469F/repo-wt/s1.1",
   "transport": "remote",
   "epic": "gh-toy-nfv",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "T1",
@@ -14,10 +14,10 @@
       "title": "isBlankOrEmpty helper + unit tests (gh-toy-v6z)",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfv.1",
-      "commit": null,
-      "notes": "Add isBlankOrEmpty to src/utils/validation.ts; extend tests/validation.test.ts with 4 cases"
+      "commit": "e834fb7",
+      "notes": "Added isBlankOrEmpty(s: string) to src/utils/validation.ts; added 4 test cases to tests/validation.test.ts. All tests pass (25/25); npm run lint clean."
     },
     {
       "id": "T2",
@@ -25,10 +25,10 @@
       "title": "--version/-v CLI flag (gh-toy-4ef)",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfv.2",
-      "commit": null,
-      "notes": "Parse process.argv in src/index.ts; handle --version/-v before app.listen"
+      "commit": "e4ec44d",
+      "notes": "Parsed process.argv in src/index.ts; handles --version/-v flags before app.listen. Prints 'fleet-e2e-toy v1.0.0'. Manual CLI tests pass; npm test and npm run lint clean."
     },
     {
       "id": "T3",
@@ -36,10 +36,10 @@
       "title": "help/--help/-h command (gh-toy-kbk)",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfv.3",
-      "commit": null,
-      "notes": "Extend argv block in src/index.ts with help check before --version check"
+      "commit": "2a202dd",
+      "notes": "Extended argv block in src/index.ts with help check before --version check. Displays exact usage block with all commands/flags. Manual CLI tests pass; npm test and npm run lint clean."
     },
     {
       "id": "T4",
