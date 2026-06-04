@@ -36,9 +36,9 @@
       "title": "Add input validation for empty or blank strings (gh-toy-v6z)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-cuu.3",
-      "commit": null,
+      "commit": "ddafcd4dd95b7e59b8e130f90d7ab648b010ecf3",
       "notes": ""
     },
     {
