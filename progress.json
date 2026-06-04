@@ -47,7 +47,7 @@
       "title": "Add input validation for empty or blank strings",
       "model": "Gemini 3.1 Pro (High)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "repo-4k7.4",
       "commit": null,
       "notes": ""
@@ -58,7 +58,7 @@
       "title": "Add CLI unit tests",
       "model": "Gemini 3.1 Pro (High)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "repo-4k7.5",
       "commit": null,
       "notes": ""
