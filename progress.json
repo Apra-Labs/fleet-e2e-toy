@@ -25,9 +25,9 @@
       "title": "Implement version flag",
       "model": "Gemini 3.5 Flash (Low)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "repo-4k7.2",
-      "commit": null,
+      "commit": "30d07455081f698899833e2e586b4a9f53358af3",
       "notes": ""
     },
     {
@@ -36,7 +36,7 @@
       "title": "Implement help subcommand and flags",
       "model": "Gemini 3.5 Flash (Low)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "repo-4k7.3",
       "commit": null,
       "notes": ""
