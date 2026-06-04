@@ -27,6 +27,11 @@ function main() {
     process.exit(0);
   }
 
+  if (args.some(arg => arg.trim() === "")) {
+    console.error("Error: Empty or whitespace-only arguments are not allowed");
+    process.exit(1);
+  }
+
   console.log("NoteAPI CLI initialized");
   if (args.length > 0) {
     console.log("Arguments:", args.join(" "));
@@ -34,5 +39,6 @@ function main() {
 }
 
 main();
+
 
 
