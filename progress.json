@@ -25,9 +25,9 @@
       "title": "Implement help command and flags (gh-toy-kbk)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-cuu.2",
-      "commit": null,
+      "commit": "016ddefbbec753555da8b3a75a2b3fda15b8b6fe",
       "notes": ""
     },
     {
