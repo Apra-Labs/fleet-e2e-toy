@@ -25,7 +25,7 @@
       "title": "Implement help command and flags (gh-toy-kbk)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-cuu.2",
       "commit": null,
       "notes": ""
@@ -36,7 +36,7 @@
       "title": "Add input validation for empty or blank strings (gh-toy-v6z)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-cuu.3",
       "commit": null,
       "notes": ""
@@ -81,6 +81,18 @@
       "model": "Gemini 3.5 Pro (Strong)",
       "phase": 1,
       "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    },
+    {
+      "seq": 3,
+      "role": "doer",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "phase": 1,
+      "tasks": [
+        "T1.1"
+      ],
       "tokens": 0,
       "toolUses": 0,
       "ms": 0
