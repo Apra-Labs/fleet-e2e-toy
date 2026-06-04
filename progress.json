@@ -47,9 +47,9 @@
       "title": "Add validation to CLI arguments and create shell wrappers",
       "model": "Gemini 3.5 Flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-1j2.4",
-      "commit": null,
+      "commit": "6d8502d55bf3140c446a5367a70d89018eb8b934",
       "notes": ""
     },
     {
