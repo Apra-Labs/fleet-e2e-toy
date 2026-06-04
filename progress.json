@@ -25,9 +25,9 @@
       "title": "Add CLI version flag support",
       "model": "Gemini 3.5 Flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-1j2.2",
-      "commit": null,
+      "commit": "7bae781bffc3cbe8ee2b04609310da1b4468ecb5",
       "notes": ""
     },
     {
