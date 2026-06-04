@@ -1,0 +1,57 @@
+{
+  "sprint": "s1.1-1780537199340",
+  "track": "track-1",
+  "branch": "pmlite-e2e/s1.1-1780537199340",
+  "base": "origin/main",
+  "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1.1-IK469F/repo-wt/s1.1",
+  "transport": "remote",
+  "epic": "gh-toy-nfv",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1",
+      "phase": 1,
+      "title": "isBlankOrEmpty helper + unit tests (gh-toy-v6z)",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfv.1",
+      "commit": null,
+      "notes": "Add isBlankOrEmpty to src/utils/validation.ts; extend tests/validation.test.ts with 4 cases"
+    },
+    {
+      "id": "T2",
+      "phase": 1,
+      "title": "--version/-v CLI flag (gh-toy-4ef)",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfv.2",
+      "commit": null,
+      "notes": "Parse process.argv in src/index.ts; handle --version/-v before app.listen"
+    },
+    {
+      "id": "T3",
+      "phase": 1,
+      "title": "help/--help/-h command (gh-toy-kbk)",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfv.3",
+      "commit": null,
+      "notes": "Extend argv block in src/index.ts with help check before --version check"
+    },
+    {
+      "id": "T4",
+      "phase": 1,
+      "title": "VERIFY: Phase 1 checks",
+      "model": "claude-haiku-4-5-20251001",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-nfv.4",
+      "commit": null,
+      "notes": "npm test, npm run lint, CLI smoke checks (--version, -v, help, --help, -h, no-args), git status clean"
+    }
+  ],
+  "dispatches": []
+}
