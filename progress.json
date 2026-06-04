@@ -58,10 +58,10 @@
       "title": "Implement Help Command (gh-toy-kbk)",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.5",
-      "commit": null,
-      "notes": ""
+      "commit": "f81f8ea9ebed9494c08422531ffd8d05d7b3b345",
+      "notes": "Implemented support for the help subcommand and --help / -h flags to display usage information and exit 0."
     },
     {
       "id": "T2.3",
