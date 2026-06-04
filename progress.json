@@ -1,0 +1,89 @@
+{
+  "sprint": "pmlite-e2e/s8.3-1780539138451",
+  "track": "sprint",
+  "branch": "pmlite-e2e/s8.3-1780539138451",
+  "base": "main",
+  "worktree": "/private/var/folders/b1/x3gsm3fn4pj4n7kjxb0wg5d80000gn/T/pmlite-e2e-s8.3-cc0Owr/repo-wt/sprint",
+  "transport": "remote",
+  "epic": "gh_toy-1j2",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Add CLI argument validation function",
+      "model": "Gemini 3.5 Flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-1j2.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Add CLI version flag support",
+      "model": "Gemini 3.5 Flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-1j2.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Add CLI help subcommand and flags",
+      "model": "Gemini 3.5 Flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-1j2.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.4",
+      "phase": 1,
+      "title": "Add validation to CLI arguments and create shell wrappers",
+      "model": "Gemini 3.5 Flash",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-1j2.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.5",
+      "phase": 1,
+      "title": "Phase 1 Verification",
+      "model": "Gemini 3.5 Pro",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh_toy-1j2.5",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": [
+    {
+      "seq": 1,
+      "role": "planner",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    },
+    {
+      "seq": 2,
+      "role": "plan-reviewer",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    }
+  ]
+}
