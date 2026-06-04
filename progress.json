@@ -6,7 +6,7 @@
   "worktree": "/tmp/pmlite-e2e-s8.2-TIL9QN/repo-wt/track-1",
   "transport": "remote",
   "epic": "gh_toy-atl",
-  "lastDispatchedPhase": 2,
+  "lastDispatchedPhase": 3,
   "tasks": [
     {
       "id": "T1.1",
@@ -80,10 +80,10 @@
       "title": "Verify CLI features manually",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "verify",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.7",
       "commit": null,
-      "notes": ""
+      "notes": "Manually verified CLI options: -v, --version, help, --help, -h, and empty/whitespace inputs."
     },
     {
       "id": "T3.1",
@@ -91,7 +91,7 @@
       "title": "Add automated tests in tests/cli.test.ts",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-atl.8",
       "commit": null,
       "notes": ""
