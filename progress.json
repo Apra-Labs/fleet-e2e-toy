@@ -1,0 +1,89 @@
+{
+  "sprint": "pmlite-e2e/s8.3-1780540246079",
+  "track": "sprint-track",
+  "branch": "pmlite-e2e/s8.3-1780540246079",
+  "base": "main",
+  "worktree": "/var/folders/b1/x3gsm3fn4pj4n7kjxb0wg5d80000gn/T/pmlite-e2e-s8.3-4kUZYK/repo-wt/sprint-track",
+  "transport": "remote",
+  "epic": "gh_toy-cuu",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Create CLI entry point, wrapper scripts, and version flag (gh-toy-4ef)",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-cuu.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Implement help command and flags (gh-toy-kbk)",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-cuu.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Add input validation for empty or blank strings (gh-toy-v6z)",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-cuu.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.4",
+      "phase": 1,
+      "title": "Add CLI unit and integration tests",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh_toy-cuu.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.5",
+      "phase": 1,
+      "title": "VERIFY: CLI Features & Validation",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh_toy-cuu.5",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": [
+    {
+      "seq": 1,
+      "role": "planner",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    },
+    {
+      "seq": 2,
+      "role": "plan-reviewer",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "phase": 1,
+      "tasks": [],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
+    }
+  ]
+}
