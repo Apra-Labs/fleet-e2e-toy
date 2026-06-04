@@ -6,7 +6,7 @@
   "worktree": "/tmp/pmlite-e2e-s8.2-TIL9QN/repo-wt/track-1",
   "transport": "remote",
   "epic": "gh_toy-atl",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "T1.1",
@@ -14,7 +14,7 @@
       "title": "Create basic CLI entry point src/cli.ts",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-atl.1",
       "commit": null,
       "notes": ""
@@ -25,7 +25,7 @@
       "title": "Create wrapper scripts tool and tool.cmd",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh_toy-atl.2",
       "commit": null,
       "notes": ""
