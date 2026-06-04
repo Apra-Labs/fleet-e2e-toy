@@ -36,9 +36,9 @@
       "title": "Add CLI help subcommand and flags",
       "model": "Gemini 3.5 Flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-1j2.3",
-      "commit": null,
+      "commit": "d9d5e3b7f46602b57b1f0b9a3ea519fc8424d708",
       "notes": ""
     },
     {
