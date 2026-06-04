@@ -1,92 +1,46 @@
-# fleet-e2e-toy — Plan Review
+# fleet-e2e-toy — Phase 1 Review
 
-**Reviewer:** pm-lite-plan-reviewer
-**Date:** 2026-06-04 00:18:46-04:00
-**Verdict:** APPROVED
-
----
-
-## 1. Done Criteria Clarity
-
-**PASS.** Each of the five tasks specifies a clear, testable, and unambiguous "Done when" condition. These cover execution success, expected stdout/stderr output, exit codes, and test suite success.
+**Reviewer:** pm-lite-reviewer  
+**Date:** 2026-06-04 00:25:00-04:00  
+**Verdict:** APPROVED  
 
 ---
 
-## 2. Cohesion and Coupling
+## 1. Requirement & Acceptance Criteria Alignment
 
-**PASS.** All tasks are cohesive and belong to Phase 1: CLI Features & Input Validation. Task 1 creates the scaffold (`src/cli.ts` and scripts), and the remaining tasks incrementally build the core features (version, help, validation) and tests upon it.
+### gh-toy-4ef: Add --version flag to CLI (P1 · feature)
+- **Status:** **PASS**
+- **Verification:** `./tool --version` and `./tool -v` both output exactly `fleet-e2e-toy v1.0.0` and exit with status `0`. The implementation uses `args.includes('--version')` / `args.includes('-v')`, ensuring compatibility and lack of interference when combined with other command-line flags.
 
----
+### gh-toy-kbk: Implement a help command (P1 · feature)
+- **Status:** **PASS**
+- **Verification:** Both `./tool help`, `./tool --help`, and `./tool -h` output identical usage text lists covering all available subcommands (`add`, `serve`, `help`) and options (`-v, --version`, `-h, --help`) and exit with status `0`.
 
-## 3. Key Abstractions in Earliest Tasks
-
-**PASS.** The primary abstractions and scaffold (the wrapper shell scripts and `src/cli.ts` skeleton) are established in Task 1, which serves as the foundation for the subsequent tasks.
-
----
-
-## 4. Riskiest Assumption Validated Early
-
-**PASS.** Key execution paths (e.g. ts-node execution, wrapper script viability on different shells/OSes) are set up and validated in Task 1, ensuring we catch environment or wrapper issues before adding complex logic.
-
----
-
-## 5. DRY / Reuse of Early Abstractions
-
-**PASS.** Tasks 2, 3, and 4 build upon the same single CLI entry point (`src/cli.ts`) and shell launchers established in Task 1.
+### gh-toy-v6z: Add input validation for empty or blank strings (P1 · bug)
+- **Status:** **PASS**
+- **Verification:** 
+  - Executing `./tool ""` or `./tool "   "` results in a clear error message printed to `stderr` and a non-zero exit code (`1`).
+  - Executing `./tool add ""` or `./tool add` (missing title argument) properly prints specific error messages regarding the missing/blank title argument and exits with code `1`.
+  - Unit tests in `tests/cli.test.ts` fully verify validation rules for empty/whitespace arguments as well as subcommand-specific parameters.
 
 ---
 
-## 6. Phase Boundaries at Cohesion Boundaries
+## 2. Code Quality & Integration
 
-**PASS.** The single phase design makes complete sense here as all Tasks (1-5) are tightly coupled to the CLI introduction and argument parsing pipeline. The phase ends with a comprehensive `VERIFY` checkpoint.
-
----
-
-## 7. Tiers Monotonically Non-Decreasing
-
-**PASS.** The tier progression is cheap (Task 1) → cheap (Task 2) → cheap (Task 3) → standard (Task 4) → standard (Task 5) → VERIFY, which is monotonically non-decreasing.
+- **Wrapper Scripts:** The launcher wrappers `./tool` (Bash) and `tool.ps1` (PowerShell) are correctly configured with execution permissions and invoke the CLI using `ts-node`.
+- **Validation Pipeline:** Input validation is applied correctly in `src/cli.ts` before the flags/commands processing, preventing blank string bypasses.
+- **CLI Core:** The implementation is clean, compact, and conforms to standard CLI conventions in Node.js.
 
 ---
 
-## 8. Alignment with Requirements Intent
+## 3. Build, Linter, and Test Suites
 
-**PASS.** The plan covers all three P1 requirements:
-- `gh-toy-4ef` (version flag) is covered in Task 2.
-- `gh-toy-kbk` (help command) is covered in Task 3.
-- `gh-toy-v6z` (empty/blank string validation) is covered in Task 4.
-
----
-
-## 9. Each Task Completable in One Session
-
-**PASS.** The tasks are sized appropriately for individual sessions, focusing on incremental improvements to a single file (`src/cli.ts`).
+- **Compilation/Build (`npm run build`):** **PASS** — Build finishes successfully with no TypeScript compiler errors.
+- **Linter (`npm run lint`):** **PASS** — All source files conform to ESLint rules without any warnings or failures.
+- **Tests (`npm test`):** **PASS** — All 29 unit tests (including API tests, validation helper tests, and CLI execution tests) pass successfully.
 
 ---
 
-## 10. Dependencies Satisfied in Order
+## Verdict Summary
 
-**PASS.** Task dependencies are explicitly stated and aligned chronologically: Tasks 2, 3, 4 depend on Task 1, and Task 5 depends on the feature implementations (Tasks 2, 3, 4).
-
----
-
-## 11. Vague Tasks
-
-**PASS.** No vague tasks. Each task specifies which files are modified or created, the exact logic changes to make, and clear criteria for success.
-
----
-
-## 12. Hidden Dependencies
-
-**PASS.** All external execution packages (`jest`, `ts-node`, `typescript`) are already configured in `package.json`. No other hidden dependencies are required.
-
----
-
-## 13. Risk Register
-
-**PASS.** The risk register identifies key risks (OS-specific shell script failures, REST API side-effects, whitespace bypasses) and offers clear, reasonable mitigations.
-
----
-
-## Summary
-
-The proposed implementation plan is complete, logically organized, and conforms to all phase sizing and tier ordering rules. It maps the requirements cleanly to concrete, incrementally testable tasks. The plan is **APPROVED**.
+The implementation of Phase 1 is robust, conforms fully to the acceptance criteria, and maintains high-quality standards across shell wrappers, validation code, and test coverage. The sprint phase is **APPROVED**.
