@@ -96,6 +96,21 @@
       "tokens": 0,
       "toolUses": 0,
       "ms": 0
+    },
+    {
+      "seq": 4,
+      "role": "doer",
+      "model": "Gemini 3.5 Pro (Strong)",
+      "phase": 1,
+      "tasks": [
+        "T1.2",
+        "T1.3",
+        "T1.4",
+        "T1.5"
+      ],
+      "tokens": 0,
+      "toolUses": 0,
+      "ms": 0
     }
   ]
 }
