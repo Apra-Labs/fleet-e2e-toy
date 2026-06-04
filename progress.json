@@ -36,9 +36,9 @@
       "title": "Implement help subcommand and flags",
       "model": "Gemini 3.5 Flash (Low)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "repo-4k7.3",
-      "commit": null,
+      "commit": "34e5a2abd3a586b5714b214da3e2e7d84cfbfb64",
       "notes": ""
     },
     {
