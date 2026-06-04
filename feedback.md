@@ -1,88 +1,111 @@
-# s1.1-1780537199340 -- Plan Review
+# s1.1-1780537199340 -- Code Review
 
-**Reviewer:** pm-lite-plan-reviewer
-**Date:** 2026-06-03 21:55:00+00:00
+**Reviewer:** pm-lite-reviewer
+**Date:** 2026-06-03 22:00:00+00:00
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
 
 ---
 
-## 1. Done criteria
+## Context Recovery
 
-PASS. Every task spells out concrete, checkable acceptance:
+Branch `pmlite-e2e/s1.1-1780537199340` against `origin/main` carries the following work commits since the plan was approved:
 
-- T1 names the exact functions/tests to add, expected output of `npm test` (4 new cases passing), and `npm run lint` clean on the two edited files.
-- T2 lists exact stdout strings (`fleet-e2e-toy v1.0.0`), exit codes (0), and the negative check (server does not bind).
-- T3 lists the exact substrings the help text must contain, plus a regression check that `--version` still works.
+- `e834fb7` feat: add isBlankOrEmpty validation helper with unit tests (T1)
+- `e4ec44d` feat: add --version and -v CLI flags (T2)
+- `2a202dd` feat: add help, --help, and -h CLI commands (T3)
+- `3d2d208` chore: update progress.json for phase 1 tasks
+- `27057a4` chore: mark T4 VERIFY checkpoint as completed
 
-The phase-level VERIFY block enumerates nine concrete commands and their pass conditions. There is no "looks good" language anywhere.
+Prior `feedback.md` is the approved plan review from `pm-lite-plan-reviewer` (commit `791539e`). No prior code-review feedback exists for this sprint, so there are no doer responses to fold in -- this is the first code review.
 
-## 2. Cohesion / coupling
+---
 
-PASS. T1 is fully isolated to `src/utils/validation.ts` + `tests/validation.test.ts`. T2 and T3 share a single file (`src/index.ts`) and a single argv-handling block; T3 explicitly extends rather than rewrites T2's block (decision pinned in Phase 0 #1 and reiterated in T3 scope guard). T1 has zero coupling to T2/T3 -- decision #2 explicitly forbids invoking `isBlankOrEmpty` from `index.ts`, removing a tempting but unrequested cross-task dependency.
+## Working tree and tracking files
 
-## 3. Key abstractions in earliest tasks
+PASS. `git status --porcelain` is empty. The diff against `origin/main` touches exactly:
 
-PASS, with the note that there are no real "abstractions" to front-load -- this sprint is three near-mechanical surface-level changes. The only shared interface is the argv-parsing pattern, and it is established in T2 before T3 extends it. The order T1 -> T2 -> T3 is correct.
+- `PLAN.md`, `requirements.md`, `progress.json`, `feedback.md` -- sprint tracking files (this commit adds the new feedback.md)
+- `src/index.ts` -- T2 + T3 edits
+- `src/utils/validation.ts` -- T1 helper added
+- `tests/validation.test.ts` -- T1 unit tests added
 
-## 4. Riskiest assumption in Task 1
+No temp files, no editor or harness config slipped in, no scratch artifacts. File hygiene clean.
 
-PASS, in spirit. The requirements section explicitly orders by risk (`isBlankOrEmpty` is lowest risk, `help` is highest), and the plan follows that order. Strictly the "riskiest" task here would be T3 (most output to get exactly right), but since the actual unknowns are minimal and T3's help text is pinned verbatim in the plan, there is no validation experiment to front-load. The Phase 0 "Assumptions verified" section did the necessary upfront validation (verified entry-point file, verified test-file import line, verified version string, verified that nothing else runs between argv and `listen`). This satisfies the intent of the check.
+---
 
-## 5. DRY / reuse of early abstractions
+## Build, lint, tests
 
-PASS. T3 reuses the argv array from T2 (`const args = process.argv.slice(2);`) rather than re-parsing. The scope guard in T3 ("extend the argv block added in T2; do not rewrite it") makes this explicit, and the final code block shows the combined state so the doer cannot accidentally duplicate.
+PASS on all three local gates.
 
-## 6. Phase boundaries
+- `npm run build` (tsc) -- compiles clean, no diagnostics.
+- `npm run lint` (`eslint src/ tests/ --ext .ts`) -- zero errors, zero warnings.
+- `npm test` (jest --verbose) -- 25/25 tests pass in 2.4 s across `tests/validation.test.ts` (12 cases including the 4 new `isBlankOrEmpty` cases) and `tests/notes.test.ts` (13 cases).
 
-PASS. Single phase is the right call: the three tasks share one reviewable increment ("the CLI flags requested by this sprint, plus the validation helper grouped with them"). Splitting into two phases would create an incoherent mid-state (helper exists but CLI doesn't). Phase 3 self-critique already addresses this and the reasoning holds.
+CI on this branch: the `.github/workflows/ci.yml` triggers only on pushes to `main` or `feature/**` and on PRs to `main`. The work branch (`pmlite-e2e/s1.1-*`) matches none of those triggers, so no CI run is expected or required for this push. Local suite is the canonical signal here and it is green. (Historical CI runs on similarly named branches in this repo have all been green when they did trigger via PR -- the configured pipeline is the same one the doer's local commands cover: `npm ci`, lint, test, build.)
 
-## 7. Model assignment and batching
+---
 
-PASS. All three tasks are on `claude-haiku-4-5-20251001`. The plan justifies this: changes are mechanical, exact code is provided, no remaining design judgement is required. Same-model clustering produces a single streak. Combined context (one ~80-line util file, one ~70-line test file, one ~7-line entry file) is well within haiku's budget, as the plan notes. No task is misallocated upward to a stronger model.
+## T1 -- isBlankOrEmpty helper (gh-toy-v6z)
 
-## 8. Single-dispatch completability
+PASS.
 
-PASS. Each task is a few-line edit in a single file (T1 touches two files but both edits are tiny and adjacent in concept). All three together are still well under one dispatch's work for haiku.
+- `src/utils/validation.ts` adds `export function isBlankOrEmpty(s: string): boolean { return s.trim().length === 0; }` appended at the end of the file. No existing exports modified.
+- `tests/validation.test.ts` extends the single existing import line to include `isBlankOrEmpty` (no duplicate import statements) and appends a new `describe("isBlankOrEmpty", () => { ... })` block with the four `it` cases the plan specified, including the `\t\n ` whitespace assertion in case 2.
+- Strict-mode compliant, lint clean.
 
-## 9. Dependency order
+Test coverage is meaningful: empty, whitespace-only (two flavors), non-blank, and surrounding-whitespace-with-content all exercise distinct equivalence classes for `s.trim().length === 0`. No redundant cases.
 
-PASS. Stated dependencies: T1 has no blocker; T2 has no blocker; T3 blocks on T2. The streak order T1 -> T2 -> T3 honors this. T1 could float anywhere, but ordering it first matches the requirements risk order and produces a clean per-commit progression.
+---
 
-## 10. Vague tasks
+## T2 -- --version / -v CLI flag (gh-toy-4ef)
 
-PASS. No room for divergent interpretation. The plan goes further than typical by:
+PASS.
 
-- pinning the exact help text (decision #3 + T3 code block),
-- pinning the exact version string format (decision #4),
-- specifying exact-match argv comparison via `includes`, ruling out prefix matching (decision #5),
-- pinning the help-vs-version precedence tie-breaker (decision #6),
-- explicitly resolving the ambiguous "Non-zero exit if args are blank" bullet from requirements as a unit-test-only assertion, not a CLI-level behavior (decision #2 -- this is exactly the kind of interpretive call a plan must make rather than punt).
+- `src/index.ts` parses `process.argv.slice(2)` before `app.listen`. The `--version` / `-v` branch prints exactly `fleet-e2e-toy v1.0.0` and `process.exit(0)`.
+- Manual smoke: `npx ts-node src/index.ts --version` -> `fleet-e2e-toy v1.0.0`, exit 0; `-v` -> same. Confirmed neither variant binds the port.
+- Literal version string is used (no dynamic `package.json` read) as the plan required. `package.json` is still `"version": "1.0.0"` so the literal is accurate today.
+- No third-party CLI library introduced; flat `args.includes(...)` pattern as scoped.
 
-Two developers handed this plan would produce byte-identical output.
+---
 
-## 11. Hidden dependencies
+## T3 -- help / --help / -h command (gh-toy-kbk)
 
-PASS. The one cross-task dependency (T3 on T2's argv block) is explicit in T3's Blockers field and visible in the code listing. No silent assumptions about file state.
+PASS.
 
-## 12. Risk register
+- The help branch is inserted before the `--version` branch so help wins on ties (decision #6 in the plan). Verified by reading `src/index.ts` lines 5-24 vs 26-29.
+- Help text matches the pinned block byte-for-byte (em-dash, blank lines, two-space indents, `$PORT` literal, all command/flag names). Manual smoke for `help`, `--help`, and `-h` all produced identical output and exit 0 without binding the port.
+- The usage text contains substrings `--version`, `-v`, `--help`, `-h`, and `help`, satisfying the requirements bullet "lists every subcommand and flag".
+- `--version` regression check still works post-T3 (verified above).
+- Server still starts on no args: `PORT=3097 npx ts-node src/index.ts` printed `NoteAPI running on http://localhost:3097` before the timeout killed it.
 
-PASS. A dedicated "Risk register" section lists four risks (dynamic version read, CLI library install, T3 rewriting vs extending, help-text drift) with concrete mitigations tied back to specific scope guards in the task bodies. No risks I would add:
+---
 
-- Port-binding flakiness on the no-flag VERIFY step #8 is real but minor; the VERIFY step already says "short timeout, then kill," which handles it.
-- `package.json` version drift (printed `1.0.0` could fall out of sync with future bumps) is acknowledged implicitly by decision #4 pinning the literal -- this is a deliberate trade-off for byte-exact acceptance and is the right call for this sprint.
+## Requirements alignment
 
-## 13. Alignment with requirements intent
+PASS. All three source issues are addressed and no scope crept in.
 
-PASS. The plan solves exactly the three issues named in requirements (gh-toy-v6z, gh-toy-4ef, gh-toy-kbk) and does not invent scope. The one interpretive judgement -- treating the "Non-zero exit if args are blank" bullet as unit-test-only rather than a CLI feature -- is defensible (the bullet sits under the `isBlankOrEmpty` acceptance list, not a CLI feature, and adding CLI-level blank-arg rejection would expand T2 in a way the requirements do not clearly demand). The decision is documented and the doer is not asked to re-litigate it.
+- gh-toy-4ef satisfied by T2: argv parsed before server start, exact output, exit 0, no port bind.
+- gh-toy-kbk satisfied by T3: argv match for `help`/`--help`/`-h`, usage text lists every command and flag, exit 0, no port bind.
+- gh-toy-v6z satisfied by T1: helper exported, unit tests cover empty, whitespace-only, and non-blank inputs. The plan's interpretation of the "Non-zero exit if args are blank" bullet as a unit-test-only assertion (decision #2) holds -- nothing in `src/index.ts` was wired to blank-arg rejection, matching the documented scope.
 
-One small confirmation against the workspace: `package.json` declares `"lint": "eslint src/ tests/ --ext .ts"` and `"start": "ts-node src/index.ts"`, so VERIFY steps 2 and 3-8 will run as written. `src/index.ts` is currently the 7-line file the plan assumes. `src/utils/validation.ts` exports exactly the two functions the plan claims. `tests/validation.test.ts` has exactly the import line the plan extends. Phase 0's "Assumptions verified" claims are accurate.
+---
+
+## Regressions in earlier phases
+
+N/A. This is a single-phase sprint and there is no earlier phase to regress. No pre-existing tests broke (notes suite still 13/13).
+
+---
+
+## Tracking artifacts
+
+PASS. `progress.json` marks T1-T4 as `completed` with the correct commit SHAs (`e834fb7`, `e4ec44d`, `2a202dd`, `3d2d208`). T4 VERIFY notes correctly enumerate the nine checks the plan asked for and the three feature commits.
 
 ---
 
 ## Summary
 
-The plan is approved with no changes required. It is unusually thorough for a small sprint: exact code is provided for all three tasks, every interpretive ambiguity in requirements is resolved upfront (help-vs-version precedence, blank-args bullet, dynamic-vs-literal version string, no third-party CLI lib), and the risk register pairs each risk with a concrete scope-guard in the relevant task. Single-phase structure matches the small, cohesive surface area. Model assignment (haiku across all three) fits the mechanical nature of the work and batches into one streak.
+All Phase 1 work matches PLAN.md exactly: T1 helper and tests are byte-for-byte the specified code; T2 prints the exact version string and exits cleanly without binding; T3 extends (not rewrites) the argv block with the pinned help text and the documented help-over-version precedence. Build, lint, and the full 25-test suite are green locally. CI on `main`/PR triggers will exercise the same gates when this branch eventually opens a PR; the workflow does not trigger on this branch name directly, which is expected behavior, not a missing signal. Working tree is clean and no extraneous files were committed.
 
-The doer should be able to execute T1 -> T2 -> T3 -> VERIFY in one dispatch and produce a clean, one-commit-per-issue series.
+Nothing to change.
