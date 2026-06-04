@@ -91,10 +91,10 @@
       "title": "Add automated tests in tests/cli.test.ts",
       "model": "Gemini 3.5 Pro (Strong)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh_toy-atl.8",
-      "commit": null,
-      "notes": ""
+      "commit": "080ca53e4668b555b731bd679f76e49878e44b6c",
+      "notes": "Added integration tests in tests/cli.test.ts to verify version flags, help command/flags, input validation, and argument passing."
     },
     {
       "id": "T3.2",
