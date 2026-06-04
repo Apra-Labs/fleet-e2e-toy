@@ -14,10 +14,10 @@
       "title": "Task 0: Update feature list",
       "model": "gemini-3.5-flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-p9k.1",
-      "commit": null,
-      "notes": ""
+      "commit": "698fa9b6015017f6cce2a806a1c4ce803b080573",
+      "notes": "Updated feature list with CLI tasks"
     },
     {
       "id": "T1",
