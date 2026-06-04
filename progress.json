@@ -14,9 +14,9 @@
       "title": "Add CLI argument validation function",
       "model": "Gemini 3.5 Flash",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-1j2.1",
-      "commit": null,
+      "commit": "abb9c69928fcb4ad8eb9747187c4649c0e34881f",
       "notes": ""
     },
     {
