@@ -7,7 +7,7 @@
   {
     "name": "Implement help subcommand and flags",
     "description": "gh-toy-kbk",
-    "passes": false
+    "passes": true
   },
   {
     "name": "Add input validation for empty or blank string arguments",
