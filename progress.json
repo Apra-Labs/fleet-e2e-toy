@@ -47,9 +47,9 @@
       "title": "Implement help command and flags (gh-toy-kbk)",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-kv6.4",
-      "commit": null,
+      "commit": "04ba77e16f0e6a37c3dcbbd022fd393393a71851",
       "notes": ""
     },
     {
