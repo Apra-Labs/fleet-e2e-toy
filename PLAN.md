@@ -10,11 +10,11 @@
 
 All tasks in this phase work on the same CLI command-line script and parsing logic. They are cohesive and build sequentially on top of the initial wrapper setup. Ordered monotonically from cheapest/most mechanical to standard complexity.
 
-#### Task 1: Scaffold CLI entry point and gitignore CLAUDE.md
-- **Change:** Add `CLAUDE.md` to `.gitignore`. Create `src/cli.ts` with a basic `main(argv: string[]): number` function that returns 0. Create a `tool` executable script at the repository root that calls `ts-node src/cli.ts` with arguments. Add basic unit test suite in `tests/cli.test.ts` to verify the execution of `main()`.
-- **Files:** `.gitignore`, `src/cli.ts` (new), `tool` (new), `tests/cli.test.ts` (new)
+#### Task 1: Scaffold CLI entry point, update feature_list.json, and configure .gitattributes
+- **Change:** Update the active `feature_list.json` to track the sprint's CLI features. Create `src/cli.ts` with a basic `main(argv: string[]): number` function that returns 0. Create a `tool` executable script at the repository root that calls `ts-node src/cli.ts` with arguments. Add basic unit test suite in `tests/cli.test.ts` to verify the execution of `main()`. Add `tool text eol=lf` to `.gitattributes` to force LF line endings on the root `tool` script and prevent interpreter errors.
+- **Files:** `feature_list.json`, `.gitattributes`, `src/cli.ts` (new), `tool` (new), `tests/cli.test.ts` (new)
 - **Model:** claude-haiku-4-5-20251001
-- **Done when:** `npm test` runs and passes all tests (including the new stub CLI tests); `./tool` runs and exits with code 0.
+- **Done when:** `npm test` runs and passes all tests (including the new stub CLI tests); `./tool` runs and exits with code 0; `feature_list.json` is updated with the CLI features list; `.gitattributes` contains `tool text eol=lf`.
 - **Blockers:** Ensure `tool` is executable (`chmod +x tool`).
 
 #### Task 2: Implement version flag support (gh-toy-4ef)
@@ -53,6 +53,7 @@ All tasks in this phase work on the same CLI command-line script and parsing log
 | Script execution permission | Medium | Explicitly run `chmod +x tool` during Task 1. |
 | Strict TypeScript compile issues | Low | Verify ts-node resolves modules correctly. tsconfig.json is already configured with target/module resolutions. |
 | Interference with existing server | Low | Keep CLI code in a separate file (`src/cli.ts`) so it does not interfere with the Express server running from `src/index.ts`. |
+| CRLF line endings on root `tool` script | Medium | Add `tool text eol=lf` to `.gitattributes` in Task 1 to force LF line endings and prevent Unix shebang "bad interpreter" errors on Windows environments. |
 
 ## Phase Sizing Rules
 
