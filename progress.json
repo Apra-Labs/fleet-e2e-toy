@@ -14,9 +14,9 @@
       "title": "Scaffold CLI entry point, update feature_list.json, and configure .gitattributes",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-kv6.1",
-      "commit": null,
+      "commit": "27613e1c8b9dbe59c84dfdd33c91035abd504de6",
       "notes": ""
     },
     {
