@@ -36,9 +36,9 @@
       "title": "Add input validation for empty or blank strings (gh-toy-v6z)",
       "model": "claude-sonnet-4-6",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-kv6.3",
-      "commit": null,
+      "commit": "8cd6b6f630fb75b41bca8d413a7466001b0b4323",
       "notes": ""
     },
     {
