@@ -35,6 +35,25 @@ describe("CLI main entry point", () => {
     expect(logSpy).toHaveBeenCalledWith("fleet-e2e-toy v1.0.0");
   });
 
+  it("should print help when help is passed", () => {
+    const result = main(["help"]);
+    expect(result).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("fleet-e2e-toy CLI"));
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("Usage:"));
+  });
+
+  it("should print help when --help is passed", () => {
+    const result = main(["--help"]);
+    expect(result).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("fleet-e2e-toy CLI"));
+  });
+
+  it("should print help when -h is passed", () => {
+    const result = main(["-h"]);
+    expect(result).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("fleet-e2e-toy CLI"));
+  });
+
   describe("empty or blank argument validation", () => {
     let errorSpy: jest.SpyInstance;
 

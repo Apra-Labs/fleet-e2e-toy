@@ -9,6 +9,21 @@ export function main(argv: string[]): number {
     return 0;
   }
 
+  if (isHelp) {
+    console.log(`fleet-e2e-toy CLI
+
+Usage:
+  ./tool [command] [options]
+
+Commands:
+  help          Show this help message
+
+Options:
+  -v, --version Show version info
+  -h, --help    Show this help message`);
+    return 0;
+  }
+
   if (!isVersion && !isHelp) {
     if (argv.some(isBlankOrEmpty)) {
       console.error("Error: Command-line arguments cannot be empty or blank.");
@@ -18,6 +33,7 @@ export function main(argv: string[]): number {
 
   return 0;
 }
+
 
 if (require.main === module) {
   const exitCode = main(process.argv.slice(2));
