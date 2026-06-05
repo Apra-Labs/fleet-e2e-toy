@@ -34,4 +34,48 @@ describe("CLI main entry point", () => {
     expect(result).toBe(0);
     expect(logSpy).toHaveBeenCalledWith("fleet-e2e-toy v1.0.0");
   });
+
+  describe("empty or blank argument validation", () => {
+    let errorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      errorSpy.mockRestore();
+    });
+
+    it("should return 1 and print error when empty string is passed as an argument", () => {
+      const result = main([""]);
+      expect(result).toBe(1);
+      expect(errorSpy).toHaveBeenCalledWith("Error: Command-line arguments cannot be empty or blank.");
+    });
+
+    it("should return 1 and print error when whitespace-only string is passed as an argument", () => {
+      const result = main(["   "]);
+      expect(result).toBe(1);
+      expect(errorSpy).toHaveBeenCalledWith("Error: Command-line arguments cannot be empty or blank.");
+    });
+
+    it("should return 1 and print error when any argument is empty or blank", () => {
+      const result = main(["valid", "", "args"]);
+      expect(result).toBe(1);
+      expect(errorSpy).toHaveBeenCalledWith("Error: Command-line arguments cannot be empty or blank.");
+    });
+
+    it("should bypass validation and return 0 when -v or --version is present", () => {
+      const result = main(["", "-v"]);
+      expect(result).toBe(0);
+      expect(logSpy).toHaveBeenCalledWith("fleet-e2e-toy v1.0.0");
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    it("should bypass validation and return 0 when help is present", () => {
+      const result = main(["", "help"]);
+      expect(result).toBe(0);
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+  });
 });
+
