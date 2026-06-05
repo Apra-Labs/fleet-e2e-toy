@@ -18,5 +18,20 @@
     "name": "Note archiving",
     "description": "Add an 'archived' boolean field to notes. POST /api/notes/:id/archive and /api/notes/:id/unarchive endpoints. GET /api/notes excludes archived notes by default; GET /api/notes?include_archived=true includes them.",
     "passes": false
+  },
+  {
+    "name": "CLI version flag",
+    "description": "Print version information when -v or --version is passed.",
+    "passes": false
+  },
+  {
+    "name": "CLI input validation",
+    "description": "Reject empty or blank strings with a user-friendly error.",
+    "passes": false
+  },
+  {
+    "name": "CLI help command",
+    "description": "Print usage details when help, -h, or --help is passed.",
+    "passes": false
   }
 ]
