@@ -25,9 +25,9 @@
       "title": "Implement version flag support (gh-toy-4ef)",
       "model": "claude-haiku-4-5-20251001",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh_toy-kv6.2",
-      "commit": null,
+      "commit": "73b7f407059655c984da501619463a2aa7a52fb7",
       "notes": ""
     },
     {
