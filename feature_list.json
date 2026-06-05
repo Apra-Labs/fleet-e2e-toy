@@ -22,7 +22,7 @@
   {
     "name": "CLI version flag",
     "description": "Print version information when -v or --version is passed.",
-    "passes": false
+    "passes": true
   },
   {
     "name": "CLI input validation",
