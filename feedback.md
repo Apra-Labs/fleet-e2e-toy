@@ -1,4 +1,4 @@
-# NoteAPI — Phase 1 Review
+# NoteAPI — Phase 2 (Final) Review
 
 **Reviewer:** Workshop-Rev
 **Date:** 2026-06-08
@@ -8,87 +8,98 @@
 
 ---
 
-## 1. Pagination Envelope Shape — PASS
+## Phase 1 (carried forward)
 
-The response from `GET /api/notes` returns exactly `{ data, total, page, limit }`, matching the spec in requirements.md. The `PaginatedResponse<T>` interface in `src/models/note.ts` defines the same four fields with correct types.
+APPROVED — no new findings. All 8 criteria passed: pagination envelope shape, post-filter `total`, `validatePaginationParams` coverage (10 unit tests), existing test migration to `res.body.data`, no `any` types, no `console.log`, input validation before processing, correct error shapes.
 
----
-
-## 2. `total` Reflects Post-Filter Count — PASS
-
-In `src/api/notes.ts`, `total = notes.length` is computed on line 37 *after* both the tag filter (lines 17-19) and the search filter (lines 22-27) have been applied. Store size is never leaked into the envelope.
+One non-blocking note carried forward: stale TODO on line 8 of `src/api/notes.ts` ("Add pagination to GET /api/notes") — pagination is implemented; remove when convenient.
 
 ---
 
-## 3. `validatePaginationParams` Coverage — PASS
+## Phase 2 Review
 
-The helper in `src/utils/validation.ts` covers all required error cases:
-- **Defaults:** `page=1`, `limit=10` when `undefined` (lines 12-13)
-- **Non-numeric:** `isNaN` + `Number.isFinite` checks (lines 15-19)
-- **Zero/negative page:** `flooredPage < 1` (line 26)
-- **Zero/negative limit:** `flooredLimit < 1` (line 30)
-- **Fractional flooring:** `Math.floor` before range checks (lines 23-24)
+### T2.1 — Multi-Tag "Last Wins" Fix — PASS
 
-Unit tests in `tests/validation.test.ts` exercise all 10 cases (defaults, valid, non-numeric page, non-numeric limit, limit=0, page=0, negative page, negative limit, fractional page, fractional limit).
+`src/api/notes.ts` lines 17-22 handle both Express query forms:
+- `Array.isArray(req.query.tag)` — takes last element (`req.query.tag[length - 1]`)
+- Single string — uses directly
+- Undefined / empty string — `tag` stays falsy, filter is skipped (returns all notes)
 
----
+Test "multiple ?tag=a&tag=b uses last value" creates notes with tag `a` and `b`, queries `?tag=a&tag=b`, and asserts only the `b`-tagged note is returned with `total=1`. Correctly verifies the "last wins" behavior.
 
-## 4. Existing Tests Updated — PASS
+### T2.1 — Tag Filter Edge Cases (3 tests) — PASS
 
-All four `GET /api/notes` tests in `tests/notes.test.ts` correctly migrated from `res.body` to `res.body.data`:
-- "returns empty array" — `res.body.data` (line 13)
-- "returns all notes" — `res.body.data` (line 26)
-- "filters by tag" — `res.body.data` (lines 38-39)
-- "searches by query" — `res.body.data` (lines 50-51)
+| Test | Assertion | Status |
+|------|-----------|--------|
+| `?tag=` (empty string) returns all notes | `total=2`, `data.length=2` | PASS |
+| `?tag=nonexistent` returns empty | `data=[]`, `total=0` | PASS |
+| `?tag=a&tag=b` uses last value | `data.length=1`, title is "Note B", `total=1` | PASS |
 
----
+All three edge cases from requirements.md section 1 are covered.
 
-## 5. No `any` Types — PASS
+### T2.2 — Search Edge Cases (4 tests) — PASS
 
-No `any` types introduced in any changed file. `validatePaginationParams` accepts `unknown` parameters with proper narrowing via `Number()` conversion and `isNaN`/`isFinite` guards.
+| Test | Assertion | Status |
+|------|-----------|--------|
+| `?q=` (empty) returns all | `data.length=2`, `total=2` | PASS |
+| `?q=zzznomatch` returns empty | `data=[]`, `total=0` | PASS |
+| `?q=c++` special chars | Does not throw, returns 1 match ("C++ Programming") | PASS |
+| `?q=foo bar` with space | Literal substring match, returns 1 result | PASS |
 
----
+All four edge cases from requirements.md section 2 are covered. The `c++` test uses URL-encoded `%2B%2B` and asserts the correct note is returned, not just that it doesn't crash.
 
-## 6. No `console.log` in Handlers — PASS
+### T2.3 — Pagination Edge Cases (7 tests) — PASS
 
-No `console.log` statements in `src/api/notes.ts`.
+| Test | Assertion | Status |
+|------|-----------|--------|
+| `?page=abc` non-numeric page | 400 + `error` defined | PASS |
+| `?limit=xyz` non-numeric limit | 400 + `error` defined | PASS |
+| `?limit=0` | 400 + `error` defined | PASS |
+| `?page=999` beyond last page | 200, `data=[]`, `total=2`, `page=999`, `limit=10` | PASS |
+| `?limit=100` larger than total | 200, `data.length=3`, `total=3` | PASS |
+| `?page=1&limit=2` with 5 notes | 200, `data.length=2`, `total=5`, `page=1`, `limit=2` | PASS |
+| Default pagination | `page=1`, `limit=10` | PASS |
 
----
+All seven cases match requirements.md section 3 edge cases. The out-of-range test correctly asserts both empty data and the real total (not 0). The slicing test verifies `data.length=2` (sliced) with `total=5` (unsliced). The default test resolves the Phase 1 note about deferred metadata assertions.
 
-## 7. Input Validation Before Processing — PASS
+### T2.4 — Composition Tests (2 tests) — PASS
 
-Pagination params are validated via `validatePaginationParams` (line 30) before the slice operation (line 38). Invalid input returns early with `400`.
+Setup: 6 notes total — 3 match both `tag=work` AND `q=meeting`, 3 match at most one filter.
 
----
+**Page 1 (`?tag=work&q=meeting&page=1&limit=2`):**
+- `total=3` — proves total reflects the filtered count (3), not store size (6)
+- `data.length <= 2` and `> 0` — correct page slice
+- Each returned note asserted to contain tag "work" and substring "meeting" in title+content
 
-## 8. Error Shape — PASS
+**Page 2 (`?tag=work&q=meeting&page=2&limit=2`):**
+- `total=3` — same filtered count
+- `data.length=1` — correct remainder (3 items, limit=2, page 2 = 1 remaining)
+- `page=2`, `limit=2` — envelope metadata correct
 
-Pagination validation error returns `res.status(400).json({ error: paginationResult.error })` (line 32), matching the `{ error: "message" }` convention.
+The `total < store size` assertion is the key composition requirement and is verified.
 
----
+### Code Quality — PASS
 
-## 9. Stale TODO Comment — NOTE
-
-Line 8 of `src/api/notes.ts` still reads:
-```
-// TODO: Add pagination to GET /api/notes (query params: page, limit)
-```
-Pagination is now implemented. This should be removed in a follow-up commit. Non-blocking.
-
----
-
-## 10. Envelope Metadata Not Asserted in Existing Tests — NOTE
-
-The migrated tests assert `res.body.data` but do not assert `res.body.total`, `res.body.page`, or `res.body.limit`. A regression that broke metadata fields would not be caught. This is acceptable because Phase 2 Task 6 explicitly adds pagination edge-case tests that assert these fields, including default values. Deferral is by design.
+- **No `any` types:** All new code uses proper types. Query parameter casts use `as string`, which is standard Express practice. `validatePaginationParams` accepts `unknown`.
+- **No `console.log`:** Confirmed absent from `src/api/notes.ts`.
+- **Error shapes:** All 400 errors return `{ error: "..." }` via `res.status(400).json()`.
+- **Test isolation:** Main `describe("GET /api/notes")` has `beforeEach(() => noteStore.clear())` inherited by all nested describes. Separate `describe("GET /api/notes -- composition")` has its own `beforeEach(() => noteStore.clear())`. No cross-test leakage.
+- **Lint:** `npm run lint` passes with zero errors.
+- **All tests:** 47/47 pass (18 validation + 29 integration).
 
 ---
 
 ## Summary
 
-**All 8 review criteria pass.** Phase 1 correctly implements the pagination envelope with proper validation, post-filter total count, and migrated tests. The implementation matches requirements.md exactly.
+**All review criteria pass across both phases.** The sprint delivers:
 
-Two non-blocking notes:
-1. Stale TODO comment on line 8 of `src/api/notes.ts` — remove when convenient.
-2. Envelope metadata assertions deferred to Phase 2 Task 6 — acceptable by plan design.
+- Pagination envelope with `{ data, total, page, limit }` and proper validation
+- Multi-tag "last wins" fix handling both `string` and `string[]` from Express
+- 16 new edge-case tests (3 tag + 4 search + 7 pagination + 2 composition)
+- Post-filter `total` verified via composition tests (total=3 with 6 notes in store)
+- Clean code quality: no `any`, no `console.log`, correct error shapes, proper test isolation
 
-Phase 1 is ready. Proceed to Phase 2.
+**One non-blocking note (carried from Phase 1):**
+- Stale TODO comment on line 8 of `src/api/notes.ts` — pagination is implemented; remove when convenient.
+
+**Verdict: APPROVED.** Ready to merge to `main`.
