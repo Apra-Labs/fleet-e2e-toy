@@ -1,0 +1,15 @@
+{
+  "_schema": {
+    "type": "work | verify",
+    "status": "pending | completed | blocked"
+  },
+  "project": "fleet-e2e-toy",
+  "plan_file": "PLAN.md",
+  "created": "2026-06-08",
+  "tasks": [
+    { "id": 1, "step": "Audit existing tag filter implementation (src/api/notes.ts:17-20); establish green baseline", "type": "work", "status": "completed", "tier": "cheap", "commit": "", "notes": "Handler logic correct: (a) filters by n.tags.includes(tag) when tag param provided, (b) returns all notes when ?tag= omitted, (c) returns empty array when no match. Existing tests confirm all three cases work. No implementation fix needed. Tag param validation not required: any string is valid, empty/missing correctly skips filter, includes() comparison has no injection surface. Baseline: 21 tests passing, all green." },
+    { "id": 2, "step": "Add comprehensive tag filtering tests (match-only, empty-on-no-match, no-param=all, empty-string param, case-sensitivity)", "type": "work", "status": "pending", "tier": "standard", "commit": "", "notes": "" },
+    { "id": 3, "step": "Set feature_list.json passes:true and run quality gates (test/lint/build)", "type": "work", "status": "pending", "tier": "standard", "commit": "", "notes": "" },
+    { "id": 4, "step": "VERIFY: Verify & Test Tag Filtering", "type": "verify", "status": "pending", "tier": "standard", "commit": "", "notes": "" }
+  ]
+}
