@@ -50,14 +50,23 @@
     "id": "task-6",
     "title": "Add pagination edge-case tests",
     "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
-    "status": "pending",
-    "tier": "standard"
+    "status": "completed",
+    "tier": "standard",
+    "notes": "Added 7 edge-case tests: invalid page (abc) → 400, invalid limit (xyz) → 400, limit=0 → 400, page=999 beyond last page returns empty with actual total, limit=100 with 3 notes returns all 3, page=1&limit=2 with 5 notes returns first 2 with total=5, default params return page=1 limit=10."
   },
   {
     "id": "task-7",
     "title": "Add composition test (tag + search + pagination together)",
     "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
-    "status": "pending",
-    "tier": "standard"
+    "status": "completed",
+    "tier": "standard",
+    "notes": "Added 2 composition tests with 6 notes (varied tags/content). Verified tag+search+pagination compose correctly: total reflects post-filter count, data length respects limit, page/limit match request. Second test verifies page 2 behavior."
+  },
+  {
+    "id": "verify-phase-2",
+    "title": "VERIFY: Edge-Case Tests and Tag Filter Fix",
+    "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
+    "status": "completed",
+    "notes": "Full test suite: 47 tests, 2 suites, 0 failures. Lint: clean. All edge cases covered — tag filter (3 cases), search (4 cases), pagination (7 cases), composition (2 cases). Multi-tag fix verified. No regressions."
   }
 ]
