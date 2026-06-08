@@ -3,10 +3,5 @@
     "name": "Tag filtering endpoint",
     "description": "GET /api/notes?tag=work returns only notes with that tag. Already partially implemented — needs tests.",
     "passes": false
-  },
-  {
-    "name": "Full-text search",
-    "description": "GET /api/notes?q=meeting searches title and content. Already partially implemented — needs edge case tests (empty query, no matches).",
-    "passes": false
   }
 ]
