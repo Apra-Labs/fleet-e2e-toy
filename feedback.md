@@ -89,3 +89,74 @@ Two minor notes for the implementer, neither blocking:
 1. **Input validation gap (cosmetic):** The requirements mention "input validation behavior for the `tag` param" but the plan does not explicitly address it. The current no-validation approach is correct for a query filter, but the plan should acknowledge this rather than leaving it implicit. Recommend adding a sentence to Task 1's done criteria or the risk register.
 
 2. **Pre-existing convention drift:** The GET `/api/notes` handler omits an explicit `res.status(200)` call, which conflicts with the project's API conventions rule. This is pre-existing, not introduced by the plan, but the implementer should know they're testing against an endpoint that doesn't fully follow project conventions.
+
+---
+
+## Execution Review — Tag Filtering (Phase 1)
+
+**Reviewer:** Workshop-REV
+**Date:** 2026-06-08
+**Commits reviewed:** 33612dc (T1) through 2bb2ea0 (T4-VERIFY)
+**Quality gates:** 25/25 tests passing, lint clean, build clean
+
+---
+
+### 1. Correctness — Test Quality
+
+**All five tests assert meaningful behavior with proper status code and body checks.**
+
+| Test | Assertions | Verdict |
+|---|---|---|
+| Match-only excludes non-matching | status 200, length 1, title match, explicit `find()` exclusion check | **PASS** — the `find(...).toBeUndefined()` assertion at line 41 is a strong exclusion proof |
+| No-match returns `[]` with 200 | status 200, `toEqual([])` | **PASS** — strict equality, not just length check |
+| Omitted `?tag=` returns all | status 200, length 2 | **PASS** — documents the no-regression requirement |
+| Empty-string `?tag=` returns all | status 200, length 2 | **PASS** — exercises the falsy-string code path (`""` is falsy, filter is skipped) |
+| Case-sensitivity | status 200, length 1, title match for lowercase variant | **PASS** — documents current behavior with "work" vs "Work" |
+
+No test is trivially passing. Each creates specific setup data and asserts against both status codes and body content. Test isolation is ensured by the pre-existing `beforeEach(() => noteStore.clear())`.
+
+### 2. Requirements Alignment
+
+| Acceptance Criterion | Evidence |
+|---|---|
+| `GET /api/notes?tag=work` returns matching notes | Test #1 (line 29) — creates tagged + untagged, asserts only tagged returned |
+| `GET /api/notes` returns all notes (no regression) | Test #3 (line 54) + pre-existing test (line 16) |
+| Unmatched tag returns 200 with `[]` | Test #2 (line 44) |
+| Tests pass under `npm test` | 25/25 passing (verified) |
+| `npm run lint` and `npm run build` clean | Both clean (verified) |
+| `feature_list.json` set to `passes: true` | Confirmed in commit d93b79a |
+
+**All acceptance criteria satisfied.**
+
+### 3. Project Conventions
+
+- **No `any` types:** Inline type `{ title: string }` used instead of `any` at line 41 — compliant.
+- **Validation via `src/utils/validation.ts`:** Tag param correctly requires no validation (any string is a valid filter, empty/missing skips the filter, no injection risk with in-memory `includes()`). This was flagged in the plan review and is acceptable.
+- **Error format `{ error: "message" }`:** No new error paths introduced. N/A.
+- **`res.status(code).json()`:** Tests assert explicit 200 status. The handler at `src/api/notes.ts:30` still uses `res.json(notes)` without explicit `res.status(200)` — this is the **pre-existing** convention drift flagged in the plan review. Not introduced by this sprint, not in scope to fix.
+- **No `console.log` in handlers:** No handler code was modified. Clean.
+- **Tests use supertest against the app:** All tests use `request(app)` — correct.
+
+### 4. Justification for `passes: true`
+
+The handler logic at `src/api/notes.ts:17-19` correctly filters notes by tag using `n.tags.includes(tag)`. Five comprehensive tests prove it works across match, no-match, no-param, empty-param, and case-sensitivity scenarios. All quality gates pass. The `passes: true` flag is justified.
+
+### 5. Findings
+
+**HIGH:** None.
+
+**MEDIUM:** None.
+
+**LOW:**
+
+1. **Minor test redundancy.** The "omitting `?tag=` returns all notes" test (line 54) is structurally near-identical to the pre-existing "returns all notes" test (line 16) — both create two notes and assert length 2 with status 200. The added test exists to document the specific no-regression acceptance criterion, which is fine, but the overlap is worth noting.
+
+2. **Inline type vs interface.** The callback type `(n: { title: string })` at line 41 is a partial shape of `Note`. Using the `Note` interface from `src/models/note` would be more precise, but for a test assertion callback this is acceptable and avoids an additional import.
+
+3. **Pre-existing: missing explicit `res.status(200)`.** The GET handler at `src/api/notes.ts:30` relies on Express's default 200 status instead of calling `res.status(200).json(notes)`. This violates `.claude/rules/api-conventions.md` but is pre-existing and out of scope. Recommend addressing in a follow-up.
+
+---
+
+**Verdict: APPROVED**
+
+The execution phase delivered exactly what the plan specified. Five well-structured tests cover all acceptance criteria with meaningful assertions. No handler changes were needed — the audit in T1 confirmed the existing implementation is correct. All quality gates pass. The only findings are LOW severity: minor test redundancy, an inline type preference, and a pre-existing convention issue. None are blocking.
