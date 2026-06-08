@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { noteStore, Note } from "../models/note";
-import { validateCreateInput, validateUpdateInput } from "../utils/validation";
+import { validateCreateInput, validateUpdateInput, validatePaginationParams } from "../utils/validation";
 
 const router = Router();
 
@@ -10,7 +10,7 @@ const router = Router();
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
 
-// List all notes, with optional tag filter and search
+// List all notes, with optional tag filter, search, and pagination
 router.get("/", (req: Request, res: Response) => {
   let notes = noteStore.getAll();
 
@@ -27,7 +27,17 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  const paginationResult = validatePaginationParams(req.query.page, req.query.limit);
+  if (!paginationResult.valid) {
+    res.status(400).json({ error: paginationResult.error });
+    return;
+  }
+
+  const { page, limit } = paginationResult.params;
+  const total = notes.length;
+  const data = notes.slice((page - 1) * limit, page * limit);
+
+  res.json({ data, total, page, limit });
 });
 
 // Get a single note by ID
