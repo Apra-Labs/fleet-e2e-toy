@@ -156,6 +156,124 @@ describe("GET /api/notes", () => {
       expect(res.body.data[0].title).toBe("foo bar baz");
     });
   });
+
+  describe("GET /api/notes — pagination edge cases", () => {
+    it("?page=abc returns 400 with error", async () => {
+      const res = await request(app).get("/api/notes?page=abc");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    it("?limit=xyz returns 400 with error", async () => {
+      const res = await request(app).get("/api/notes?limit=xyz");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    it("?limit=0 returns 400", async () => {
+      const res = await request(app).get("/api/notes?limit=0");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    it("?page=999 beyond last page returns empty data with actual total", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 1", content: "Content", tags: [] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 2", content: "Content", tags: [] });
+
+      const res = await request(app).get("/api/notes?page=999");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual([]);
+      expect(res.body.total).toBe(2);
+      expect(res.body.page).toBe(999);
+      expect(res.body.limit).toBe(10);
+    });
+
+    it("?limit=100 with 3 notes returns all 3 with total=3", async () => {
+      for (let i = 1; i <= 3; i++) {
+        await request(app)
+          .post("/api/notes")
+          .send({ title: `Note ${i}`, content: "Content", tags: [] });
+      }
+
+      const res = await request(app).get("/api/notes?limit=100");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(3);
+      expect(res.body.total).toBe(3);
+    });
+
+    it("?page=1&limit=2 with 5 notes returns first 2 with total=5", async () => {
+      for (let i = 1; i <= 5; i++) {
+        await request(app)
+          .post("/api/notes")
+          .send({ title: `Note ${i}`, content: "Content", tags: [] });
+      }
+
+      const res = await request(app).get("/api/notes?page=1&limit=2");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.total).toBe(5);
+      expect(res.body.page).toBe(1);
+      expect(res.body.limit).toBe(2);
+    });
+
+    it("default pagination returns page=1 and limit=10", async () => {
+      const res = await request(app).get("/api/notes");
+      expect(res.status).toBe(200);
+      expect(res.body.page).toBe(1);
+      expect(res.body.limit).toBe(10);
+    });
+  });
+});
+
+describe("GET /api/notes — composition", () => {
+  beforeEach(() => {
+    noteStore.clear();
+  });
+
+  it("tag+search+pagination page 1 returns filtered results", async () => {
+    // 3 notes that match both tag=work AND q=meeting
+    await request(app).post("/api/notes").send({ title: "Work meeting 1", content: "meeting agenda", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Work meeting 2", content: "weekly meeting notes", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Work meeting 3", content: "meeting tomorrow", tags: ["work"] });
+    // notes that only match one filter — should be excluded
+    await request(app).post("/api/notes").send({ title: "Work task", content: "complete the project", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Personal meeting", content: "family meeting", tags: ["personal"] });
+    await request(app).post("/api/notes").send({ title: "Random note", content: "nothing", tags: [] });
+
+    const res = await request(app).get("/api/notes?tag=work&q=meeting&page=1&limit=2");
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(3);
+    expect(res.body.data.length).toBeLessThanOrEqual(2);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.page).toBe(1);
+    expect(res.body.limit).toBe(2);
+    // all returned notes must be tagged work and contain meeting
+    for (const note of res.body.data) {
+      expect(note.tags).toContain("work");
+      const haystack = (note.title + " " + note.content).toLowerCase();
+      expect(haystack).toContain("meeting");
+    }
+  });
+
+  it("tag+search+pagination page 2 returns remaining results", async () => {
+    await request(app).post("/api/notes").send({ title: "Work meeting 1", content: "meeting agenda", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Work meeting 2", content: "weekly meeting notes", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Work meeting 3", content: "meeting tomorrow", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Work task", content: "complete the project", tags: ["work"] });
+    await request(app).post("/api/notes").send({ title: "Personal meeting", content: "family meeting", tags: ["personal"] });
+    await request(app).post("/api/notes").send({ title: "Random note", content: "nothing", tags: [] });
+
+    const res = await request(app).get("/api/notes?tag=work&q=meeting&page=2&limit=2");
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(3);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.page).toBe(2);
+    expect(res.body.limit).toBe(2);
+  });
 });
 
 describe("GET /api/notes/:id", () => {
