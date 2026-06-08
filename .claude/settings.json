@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "npm run lint:fix 2\u003e/dev/null || true",
+            "command": "npm run lint:fix 2>/dev/null || true",
             "type": "command"
           }
         ],
@@ -44,6 +44,10 @@
         "matcher": ""
       }
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
   "mcpServers": {},
   "permissions": {
