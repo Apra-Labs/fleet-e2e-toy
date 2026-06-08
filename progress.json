@@ -34,15 +34,17 @@
     "id": "task-4",
     "title": "Fix multi-tag handling and add tag filter edge-case tests",
     "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
-    "status": "pending",
-    "tier": "cheap"
+    "status": "completed",
+    "tier": "cheap",
+    "notes": "Fixed multi-tag handling: when req.query.tag is an array (Express parses repeated params), take the last element. Added 3 edge-case tests: empty tag filter returns all notes, nonexistent tag returns empty, multiple tags use last value. All 38 tests pass, lint clean."
   },
   {
     "id": "task-5",
     "title": "Add search edge-case tests",
     "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
-    "status": "pending",
-    "tier": "cheap"
+    "status": "completed",
+    "tier": "cheap",
+    "notes": "Added 4 edge-case tests for search: empty query returns all notes, no match returns empty, special chars (c++) handled safely, spaces in query treated as literal substring. All 38 tests pass, lint clean."
   },
   {
     "id": "task-6",
