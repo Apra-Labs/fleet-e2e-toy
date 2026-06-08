@@ -14,7 +14,13 @@ const router = Router();
 router.get("/", (req: Request, res: Response) => {
   let notes = noteStore.getAll();
 
-  const tag = req.query.tag as string | undefined;
+  let tag: string | undefined;
+  if (Array.isArray(req.query.tag)) {
+    tag = req.query.tag[req.query.tag.length - 1] as string;
+  } else if (req.query.tag) {
+    tag = req.query.tag as string;
+  }
+
   if (tag) {
     notes = notes.filter((n) => n.tags.includes(tag));
   }

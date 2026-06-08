@@ -51,6 +51,111 @@ describe("GET /api/notes", () => {
     expect(res.body.data).toHaveLength(1);
     expect(res.body.data[0].title).toBe("Meeting notes");
   });
+
+  describe("GET /api/notes — tag filter edge cases", () => {
+    it("?tag= (empty string) returns all notes", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 1", content: "Content", tags: ["a"] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 2", content: "Content", tags: ["b"] });
+
+      const res = await request(app).get("/api/notes?tag=");
+      expect(res.status).toBe(200);
+      expect(res.body.total).toBe(2);
+      expect(res.body.data).toHaveLength(2);
+    });
+
+    it("?tag=nonexistent returns empty data and total=0", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 1", content: "Content", tags: ["work"] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 2", content: "Content", tags: ["personal"] });
+
+      const res = await request(app).get("/api/notes?tag=nonexistent");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual([]);
+      expect(res.body.total).toBe(0);
+    });
+
+    it("multiple ?tag=a&tag=b uses last value", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note A", content: "Content", tags: ["a"] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note B", content: "Content", tags: ["b"] });
+
+      const res = await request(app).get("/api/notes?tag=a&tag=b");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toBe("Note B");
+      expect(res.body.total).toBe(1);
+    });
+  });
+
+  describe("GET /api/notes — search edge cases", () => {
+    it("?q= (empty) returns all notes", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 1", content: "Content", tags: [] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 2", content: "Content", tags: [] });
+
+      const res = await request(app).get("/api/notes?q=");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.total).toBe(2);
+    });
+
+    it("?q=zzznomatch returns empty data and total=0", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 1", content: "Content", tags: [] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "Note 2", content: "Content", tags: [] });
+
+      const res = await request(app).get("/api/notes?q=zzznomatch");
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual([]);
+      expect(res.body.total).toBe(0);
+    });
+
+    it("?q=c++ does not throw, returns results or empty array", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "C++ Programming", content: "Learn C++", tags: [] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "JavaScript Notes", content: "ES6 features", tags: [] });
+
+      const res = await request(app).get("/api/notes?q=c%2B%2B");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toBe("C++ Programming");
+    });
+
+    it("?q=foo bar (space in query) does not throw, treated as literal substring match", async () => {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "foo bar baz", content: "Content", tags: [] });
+      await request(app)
+        .post("/api/notes")
+        .send({ title: "foo only", content: "Content", tags: [] });
+
+      const res = await request(app).get("/api/notes?q=foo%20bar");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toBe("foo bar baz");
+    });
+  });
 });
 
 describe("GET /api/notes/:id", () => {
