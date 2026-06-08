@@ -5,6 +5,35 @@ export interface ValidationError {
   message: string;
 }
 
+export function validatePaginationParams(
+  page: unknown,
+  limit: unknown
+): { valid: true; params: { page: number; limit: number } } | { valid: false; error: string } {
+  const pageNum = page === undefined ? 1 : Number(page);
+  const limitNum = limit === undefined ? 10 : Number(limit);
+
+  if (isNaN(pageNum) || !Number.isFinite(pageNum)) {
+    return { valid: false, error: "page must be a valid number" };
+  }
+
+  if (isNaN(limitNum) || !Number.isFinite(limitNum)) {
+    return { valid: false, error: "limit must be a valid number" };
+  }
+
+  const flooredPage = Math.floor(pageNum);
+  const flooredLimit = Math.floor(limitNum);
+
+  if (flooredPage < 1) {
+    return { valid: false, error: "page must be at least 1" };
+  }
+
+  if (flooredLimit < 1) {
+    return { valid: false, error: "limit must be at least 1" };
+  }
+
+  return { valid: true, params: { page: flooredPage, limit: flooredLimit } };
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
