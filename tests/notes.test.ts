@@ -26,7 +26,7 @@ describe("GET /api/notes", () => {
     expect(res.body).toHaveLength(2);
   });
 
-  it("filters by tag", async () => {
+  it("filters by tag — returns only matching notes and excludes non-matching", async () => {
     await request(app)
       .post("/api/notes")
       .send({ title: "Tagged", content: "Body", tags: ["work"] });
@@ -35,8 +35,60 @@ describe("GET /api/notes", () => {
       .send({ title: "Untagged", content: "Body", tags: ["personal"] });
 
     const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0].title).toBe("Tagged");
+    expect(res.body.find((n: { title: string }) => n.title === "Untagged")).toBeUndefined();
+  });
+
+  it("returns empty array with 200 when no notes match the tag", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Personal note", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("omitting ?tag= returns all notes", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "First", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Second", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
+  });
+
+  it("empty-string ?tag= returns all notes", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Alpha", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Beta", content: "Body", tags: ["personal"] });
+
+    const res = await request(app).get("/api/notes?tag=");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
+  });
+
+  it("tag filtering is case-sensitive", async () => {
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Lowercase", content: "Body", tags: ["work"] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Uppercase", content: "Body", tags: ["Work"] });
+
+    const res = await request(app).get("/api/notes?tag=work");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe("Lowercase");
   });
 
   it("searches by query string", async () => {
