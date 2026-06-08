@@ -10,6 +10,13 @@ export interface Note {
 export type CreateNoteInput = Pick<Note, "title" | "content" | "tags">;
 export type UpdateNoteInput = Partial<CreateNoteInput>;
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 // In-memory store — replaced by a real DB in production
 const notes = new Map<string, Note>();
 
