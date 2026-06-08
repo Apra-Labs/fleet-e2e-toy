@@ -1,0 +1,51 @@
+[
+  {
+    "id": "task-1",
+    "title": "Add PaginatedResponse interface to note model",
+    "phase": "Phase 1: Pagination Implementation",
+    "status": "pending",
+    "tier": "cheap"
+  },
+  {
+    "id": "task-2",
+    "title": "Add validatePaginationParams helper with unit tests",
+    "phase": "Phase 1: Pagination Implementation",
+    "status": "pending",
+    "tier": "cheap"
+  },
+  {
+    "id": "task-3",
+    "title": "Implement pagination in GET handler and update existing tests",
+    "phase": "Phase 1: Pagination Implementation",
+    "status": "pending",
+    "tier": "standard"
+  },
+  {
+    "id": "task-4",
+    "title": "Fix multi-tag handling and add tag filter edge-case tests",
+    "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
+    "status": "pending",
+    "tier": "cheap"
+  },
+  {
+    "id": "task-5",
+    "title": "Add search edge-case tests",
+    "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
+    "status": "pending",
+    "tier": "cheap"
+  },
+  {
+    "id": "task-6",
+    "title": "Add pagination edge-case tests",
+    "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
+    "status": "pending",
+    "tier": "standard"
+  },
+  {
+    "id": "task-7",
+    "title": "Add composition test (tag + search + pagination together)",
+    "phase": "Phase 2: Edge-Case Tests and Tag Filter Fix",
+    "status": "pending",
+    "tier": "standard"
+  }
+]
