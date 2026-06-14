@@ -44,8 +44,10 @@
       "title": "Add full tests/cli.test.ts covering all three features",
       "phase": 1,
       "model": "claude-haiku-4-5-20251001",
-      "status": "pending",
-      "dependencies": ["T1.3"]
+      "status": "done",
+      "dependencies": ["T1.3"],
+      "completedAt": "2026-06-14T15:30:00Z",
+      "notes": "Added 6 new test cases covering --version precedence, help command, --help, -h flags, and empty/whitespace validation. All 9 tests pass. npm run lint passes. Commit 5c94626."
     },
     {
       "id": "T1.5",
