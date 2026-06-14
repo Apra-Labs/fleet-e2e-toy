@@ -76,3 +76,9 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateNonBlank(value: string, argName: string): void {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(`Error: ${argName} must not be empty or blank`);
+  }
+}

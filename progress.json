@@ -3,7 +3,7 @@
   "branch": "pmlite-e2e/s1-1781459350640",
   "base": "main",
   "epic": "gh-toy-6ed",
-  "lastDispatchedPhase": 0,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "T1.1",
@@ -22,8 +22,10 @@
       "title": "Add validateNonBlank helper and validation unit tests",
       "phase": 1,
       "model": "claude-haiku-4-5-20251001",
-      "status": "pending",
-      "dependencies": ["T1.1"]
+      "status": "done",
+      "dependencies": ["T1.1"],
+      "completedAt": "2026-06-14T14:08:00Z",
+      "notes": "Appended validateNonBlank function to src/utils/validation.ts. Appended validateNonBlank describe block to tests/validation.test.ts with 4 test cases (non-blank passes, empty string throws, whitespace-only throws, non-string throws). All tests pass. npm run lint passes."
     },
     {
       "id": "T1.3",

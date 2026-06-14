@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateNonBlank } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -62,5 +62,50 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+});
+
+describe("validateNonBlank", () => {
+  it("accepts a non-blank string without throwing", () => {
+    expect(() => validateNonBlank("hello", "testArg")).not.toThrow();
+  });
+
+  it("throws on empty string with correct error message", () => {
+    expect(() => validateNonBlank("", "myArg")).toThrow(Error);
+    try {
+      validateNonBlank("", "myArg");
+      fail("should have thrown");
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.message).toMatch(/must not be empty or blank/);
+        expect(err.message).toMatch(/myArg/);
+      }
+    }
+  });
+
+  it("throws on whitespace-only string with correct error message", () => {
+    expect(() => validateNonBlank("   ", "myArg")).toThrow(Error);
+    try {
+      validateNonBlank("   ", "myArg");
+      fail("should have thrown");
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.message).toMatch(/must not be empty or blank/);
+        expect(err.message).toMatch(/myArg/);
+      }
+    }
+  });
+
+  it("throws when called with non-string value cast through unknown", () => {
+    const nonStringValue = 123 as unknown as string;
+    expect(() => validateNonBlank(nonStringValue, "badArg")).toThrow(Error);
+    try {
+      validateNonBlank(nonStringValue, "badArg");
+      fail("should have thrown");
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.message).toMatch(/must not be empty or blank/);
+      }
+    }
   });
 });
