@@ -1,0 +1,64 @@
+{
+  "sprint": "pmlite-e2e-s1",
+  "branch": "pmlite-e2e/s1-1781459350640",
+  "base": "main",
+  "epic": "gh-toy-6ed",
+  "lastDispatchedPhase": 0,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "bead": "gh-toy-6ed.1",
+      "title": "Create src/cli.ts with --version/-v; prove TS+Jest pipeline",
+      "phase": 1,
+      "model": "claude-haiku-4-5-20251001",
+      "status": "pending",
+      "dependencies": []
+    },
+    {
+      "id": "T1.2",
+      "bead": "gh-toy-6ed.2",
+      "title": "Add validateNonBlank helper and validation unit tests",
+      "phase": 1,
+      "model": "claude-haiku-4-5-20251001",
+      "status": "pending",
+      "dependencies": ["T1.1"]
+    },
+    {
+      "id": "T1.3",
+      "bead": "gh-toy-6ed.3",
+      "title": "Extend cli.ts with help command and input validation",
+      "phase": 1,
+      "model": "claude-sonnet-4-6",
+      "status": "pending",
+      "dependencies": ["T1.2"]
+    },
+    {
+      "id": "T1.4",
+      "bead": "gh-toy-6ed.4",
+      "title": "Add full tests/cli.test.ts covering all three features",
+      "phase": 1,
+      "model": "claude-haiku-4-5-20251001",
+      "status": "pending",
+      "dependencies": ["T1.3"]
+    },
+    {
+      "id": "T1.5",
+      "bead": "gh-toy-6ed.5",
+      "title": "Wire pretest script in package.json",
+      "phase": 1,
+      "model": "claude-haiku-4-5-20251001",
+      "status": "pending",
+      "dependencies": ["T1.4"]
+    },
+    {
+      "id": "T1.6",
+      "bead": "gh-toy-6ed.6",
+      "title": "VERIFY: build + lint + full test suite",
+      "phase": 1,
+      "model": "claude-haiku-4-5-20251001",
+      "status": "pending",
+      "dependencies": ["T1.5"]
+    }
+  ],
+  "dispatches": []
+}
