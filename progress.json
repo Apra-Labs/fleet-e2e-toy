@@ -11,8 +11,10 @@
       "title": "Create src/cli.ts with --version/-v; prove TS+Jest pipeline",
       "phase": 1,
       "model": "claude-haiku-4-5-20251001",
-      "status": "pending",
-      "dependencies": []
+      "status": "done",
+      "dependencies": [],
+      "completedAt": "2026-06-14T14:07:00Z",
+      "notes": "Created src/cli.ts with --version/-v flag. Created tests/cli.test.ts with 3 smoke tests. npm run build succeeded, dist/cli.js exists. All 3 tests pass. npm run lint passes."
     },
     {
       "id": "T1.2",
