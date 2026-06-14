@@ -1,87 +1,93 @@
-# pmlite-e2e-s1 -- Plan Review
+# pmlite-e2e-s1 -- Plan Review (revision 2)
 
 **Reviewer:** pm-plan-reviewer
-**Date:** 2026-06-14 14:00:00+00:00
-**Verdict:** CHANGES NEEDED
+**Date:** 2026-06-14 15:30:00+00:00
+**Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
+> Prior review (commit 34f021f) flagged two blocking issues plus three recommended
+> additions. This revision (PLAN.md commit 6c23638) addresses all of them.
+
+---
+
+## How the revision addressed prior feedback
+
+**Prior blocker 1 — Sequencing inverted the requirements-stated risk order.** Fixed. The planner restructured the task list so T1.1 now creates `src/cli.ts` with `--version`/`-v` only, runs `npm run build`, and runs a three-case smoke test that spawns `node dist/cli.js`. That is the smallest scope that exercises both R1 (TS compile of the new entrypoint) and R2 (Jest spawn into `dist/`), exactly as `requirements.md` Section "Risk / Priority Order" directs ("Make the `--version` flag Task 1 to prove the end-to-end CLI pipeline first"). The validation helper moves to T1.2, the help+validation extension to T1.3, the broader CLI test suite to T1.4, `pretest` wiring to T1.5, and VERIFY to T1.6. Ordering rationale is now spelled out at the top of Phase 1 and explicitly cites the requirements-stated risk-first reasoning.
+
+**Prior blocker 2 — R1 in the risk register referenced the wrong task.** Fixed. R1 now reads "First empirically confirmed at T1.1 Done-when (`npm run build` succeeds and `dist/cli.js` exists)." That matches the new T1.1 which actually runs the build. R2 was likewise updated to "First confirmed at T1.1 (smoke spawn for `--version`) and broadened at T1.4 (full CLI test suite)."
+
+**Prior non-blocking 1 — Add R3/R4/R5 to the risk register.** Fixed. R3 (`declaration: true` emits `dist/cli.d.ts`), R4 (ESLint `@typescript-eslint/no-unused-vars` is enforced — with a specific instruction not to "simplify" the `catch (err)` branch in T1.3), and R5 (synchronous `process.exit(main(argv))` is only safe because `main` is sync) are all present and well-scoped.
+
+**Prior non-blocking 2 — Portability note for `spawnSync` with empty-string argv.** Fixed. T1.4 explicitly says: "invoke `spawnSync` with the array form `spawnSync(process.execPath, [CLI, ""], { encoding: "utf8" })` so an empty string element is passed verbatim as argv on both Windows and Linux. Do NOT use a shell string form."
+
+**Prior non-blocking 3 — Per-feature smoke checks on the full-implementation task.** Fixed. T1.3's Done-when now enumerates four discrete smoke checks (version, `help`, `--help`, empty-string `""`), each with the exact expected stdout/stderr substring and exit code. That gives T1.3 atomic acceptance independent of T1.4's broader test sweep.
 
 ---
 
 ## 1. Done criteria per task
 
-PASS with one caveat. Every task has an explicit "Done when" block with concrete, observable criteria (commands that must exit 0, files that must exist, specific output strings). T1.1 requires the validation test to pass and lint to pass; T1.2 requires `npm run build` to succeed and `dist/cli.js` to exist plus a smoke check for `--version`; T1.3 requires `npx jest tests/cli.test.ts` to pass; T1.4 requires `npm test` to succeed from a state with `dist/` deleted; T1.5 is itself the global VERIFY step. The caveat is that T1.2's "Done when" only smoke-checks `--version` even though that task implements all three features (help, validation, version) — the per-feature checks are deferred to T1.3. That is acceptable because T1.3 will catch regressions, but it slightly weakens T1.2's atomic acceptance.
+PASS. Every task carries a `Done when` block with binary, observable criteria: exit-code expectations, exact stdout strings or substring markers, files that must exist after the step, and named lint/test commands. T1.1's Done-when ties straight back to R1 and R2 (first empirical confirmation), T1.3's Done-when now lists four per-feature smoke checks (resolving the prior caveat), and T1.6 closes the phase on the full DoD gate (`npm run build`, `npm run lint`, `npm test` all exit 0 with no skipped tests). No "should work" or "looks reasonable" criteria remain.
 
 ## 2. Cohesion within tasks / coupling between tasks
 
-PASS. T1.1 owns the helper + its unit test (single concern: validation primitive). T1.2 owns the CLI surface (single file, single feature group). T1.3 owns the CLI integration tests. T1.4 owns the npm-script wiring. T1.5 owns verification. Coupling between tasks is one-directional and explicit via the `Blockers` field: T1.2 -> T1.1, T1.3 -> T1.2, T1.5 -> all. No hidden bidirectional coupling.
+PASS. T1.1 owns the CLI skeleton + smoke proof. T1.2 owns the validation helper + its unit tests. T1.3 owns the full CLI surface (precedence under D3, help text under D4). T1.4 owns the integration-test broadening. T1.5 owns the `pretest` wiring. T1.6 owns VERIFY. Each task touches a tightly scoped file set and the `Blockers` field explicitly tracks the cross-task dependencies (T1.3 -> T1.1 + T1.2; T1.4 -> T1.3; T1.6 -> everyone). No bidirectional coupling, no shared mutable scratch space between tasks.
 
 ## 3. Key abstractions in earliest tasks
 
-PASS. `validateNonBlank` (the shared helper consumed by the CLI) lands in T1.1. D2 fixes its signature, error message format, and throwing contract up-front so T1.2 can rely on it without re-litigation. Help text content (D4) and version string (D5) are also frozen in decisions and are not re-derived inside tasks.
+PASS. The shared abstractions land early: T1.1 establishes the CLI entrypoint conventions (shebang, `main(argv): number`, `process.exit(main(...))`) which T1.3 must preserve verbatim, and T1.2 lands `validateNonBlank` before T1.3 imports it. The frozen decisions (D2 signature/error shape, D3 precedence, D4 help text, D5 version string, D6 file paths, D7 no-deps) are bakery-stamped before any task starts, so no task has to invent these.
 
 ## 4. Riskiest assumption validated in Task 1
 
-**FAIL.** This is the headline issue. The plan's own R1 names the riskiest assumption as "TypeScript compiles `src/cli.ts` to `dist/cli.js` cleanly" — and `requirements.md` Section "Risk / Priority Order" is explicit:
-
-> "Make the `--version` flag Task 1 to prove the end-to-end CLI pipeline first (smallest scope, binary acceptance criteria). Validation helper and help command follow."
-
-The plan inverts that ordering: T1.1 is the validation helper (no CLI compile risk exercised), and the CLI compile risk is not exercised until T1.2 — which also bundles all three features into one sonnet task. The rationale offered (T1.2 imports `validateNonBlank`) is real but resolvable: T1.1 could be a stub `src/cli.ts` that handles only `--version`/`-v` (proving the TS-compile + Jest-spawn pipeline end-to-end in the smallest scope), with `validateNonBlank` and help added in subsequent tasks. As written, the plan defers the riskiest assumption past Task 1, contradicting requirements.md guidance that was explicitly meant to drive sequencing.
-
-Additionally, R1 in the risk register says "Confirmed at T1.1 VERIFY (the build step)" — but T1.1 does not run `npm run build` and does not touch `src/cli.ts`. This is a factual error in the risk register; the TS-compile risk is first exercised by T1.2's `npm run build`. Either fix the reference or restructure the tasks so T1.1 really does exercise that risk.
+PASS. This was the headline issue in the prior review and is now resolved. T1.1 collapses to exactly the scope the requirements asked for: a `--version`-only `src/cli.ts` whose Done-when requires `npm run build` to succeed, `dist/cli.js` to exist, and `npx jest tests/cli.test.ts` to pass three smoke cases. Both R1 (TS compile) and R2 (Jest spawn portability) are empirically exercised before any other CLI work starts. The plan also documents the rationale at the top of Phase 1 so the requirements-stated risk-first reasoning is no longer implicit.
 
 ## 5. Reuse of early abstractions (DRY)
 
-PASS. T1.2 imports `validateNonBlank` from T1.1. The frozen help text (D4) and version string (D5) appear only in `src/cli.ts` and are asserted against in T1.3's tests. No duplicated definitions of the constants across source and tests (tests assert on substring markers like `Usage:`, `--version`, `--help`, not on the full block) — good DRY discipline.
+PASS. T1.3 reuses the T1.1 entrypoint structure (replaces only the body) and imports `validateNonBlank` from T1.2 rather than redefining its message format. The version string and help text live exactly once in `src/cli.ts`; tests in T1.1 and T1.4 assert against the literal string or substring markers, not against duplicate copies of the help block.
 
 ## 6. Phase boundaries at cohesion boundaries
 
-PASS. A single phase is defensible here: every task contributes to one reviewable increment (a working CLI gated by build + lint + test). The sprint is small enough that splitting into multiple phases would be artificial. The VERIFY task closes the phase with the full DoD gate.
+PASS. A single phase remains the right cut for this sprint. Every task contributes to one reviewable increment (a working CLI gated by build+lint+test), and the phase closes with VERIFY (T1.6). The sprint is small enough that an extra phase boundary would be ceremonial.
 
 ## 7. Models assigned, sized, and clustered
 
-PASS. T1.2 (the only task requiring judgment about argv parsing and precedence) gets sonnet; T1.1, T1.3, T1.4, T1.5 (mechanical work guided by frozen decisions) get haiku. Streaks are explicit at the end: Streak A (haiku T1.1), Streak B (sonnet T1.2), Streak C (haiku T1.3+T1.4+T1.5) — three dispatches, with the haiku tail contiguous so one fresh context handles tests + script wiring + VERIFY. Each task fits comfortably inside its model's context budget. Note: if the restructure under check 4 splits T1.2 into per-feature tasks, the model assignments should be re-evaluated (the per-feature work would likely be haiku once each obeys a single frozen decision).
+PASS. T1.3 (argv precedence, the only judgment-bearing task) gets sonnet; everything else (T1.1, T1.2, T1.4, T1.5, T1.6) gets haiku. Streaks are explicit and contiguous: Streak A (haiku T1.1 + T1.2), Streak B (sonnet T1.3 alone), Streak C (haiku T1.4 + T1.5 + T1.6). Three dispatches total, with the haiku tail handling tests + script wiring + VERIFY in one fresh context. Each streak fits comfortably inside its model's context budget.
 
 ## 8. Each task completable in one dispatch
 
-PASS. T1.1 touches two files with a tight code block specified. T1.2 creates one file with the full skeleton provided. T1.3 creates one test file with the full case list enumerated. T1.4 is a one-line addition to `package.json`. T1.5 runs three commands. None requires interactive iteration beyond what a single dispatch can absorb.
+PASS. T1.1 specifies two file contents verbatim. T1.2 is an append to one source file and one test file. T1.3 specifies the full final file contents. T1.4 enumerates the test cases and the portable `spawnSync` form. T1.5 is a one-key edit to `package.json`. T1.6 is three command invocations. None of these require iterative discovery beyond what a single dispatch absorbs.
 
 ## 9. Dependencies satisfied in order
 
-PASS. T1.1 (no blockers) -> T1.2 (blocked by T1.1) -> T1.3 (blocked by T1.2) -> T1.4 (independent, can be done anywhere before T1.5) -> T1.5 (blocked by all). T1.4 is correctly marked as mechanically independent but logically required for VERIFY. The graph is linear and resolvable.
+PASS. T1.1 (no blockers) -> T1.2 (no blockers; purely additive helper) -> T1.3 (needs T1.1 file + T1.2 helper) -> T1.4 (needs T1.3 CLI behaviour to assert against) -> T1.5 (mechanically independent, scheduled here for VERIFY) -> T1.6 (gates everything). The graph is a linear path with one safe shortcut (T1.2 can run in parallel with T1.1; the plan groups them in Streak A which is fine).
 
 ## 10. Vague tasks
 
-PASS. Decisions D1–D7 eliminate the common ambiguity vectors: error message wording, stderr vs stdout routing, exit codes, precedence between conflicting flags (D3 even handles `--version` + `--help`), behaviour on no-args (D3 step 4 prints help, an explicit choice not in requirements but documented), and dependency policy (D7 forbids `commander`/`yargs`). Two implementers following this plan would produce functionally equivalent CLIs. One small ambiguity: the test under T1.3 says "empty-string argument `\"\"`" without specifying how the test author should spawn the process with an empty argv element on Windows — `spawnSync` with an args array `["dist/cli.js", ""]` works on both platforms, but a note would help.
+PASS. The D1–D7 frozen decisions remove the standard ambiguity vectors (stderr vs stdout, exit codes, precedence between `--version` and `--help`, no-arg behaviour, dependency policy, file locations). The lone remaining ambiguity from the prior review — how to pass an empty-string argv element portably — is now resolved by the explicit `spawnSync(process.execPath, [CLI, ""], { encoding: "utf8" })` instruction in T1.4. Two implementers following this plan will produce functionally identical CLIs.
 
 ## 11. Hidden dependencies
 
-PASS with one note. The only non-obvious dependency is that `npm test` invokes `pretest` (T1.4) which runs `tsc` over `src/cli.ts` (T1.2) — so deleting `dist/` then running `npm test` exercises the whole chain. This is implicit but the plan calls it out in T1.4's Done-when. One hidden concern: ts-jest is already configured and will compile `tests/cli.test.ts` independently — that path does not require `dist/`. But the CLI under test does require `dist/cli.js`, which `pretest` provides. The plan handles this correctly; just confirming there is no skipped dependency.
+PASS. The only non-obvious dependency is the `npm test` -> `pretest` -> `tsc` chain; T1.5's Done-when surfaces it explicitly (run with `dist/` deleted). One subtlety: T1.1 runs `npx jest tests/cli.test.ts` before `pretest` exists, so the task instruction explicitly says "Run `npm run build` once during this task and confirm `dist/cli.js` exists before running the smoke test." That avoids the trap of the smoke test failing because nothing has compiled `dist/cli.js` yet.
 
 ## 12. Risk register
 
-PARTIAL PASS / FAIL on accuracy. The plan does include a risk register (R1, R2), which is the structural requirement. However:
-
-- R1 mis-attributes the confirmation point to T1.1 (see check 4). It should say T1.2.
-- A risk worth adding: **R3 — `tsconfig.json` has `"declaration": true`, so `tsc` emits `.d.ts` files alongside `.js`.** This is benign but worth noting because the CLI gets a `dist/cli.d.ts` it does not need; it does not break anything but if any future task adds a `files` allowlist to `package.json`, the CLI declaration emit will be a surprise.
-- A risk worth adding: **R4 — eslint `@typescript-eslint/no-unused-vars` is set to `error`.** The T1.2 skeleton uses `err instanceof Error` and discards a non-Error branch with `String(err)`, so it should lint cleanly, but the plan should remind the implementer that any unused import or `_` parameter convention is enforced.
-- A risk worth adding: **R5 — `process.exit` inside `main(argv)` vs. at the bottom of the file.** The skeleton calls `process.exit(main(...))`. That is fine, but if any future code awaits a promise inside `main`, the synchronous `process.exit` will cut it off. Not a blocker for this sprint but worth a one-line warning.
+PASS. All five risks (R1–R5) are present, scoped, and linked to the task where they are first exercised. R1 (TS compile) and R2 (Jest spawn) now correctly point at T1.1 as their first empirical confirmation. R3 (declaration emit), R4 (eslint no-unused-vars constraints on T1.3), and R5 (sync `process.exit`) are each accompanied by a clear "what to do about it" — including the specific instruction not to "simplify" the `catch (err)` branch by dropping the `String(err)` arm, which is the precise way R4 would bite an implementer.
 
 ## 13. Alignment with requirements.md intent
 
-PARTIAL PASS. The plan correctly identifies the three features, freezes the right artifacts (version string, file locations, error message shape), and adopts the DoD verbatim. The deviation from the explicit "make `--version` Task 1" guidance (check 4) is the one place where the plan optimises for code-locality rather than for the requirement author's stated intent to prove the riskiest assumption first. Otherwise, every acceptance criterion in requirements.md maps to a Done-when bullet in the plan (`--version` exact output and exit, `-v` alias, precedence over other flags, validation error to stderr with exit 1, help on `help`/`--help`/`-h` with exit 0, help mentions every flag and subcommand).
+PASS. All three acceptance criteria sets from requirements.md map onto Done-when bullets (`--version` exact output + exit 0 + `-v` alias + precedence; validation error to stderr with exit 1 for `""` and `"   "`; help via `help`/`--help`/`-h` with usage text listing every flag and subcommand). DoD is adopted verbatim. The requirements-stated "Risk / Priority Order" is now honoured: `--version` is genuinely Task 1, with the smallest scope that exercises the riskiest assumption end-to-end. File locations match requirements (CLI at `src/cli.ts`, validation in `src/utils/validation.ts`, tests in `tests/cli.test.ts` and `tests/validation.test.ts`).
 
 ---
 
 ## Summary
 
-The plan is structurally strong: tasks are atomic, decisions are frozen, models are sized correctly, and the DoD is mapped. Two issues prevent approval:
+Both prior blockers are resolved and all three prior non-blocking recommendations are incorporated:
 
-1. **Sequencing inverts the requirements-stated risk order.** `requirements.md` explicitly says `--version` should be Task 1 to prove the end-to-end CLI pipeline first. The plan instead makes the validation helper Task 1 and bundles all three CLI features into T1.2. Either restructure (suggested: T1.1 = stub `src/cli.ts` with `--version` only + one smoke test; T1.2 = validation helper + wire into CLI; T1.3 = help; T1.4 = full tests; T1.5 = pretest; T1.6 = VERIFY) or, if you keep the current order, document in R1 why you chose code-locality over requirements-stated risk-first ordering and acknowledge the deferred risk.
+- T1.1 now creates `src/cli.ts` with `--version` only, runs `npm run build`, and spawns the binary in a three-case smoke test — directly honouring `requirements.md` "Risk / Priority Order" and giving R1/R2 their first empirical confirmation in Task 1.
+- R1 and R2 in the risk register now point at T1.1 as the first confirmation site, which matches the restructured task list.
+- R3, R4, R5 are added with actionable guidance, including a specific R4 instruction tied to the T1.3 skeleton.
+- T1.4 specifies the portable `spawnSync(process.execPath, [CLI, ""], ...)` form for empty-string argv.
+- T1.3's Done-when carries four per-feature smoke checks so it has atomic acceptance.
 
-2. **R1 in the risk register references the wrong task.** It says "Confirmed at T1.1 VERIFY (the build step)" but T1.1 does not run `npm run build` or touch the CLI. Fix to "Confirmed at T1.2 Done-when (`npm run build` succeeds; `dist/cli.js` exists)" or restructure per (1) so the reference becomes correct.
+Decisions D1–D7 remain bakery-stamped, models are sized to task complexity (one sonnet, five haiku) and clustered into three contiguous streaks (three dispatches). The plan is now ready to dispatch.
 
-Also recommended (not blocking):
-- Add R3/R4/R5 from check 12 to the risk register.
-- Add a sentence to T1.3 noting that `spawnSync` should be invoked with `args: ["dist/cli.js", ""]` (array form) to pass an empty string argv element portably on Windows.
-- Consider splitting T1.2's Done-when into per-feature smoke checks so it is not entirely dependent on T1.3 for per-feature verification.
+Verdict: APPROVED.
