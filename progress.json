@@ -33,8 +33,10 @@
       "title": "Extend cli.ts with help command and input validation",
       "phase": 1,
       "model": "claude-sonnet-4-6",
-      "status": "pending",
-      "dependencies": ["T1.2"]
+      "status": "done",
+      "dependencies": ["T1.2"],
+      "completedAt": "2026-06-14T14:20:00Z",
+      "notes": "Replaced placeholder src/cli.ts with full implementation per D2-D7. Imports validateNonBlank from ./utils/validation. Implements D3 flag precedence: --version/-v first, then help/--help/-h, then positional validation, then no-arg fallback to help. Uses console.log for stdout and process.stderr.write for stderr. All 4 smoke checks pass: --version prints version, help/--help print help text with Usage:, empty string arg exits 1 with 'must not be empty or blank' on stderr. All 3 existing cli.test.ts tests pass. npm run lint passes."
     },
     {
       "id": "T1.4",
