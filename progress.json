@@ -66,8 +66,10 @@
       "title": "VERIFY: build + lint + full test suite",
       "phase": 1,
       "model": "claude-haiku-4-5-20251001",
-      "status": "pending",
-      "dependencies": ["T1.5"]
+      "status": "done",
+      "dependencies": ["T1.5"],
+      "completedAt": "2026-06-14T15:40:00Z",
+      "notes": "VERIFY CHECKPOINT PASSED: (1) npm run build - exit 0, dist/cli.js exists; (2) npm run lint - exit 0, no errors; (3) npm test - exit 0, all 34 tests pass including validateNonBlank tests and full cli.test.ts. Test breakdown: validation.test.ts 12 tests, cli.test.ts 9 tests (all new/expanded), notes.test.ts 13 tests. All prior tests still pass. Tree is clean."
     }
   ],
   "dispatches": []
