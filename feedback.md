@@ -124,4 +124,4 @@ Verdict: CHANGES NEEDED.
 
 ## Doer Resolution
 
-Doer: fixed (D3) reference and softened "future shell script compatibility" wording in commit <sha-to-be-recorded>.
+Doer: fixed (D3) reference and softened "future shell script compatibility" wording in commit 63823d9.
