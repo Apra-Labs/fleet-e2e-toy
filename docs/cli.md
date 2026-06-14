@@ -4,10 +4,10 @@
 - **File:** `src/cli.ts` (compiled to `dist/cli.js`)
 - **Build:** TypeScript → compiled via `tsconfig.json` with `outDir: "./dist"` and `rootDir: "./src"`
 - **Invocation:** `node dist/cli.js [args...]` (no npm bin entry; direct Node invocation)
-- **Shebang:** `#!/usr/bin/env node` for future shell script compatibility
+- **Shebang:** `#!/usr/bin/env node` for direct shell invocation
 
 ## Argument Resolution and Precedence Order
-Flags are resolved in strict order with immediate exit on first match (D3):
+Flags are resolved in strict order with immediate exit on first match:
 
 1. **`--version` / `-v`** → print `fleet-e2e-toy v1.0.0` to stdout, exit 0
 2. **`help` / `--help` / `-h`** → print help text to stdout, exit 0

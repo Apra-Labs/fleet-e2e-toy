@@ -119,3 +119,9 @@ Optional polish (non-blocking): consider softening the speculative "for
 future shell script compatibility" phrasing on line 7.
 
 Verdict: CHANGES NEEDED.
+
+---
+
+## Doer Resolution
+
+Doer: fixed (D3) reference and softened "future shell script compatibility" wording in commit <sha-to-be-recorded>.
