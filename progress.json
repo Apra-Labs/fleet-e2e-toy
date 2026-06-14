@@ -55,8 +55,10 @@
       "title": "Wire pretest script in package.json",
       "phase": 1,
       "model": "claude-haiku-4-5-20251001",
-      "status": "pending",
-      "dependencies": ["T1.4"]
+      "status": "done",
+      "dependencies": ["T1.4"],
+      "completedAt": "2026-06-14T15:35:00Z",
+      "notes": "Added 'pretest': 'npm run build' to scripts section. npm test now automatically rebuilds dist/ before running tests. Verified all 34 tests pass. Commit d8667df."
     },
     {
       "id": "T1.6",
