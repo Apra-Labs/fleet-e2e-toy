@@ -14,10 +14,10 @@
       "title": "Add --version / -v flag to src/index.ts",
       "model": "haiku",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-zlb.1",
-      "commit": null,
-      "notes": ""
+      "commit": "570be6d",
+      "notes": "Version flag working. Tested --version and -v, both print 'noteapi v1.0.0' and exit 0."
     },
     {
       "id": "s1-t2",
