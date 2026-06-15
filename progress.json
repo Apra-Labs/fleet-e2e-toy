@@ -1,0 +1,46 @@
+{
+  "sprint": "s1 -- version flag",
+  "track": "s1",
+  "branch": "pmlite-e2e/s1-1781500148702",
+  "base": "main",
+  "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1-xpWVdd/repo-wt/s1",
+  "transport": "remote",
+  "epic": "gh-toy-zlb",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "s1-t1",
+      "phase": 1,
+      "title": "Add --version / -v flag to src/index.ts",
+      "model": "haiku",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-zlb.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "s1-t2",
+      "phase": 1,
+      "title": "Add unit test for --version flag",
+      "model": "haiku",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-zlb.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "s1-t3",
+      "phase": 1,
+      "title": "Run tests and verify all pass",
+      "model": "haiku",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-zlb.3",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
