@@ -25,10 +25,10 @@
       "title": "Add unit test for --version flag",
       "model": "haiku",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-zlb.2",
-      "commit": null,
-      "notes": ""
+      "commit": "6b89950",
+      "notes": "Tests added in tests/version.test.ts using execSync. Both --version and -v tests passing."
     },
     {
       "id": "s1-t3",
@@ -36,10 +36,10 @@
       "title": "Run tests and verify all pass",
       "model": "haiku",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-zlb.3",
-      "commit": null,
-      "notes": ""
+      "commit": "6b89950",
+      "notes": "PASS: npm test - 23 tests passed, 3 test suites passed. PASS: npm run lint - no errors."
     }
   ],
   "dispatches": []
