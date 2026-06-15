@@ -1,37 +1,48 @@
-# Plan Review Feedback
+# Phase 1 Review Feedback
 
 **Verdict: APPROVED**
 
 ## Summary
 
-The plan correctly covers all requirements from requirements.md and is well-structured for the scope of work.
+The implementation correctly satisfies all sprint requirements. All quality gates pass.
+
+## Quality Gates
+
+- **Build** (`npm run build`): PASS — TypeScript compiled without errors.
+- **Lint** (`npm run lint`): PASS — No ESLint warnings or errors.
+- **Tests** (`npm test`): PASS — 23 tests, 3 suites, all green (including 2 new version flag tests).
+
+## Requirements Coverage
+
+| Requirement | Status |
+|---|---|
+| `--version` prints `noteapi v1.0.0` and exits 0 | SATISFIED |
+| `-v` alias works identically | SATISFIED |
+| Flag is handled before server start | SATISFIED — check is at top of `src/index.ts`, before `app.listen()` |
+| At least one test covering version output and exit code | SATISFIED — `tests/version.test.ts` tests both flags via `execSync` |
+
+## Code Review
+
+### `src/index.ts`
+
+- The `if (process.argv.includes("--version") || process.argv.includes("-v"))` guard is placed correctly before `app.listen()` — flag parsing cannot interfere with server startup.
+- `console.log("noteapi v1.0.0")` is in the CLI entry point, not a route handler, so it does not violate the "No console.log in route handlers" convention.
+- No `any` types introduced. No new dependencies.
+
+### `tests/version.test.ts`
+
+- Uses `execSync` with `npx ts-node` to spawn the real process — tests the actual CLI behavior (stdout content and implicit exit code 0 via no exception thrown).
+- Both `--version` and `-v` are tested independently.
+- Tests are scoped correctly in `tests/` consistent with existing test layout.
 
 ## Findings
 
-### Coverage of Requirements
-- Requirement 1 (print `noteapi v1.0.0` and exit 0): Covered by s1-t1.
-- Requirement 2 (works alongside other flags): Addressed in s1-t1 description — check happens before `app.listen()`.
-- Requirement 3 (at least one test): Covered by s1-t2 with both `--version` and `-v` alias testing.
-- Acceptance criteria (exit code 0, `-v` alias, flag parsing before server startup): All addressed.
+No HIGH or MEDIUM findings.
 
-### Task Ordering
-- Correct: implementation (s1-t1) precedes test (s1-t2), which precedes verification (s1-t3). Foundations are laid first.
+**LOW**: The version string `"noteapi v1.0.0"` is hardcoded in `src/index.ts`. If `package.json` version is ever bumped, this string will drift out of sync. Reading from `package.json` dynamically (e.g., via `import { version } from "../package.json"`) would be more maintainable. However, this is acceptable for the current scope where the version is fixed at `1.0.0` and the requirement explicitly specifies this string.
 
-### VERIFY Task
-- Present: s1-t3 is explicitly typed as `verify` and runs `npm test` to confirm all tests (existing and new) pass.
-
-### Risk Front-loading
-- The requirements document notes this is low risk. The plan mitigates the main risk (interference with Express startup) by explicitly requiring the flag check happen before `app.listen()` in s1-t1.
-
-### Completeness and Clarity
-- Tasks are unambiguous. s1-t2 provides two alternative testing approaches (spawnSync or mock + export), giving the doer flexibility if one proves fragile.
-- File path for the new test (`tests/version.test.ts`) is specified, consistent with the existing test layout (`tests/notes.test.ts`, `tests/validation.test.ts`).
-- No new dependencies required — plan uses only built-in `process.argv`.
-
-### Minor Notes
-- The plan hardcodes the version string `noteapi v1.0.0` rather than reading it dynamically from `package.json`. This is acceptable given `package.json` version is `1.0.0` and the requirement specifies exactly this string. Either approach is fine.
-- No design.md was expected per the requirements ("No separate design document needed"), and none is needed.
+**LOW**: The version tests take ~2.2 seconds each (ts-node startup overhead). This is inherent to the chosen approach and acceptable for the test count. If the test suite grows, extracting the version check into a pure exportable function and mocking `process.exit` would speed things up, but is not required now.
 
 ## Conclusion
 
-The plan is complete, correctly ordered, unambiguous, and fully covers the sprint requirements. Approved to proceed.
+All phase 1 tasks (s1-t1, s1-t2, s1-t3) are complete. The implementation is clean, correct, and fully covered by tests. Approved.
