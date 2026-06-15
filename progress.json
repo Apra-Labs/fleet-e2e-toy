@@ -6,7 +6,7 @@
   "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s1-xpWVdd/repo-wt/s1",
   "transport": "remote",
   "epic": "gh-toy-zlb",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "s1-t1",
@@ -42,5 +42,10 @@
       "notes": "PASS: npm test - 23 tests passed, 3 test suites passed. PASS: npm run lint - no errors."
     }
   ],
-  "dispatches": []
+  "dispatches": [
+    { "seq": 1, "role": "planner", "model": "default", "phase": null, "tasks": [], "tokens": 19012, "toolUses": 9, "ms": 40131 },
+    { "seq": 2, "role": "plan-reviewer", "model": "sonnet", "phase": null, "tasks": [], "tokens": 18328, "toolUses": 7, "ms": 35075 },
+    { "seq": 3, "role": "doer", "model": "haiku", "phase": 1, "tasks": ["s1-t1","s1-t2","s1-t3"], "tokens": 34057, "toolUses": 42, "ms": 157304 },
+    { "seq": 4, "role": "reviewer", "model": "sonnet", "phase": 1, "tasks": [], "tokens": 25061, "toolUses": 14, "ms": 66852 }
+  ]
 }
