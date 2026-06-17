@@ -22,7 +22,21 @@ const argv = yargs(hideBin(process.argv))
       demandOption: true,
     });
   })
-  .command('create', 'Create a note')
+  .command('create', 'Create a note', (yargs) => {
+    return yargs
+      .option('title', {
+        alias: 't',
+        describe: 'Note title',
+        type: 'string',
+        demandOption: true,
+      })
+      .option('content', {
+        alias: 'c',
+        describe: 'Note content',
+        type: 'string',
+        demandOption: true,
+      });
+  })
   .command('update', 'Update a note')
   .command('delete', 'Delete a note')
   .help()
