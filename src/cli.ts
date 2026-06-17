@@ -14,7 +14,14 @@ const argv = yargs(hideBin(process.argv))
       type: 'string',
     });
   })
-  .command('read', 'Read a note')
+  .command('read', 'Read a note', (yargs) => {
+    return yargs.option('id', {
+      alias: 'i',
+      describe: 'Note ID to read',
+      type: 'string',
+      demandOption: true,
+    });
+  })
   .command('create', 'Create a note')
   .command('update', 'Update a note')
   .command('delete', 'Delete a note')
