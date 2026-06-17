@@ -51,7 +51,7 @@
     {
       "id": 9,
       "name": "Build and configure package.json",
-      "status": "pending",
+      "status": "completed",
       "model": "default"
     },
     {
