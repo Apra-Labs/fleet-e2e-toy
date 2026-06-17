@@ -4,10 +4,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 const argv = yargs(hideBin(process.argv))
-  .option('version', {
-    alias: 'v',
-    describe: 'Show version number',
-    type: 'boolean',
-  })
+  .version('fleet-e2e-toy v1.0.0')
+  .alias('v', 'version')
   .help()
   .argv;
