@@ -30,6 +30,36 @@ npm test        # 21 tests, all passing
 npm start       # http://localhost:3000
 ```
 
+## CLI Usage
+
+The NoteAPI includes a CLI tool for interacting with the API from the command line.
+
+```bash
+# Show version
+noteapi --version
+
+# Show help
+noteapi --help
+
+# Start the server
+noteapi start
+noteapi start --port 8080
+
+# List all notes
+noteapi list
+
+# Get a note by ID
+noteapi get <id>
+
+# Create a new note
+noteapi create --title "My Note" --content "Hello World"
+noteapi create --title "Tagged" --content "With tags" --tags "work,important"
+
+# Delete a note
+noteapi delete <id>
+noteapi delete <id> --force  # Skip confirmation
+```
+
 ## API Endpoints
 
 | Method | Path | Description |

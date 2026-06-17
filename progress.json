@@ -48,7 +48,7 @@
     {
       "id": 10,
       "name": "Update README and package.json bin",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
