@@ -57,7 +57,7 @@
     {
       "id": 10,
       "name": "Integration tests",
-      "status": "pending",
+      "status": "completed",
       "model": "default"
     }
   ]
