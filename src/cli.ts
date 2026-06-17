@@ -56,7 +56,14 @@ const argv = yargs(hideBin(process.argv))
         type: 'string',
       });
   })
-  .command('delete', 'Delete a note')
+  .command('delete', 'Delete a note', (yargs) => {
+    return yargs.option('id', {
+      alias: 'i',
+      describe: 'Note ID to delete',
+      type: 'string',
+      demandOption: true,
+    });
+  })
   .help()
   .alias('h', 'help')
   .example('$0 --version', 'Show version')
