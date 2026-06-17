@@ -37,7 +37,25 @@ const argv = yargs(hideBin(process.argv))
         demandOption: true,
       });
   })
-  .command('update', 'Update a note')
+  .command('update', 'Update a note', (yargs) => {
+    return yargs
+      .option('id', {
+        alias: 'i',
+        describe: 'Note ID to update',
+        type: 'string',
+        demandOption: true,
+      })
+      .option('title', {
+        alias: 't',
+        describe: 'New title',
+        type: 'string',
+      })
+      .option('content', {
+        alias: 'c',
+        describe: 'New content',
+        type: 'string',
+      });
+  })
   .command('delete', 'Delete a note')
   .help()
   .alias('h', 'help')
