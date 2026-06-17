@@ -1,0 +1,54 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Add yargs dependency",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "name": "Create CLI entry point with --version flag",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "Add --help flag with usage info",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "name": "Add start command for server",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "Add list command for notes",
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "name": "Add get command for notes",
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "name": "Add create command for notes",
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "name": "Add delete command for notes",
+      "status": "pending"
+    },
+    {
+      "id": 9,
+      "name": "Write CLI tests",
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "name": "Update README and package.json bin",
+      "status": "pending"
+    }
+  ]
+}
