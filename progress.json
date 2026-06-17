@@ -1,0 +1,64 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Create CLI entry point",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 2,
+      "name": "Add --version flag",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 3,
+      "name": "Add --help flag",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 4,
+      "name": "Create list command structure",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 5,
+      "name": "Create read command structure",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 6,
+      "name": "Create create command structure",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 7,
+      "name": "Create update command structure",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 8,
+      "name": "Create delete command structure",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 9,
+      "name": "Build and configure package.json",
+      "status": "pending",
+      "model": "default"
+    },
+    {
+      "id": 10,
+      "name": "Integration tests",
+      "status": "pending",
+      "model": "default"
+    }
+  ]
+}
