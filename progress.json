@@ -77,5 +77,7 @@
       "reviewer_model": "claude-opus-4-8"
     }
   ],
-  "token_log": []
+  "token_log": [
+    {"agent":"plan-reviewer-r0","model":"claude-sonnet-4-6","tokens":{"input":12800,"output":1950,"cache_read":0}}
+  ]
 }

@@ -302,3 +302,182 @@ The `feat/p1-cli-features` branch cannot be approved for Phase 2 for the followi
   mode, edit `src/cli/run.ts` (not `src/cli.ts`).
 - Remove `plan.md` and `progress.md` from the branch.
 - Push all commits and verify CI is green before requesting re-review.
+
+---
+
+# CLI Features Sprint -- Plan Review (PLAN.md + progress.json structural validation)
+
+**Reviewer:** claude-sonnet-4-6 (plan-reviewer-r0)
+**Date:** 2026-06-18 00:00:00+00:00
+**Verdict:** APPROVED
+
+> See the recent git history of this file to understand the context of this review.
+> Prior entries: reviewer-p1-i1 (APPROVED Phase 1 code), reviewer-p2-i1 (CHANGES NEEDED Phase 2 code).
+> This entry is a structural validation of PLAN.md and progress.json as plan documents.
+
+---
+
+## Structural Checks
+
+### Phases Array Not Empty
+
+PASS. `progress.json` contains 3 phases (IDs "1", "2", "3"). All are present and non-empty.
+
+### Tasks Array Not Empty
+
+PASS. `progress.json` contains 8 tasks (IDs 1.1, 1.2, 1.3, 2.1, 2.2, 3.1, 3.2, 3.3). All are
+present and non-empty.
+
+### Each Phase Has a Verify Task
+
+PASS.
+- Phase 1: Task 1.3 "VERIFY Phase 1" (type: verify in PLAN.md).
+- Phase 2: Task 2.2 "VERIFY Phase 2" (type: verify in PLAN.md).
+- Phase 3: Task 3.3 "VERIFY Phase 3" (type: verify in PLAN.md).
+
+All three phases have an explicit verification gate.
+
+### Each Phase Has "model" and "reviewer_model"
+
+PASS. All three phase objects in `progress.json` include both fields:
+- Phase 1: `model: claude-sonnet-4-6`, `reviewer_model: claude-opus-4-8`
+- Phase 2: `model: claude-haiku-4-5-20251001`, `reviewer_model: claude-sonnet-4-6`
+- Phase 3: `model: claude-opus-4-8`, `reviewer_model: claude-opus-4-8`
+
+### All Model IDs Are in the Allowed Set
+
+PASS. The allowed set is: `claude-haiku-4-5-20251001`, `claude-sonnet-4-6`, `claude-opus-4-8`.
+
+Checking every model ID across phases and tasks:
+- Phase models: claude-sonnet-4-6, claude-haiku-4-5-20251001, claude-opus-4-8 -- all valid.
+- Phase reviewer_models: claude-opus-4-8, claude-sonnet-4-6, claude-opus-4-8 -- all valid.
+- Task models: claude-sonnet-4-6 (tasks 1.1, 1.2, 1.3, 3.1, 3.2), claude-haiku-4-5-20251001
+  (tasks 2.1, 2.2), claude-opus-4-8 (task 3.3) -- all valid.
+
+No disallowed model IDs found anywhere in the document.
+
+---
+
+## Plan Quality Checks
+
+### Done Criteria
+
+PASS. Every task in PLAN.md states explicit done criteria:
+- Tasks 1.1 and 1.2: "build + lint clean; `npm run cli -- somecommand` and `--json somecommand` work."
+- Task 2.1: version flag text/json output, exit 0, precedence over subcommands.
+- Tasks 3.1 and 3.2: "npm run build clean; npm test green including the two new suites; [specific
+  manual verification steps]."
+- Verify tasks (1.3, 2.2, 3.3): checklist items the reviewer confirms against committed state.
+
+All criteria are sufficiently concrete that two different developers would agree on whether they
+are met.
+
+### Cohesion and Coupling
+
+PASS. Each phase is a coherent unit:
+- Phase 1: foundation only -- parser, output abstraction, runner. No feature logic.
+- Phase 2: single feature (--version) building on the Phase 1 abstraction.
+- Phase 3: two tightly coupled features (JSON mode + SIGINT) that share a single code path and
+  data model (temp-file registry, OutputWriter error contract). Grouping them into one phase is
+  the right call -- the plan's rationale ("both depend on the OutputWriter error contract and on a
+  temp-file registry") is sound.
+
+### Key Abstractions Front-Loaded
+
+PASS. Phase 1 establishes `ParsedArgs`, `OutputWriter`, and `run()` before any feature work
+begins. PLAN.md explicitly instructs Phase 3 doers to reuse these and not reinvent them.
+
+### Riskiest Assumption Validated First
+
+PASS. The riskiest assumption (TypeScript strict compilation with `resolveJsonModule` + `import
+pkg from package.json`, hand-rolled parser, `process.stdout` spy pattern for tests) is validated
+in Phase 1 Task 1.1 before any feature work begins. Phase 1 is APPROVED and verified.
+
+### DRY
+
+PASS. PLAN.md contains an explicit DRY constraint at the top of Phase 3: "every task below MUST
+reuse `parseArgs`, `OutputWriter`/`createOutputWriter`, and `run()` from Phase 1."
+
+### Phase Boundaries at Cohesion Boundaries
+
+PASS. See cohesion check above. Each phase boundary falls where a logical unit closes: foundation,
+first feature, combined final features.
+
+### Model Assignments and Streaking
+
+NOTE. There is a minor inconsistency between phase-level and task-level model assignments in Phase 3.
+`progress.json` phase 3 `model` is `claude-opus-4-8`, but PLAN.md tasks 3.1 and 3.2 (the work
+tasks) specify `model: claude-sonnet-4-6`. The task-level model is authoritative for dispatching
+the doer; the phase-level `model` appears to have been set incorrectly in `progress.json` for
+Phase 3. This inconsistency does not block the plan (all model IDs are valid and the task-level
+assignments determine actual dispatch), but the phase-level field should be corrected to
+`claude-sonnet-4-6` to match tasks 3.1 and 3.2, with `claude-opus-4-8` reserved for the reviewer
+role (already correctly set as `reviewer_model`). This is a low-severity data quality issue.
+
+Tasks 3.1 and 3.2 are both `claude-sonnet-4-6`, which correctly batches them into a single
+streak. Task 3.3 (VERIFY) is `claude-opus-4-8` as assigned by the orchestrator.
+
+### Each Task Completable in One Dispatch
+
+PASS. Task 3.1 is the largest (two new source files + two new test files + edit to run.ts) but the
+scope is tightly bounded and the plan provides exact file names, export signatures, and test
+cases. A single dispatch can complete it. Task 3.2 is smaller (one new source file + edit to
+index.ts + one test file). Both fit within a single model context.
+
+### Dependencies Satisfied in Order
+
+PASS. Phase 3 depends on Phase 1 abstractions (APPROVED) and Phase 2 (APPROVED on
+`temp-requirements`). Task 3.2 (SIGINT) depends on 3.1 (tempfiles registry for cleanupAll import)
+-- and 3.2 is listed after 3.1. Verify task 3.3 is last in Phase 3.
+
+### No Vague Tasks
+
+PASS. Task specifications include exact function signatures (`createSigintHandler(deps: { cleanup:
+() => void; write: (s: string) => void; exit: (code: number) => void }): () => void`), exact
+export names, exact output strings (`Interrupted.\n`, exit code 130), and exact test scenarios.
+No ambiguity exists for two developers reading the same task.
+
+### No Hidden Dependencies
+
+PASS. The one inter-task dependency within Phase 3 (3.2 imports `cleanupAll` from the
+`tempfiles.ts` created in 3.1) is explicitly called out in the plan.
+
+### Risk Register
+
+PASS. A risk register is present with three items: JSON-mode SIGINT scope exclusion, Windows
+Ctrl-C semantics, and stale `dist/` artifacts. The Windows platform risk is correctly mitigated
+(unit test with injected fakes is the binding gate; manual Ctrl-C is confirmatory only). All
+relevant risks are identified.
+
+### Requirements Alignment
+
+PASS. All three requirements from `requirements.md` are fully addressed:
+- gh-toy-4ef (--version): completed in Phase 2, verified on `temp-requirements`.
+- gh-toy-69s (SIGINT): specified in Phase 3 Task 3.2 with correct output (`Interrupted.`, exit
+  130, no stack trace, partial file cleanup) and verifiable unit test.
+- gh-toy-aqd (--json): specified in Phase 3 Task 3.1 with real subcommand, success JSON, error
+  JSON, and text-mode defaults.
+
+The trailing boilerplate in requirements.md ("API handlers go in src/api/...") is correctly
+identified in PLAN.md as irrelevant copied context -- the plan solves CLI behaviors, not HTTP API
+behaviors. Requirements intent is correctly understood.
+
+---
+
+## Summary
+
+PLAN.md and progress.json pass all structural validation checks: phases array is non-empty,
+tasks array is non-empty, every phase has a verify task, every phase has `model` and
+`reviewer_model` fields, and all model IDs belong to the allowed set
+(`claude-haiku-4-5-20251001`, `claude-sonnet-4-6`, `claude-opus-4-8`).
+
+Plan quality is high: done criteria are concrete, cohesion is strong within phases, coupling is
+low between them, key abstractions are front-loaded in Phase 1, the riskiest assumption is
+validated first, DRY is enforced by explicit constraint, and all three requirements are addressed.
+
+One low-severity data quality note: `progress.json` Phase 3 `model` field is `claude-opus-4-8`
+but PLAN.md assigns `claude-sonnet-4-6` to the work tasks (3.1, 3.2). The task-level field is
+authoritative and all IDs are valid, so this does not block approval. The orchestrator should
+correct the phase-level `model` to `claude-sonnet-4-6` at the next opportunity.
+
+**Verdict: APPROVED.** Phase 3 work may proceed.
