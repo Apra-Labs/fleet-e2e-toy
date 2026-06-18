@@ -65,9 +65,10 @@
       "id": "3.3",
       "title": "VERIFY Phase 3",
       "phase": "3",
-      "status": "verify",
-      "model": "claude-opus-4-8",
-      "notes": "All gates green: npm run build clean, npm run lint clean, npm test 55/55 passed across 8 suites. --json accepted on write subcommand; success JSON valid; error JSON on stdout; text-mode error on stderr; SIGINT handler unit-tested; temp-file registry unit-tested."
+      "status": "completed",
+      "commit": "ab5cb0c",
+      "model": "claude-haiku-4-5-20251001",
+      "notes": "Phase 3 verification complete: npm run build clean, npm run lint clean, npm test 55/55 passed across 8 suites. --json accepted on write subcommand with valid JSON output; error JSON on stdout with non-zero exit; text-mode error on stderr; SIGINT handler (4 tests) calls cleanup→write→exit(130); temp-file registry (4 tests) register/list/cleanup/best-effort delete; both OutputWriter.error() branches covered (text stderr + JSON stdout). Working tree clean."
     }
   ],
   "phases": [
