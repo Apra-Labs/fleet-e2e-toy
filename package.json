@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "REST API for managing notes with tags and search — demo project for Agentic AI Workshop (Advanced)",
   "main": "dist/index.js",
+  "bin": {
+    "fleet-e2e-toy": "dist/cli/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts",
+    "cli": "ts-node src/cli/index.ts",
     "test": "jest --verbose",
     "test:coverage": "jest --coverage",
     "lint": "eslint src/ tests/ --ext .ts",

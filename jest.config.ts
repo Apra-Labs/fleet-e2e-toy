@@ -5,7 +5,7 @@ const config: Config = {
   testEnvironment: "node",
   roots: ["<rootDir>/tests"],
   testMatch: ["**/*.test.ts"],
-  collectCoverageFrom: ["src/**/*.ts", "!src/index.ts"],
+  collectCoverageFrom: ["src/**/*.ts", "!src/index.ts", "!src/cli/index.ts"],
 };
 
 export default config;
