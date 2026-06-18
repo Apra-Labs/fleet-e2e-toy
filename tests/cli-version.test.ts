@@ -10,13 +10,13 @@ describe("cli-version", () => {
     outputs = [];
     errors = [];
 
-    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation((str: string | Buffer) => {
-      outputs.push(String(str));
+    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation((chunk: unknown) => {
+      outputs.push(String(chunk));
       return true;
     });
 
-    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation((str: string | Buffer) => {
-      errors.push(String(str));
+    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation((chunk: unknown) => {
+      errors.push(String(chunk));
       return true;
     });
   });
