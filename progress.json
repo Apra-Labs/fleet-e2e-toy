@@ -29,15 +29,18 @@
       "id": "2.1",
       "title": "Implement and test --version",
       "phase": "2",
-      "status": "pending",
-      "model": "claude-haiku-4-5-20251001"
+      "status": "completed",
+      "model": "claude-haiku-4-5-20251001",
+      "commit": "ec8aa1d",
+      "notes": "Edited src/cli/run.ts to handle --version and -v flags with version sourced from package.json. Created tests/cli-version.test.ts with 4 test cases. All 43 tests pass, lint clean, build succeeds."
     },
     {
       "id": "2.2",
       "title": "VERIFY Phase 2",
       "phase": "2",
-      "status": "pending",
-      "model": "claude-haiku-4-5-20251001"
+      "status": "completed",
+      "model": "claude-haiku-4-5-20251001",
+      "notes": "Verified: --version/v flags exit 0, print exact string 'fleet-e2e-toy v1.0.0', JSON variant valid, precedence over subcommands works, version sourced from package.json. Manual tests pass. Build clean, lint pass, all 43 tests pass."
     },
     {
       "id": "3.1",
