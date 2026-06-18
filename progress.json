@@ -1,0 +1,81 @@
+{
+  "tasks": [
+    {
+      "id": "1.1",
+      "title": "Create CLI entrypoint, argv parser, and output abstraction",
+      "phase": "1",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "1.2",
+      "title": "Foundation tests",
+      "phase": "1",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "1.3",
+      "title": "VERIFY Phase 1",
+      "phase": "1",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "2.1",
+      "title": "Implement and test --version",
+      "phase": "2",
+      "status": "pending",
+      "model": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": "2.2",
+      "title": "VERIFY Phase 2",
+      "phase": "2",
+      "status": "pending",
+      "model": "claude-haiku-4-5-20251001"
+    },
+    {
+      "id": "3.1",
+      "title": "Temp-file registry + JSON output mode wiring",
+      "phase": "3",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "3.2",
+      "title": "SIGINT graceful shutdown",
+      "phase": "3",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "3.3",
+      "title": "VERIFY Phase 3",
+      "phase": "3",
+      "status": "pending",
+      "model": "claude-sonnet-4-6"
+    }
+  ],
+  "phases": [
+    {
+      "id": "1",
+      "title": "CLI Foundation (shared abstraction)",
+      "model": "claude-sonnet-4-6",
+      "reviewer_model": "claude-opus-4-8"
+    },
+    {
+      "id": "2",
+      "title": "--version flag (gh-toy-4ef, P1)",
+      "model": "claude-haiku-4-5-20251001",
+      "reviewer_model": "claude-sonnet-4-6"
+    },
+    {
+      "id": "3",
+      "title": "SIGINT handling + JSON output mode (gh-toy-69s P2, gh-toy-aqd P2)",
+      "model": "claude-sonnet-4-6",
+      "reviewer_model": "claude-opus-4-8"
+    }
+  ],
+  "token_log": []
+}
