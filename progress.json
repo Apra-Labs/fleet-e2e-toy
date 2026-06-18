@@ -4,15 +4,19 @@
       "id": "1.1",
       "title": "Create CLI entrypoint, argv parser, and output abstraction",
       "phase": "1",
-      "status": "pending",
-      "model": "claude-sonnet-4-6"
+      "status": "completed",
+      "model": "claude-sonnet-4-6",
+      "commit": "a7e57fc",
+      "notes": "Created src/cli/types.ts, parse.ts, output.ts, run.ts, index.ts. Added bin field and cli script to package.json. Added coverage exclusion for src/cli/index.ts in jest.config.ts. Build compiles clean; lint passes."
     },
     {
       "id": "1.2",
       "title": "Foundation tests",
       "phase": "1",
-      "status": "pending",
-      "model": "claude-sonnet-4-6"
+      "status": "completed",
+      "model": "claude-sonnet-4-6",
+      "commit": "a7e57fc",
+      "notes": "Created tests/cli-parse.test.ts (12 tests for parseArgs) and tests/cli-run.test.ts (6 tests for run() with stdout/stderr spies). All 39 tests pass."
     },
     {
       "id": "1.3",
