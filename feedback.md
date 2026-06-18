@@ -1,3 +1,156 @@
+# CLI Features Sprint -- Code Review (Phase 3: JSON output mode + SIGINT graceful shutdown)
+
+**Reviewer:** claude-opus-4-8 (reviewer-p3-i1)
+**Date:** 2026-06-18 01:22:42-04:00
+**Verdict:** APPROVED
+
+> See the recent git history of this file to understand the context of this review.
+> Prior entries below: Phase 1 re-review (APPROVED, ab5cb0c HEAD), Phase 2 --version
+> re-review (APPROVED), and the original plan/Phase-1/Phase-2 entries. This entry reviews
+> Phase 3 (gh-toy-aqd JSON mode + gh-toy-69s SIGINT) at HEAD ae60eba on temp-requirements.
+
+---
+
+## Context & Scope
+
+Branch `temp-requirements`, HEAD `ae60eba`, base `main`. Phase 3 is the only phase with new
+production work: `src/cli/tempfiles.ts` (registry), `src/cli/signals.ts` (SIGINT handler
+factory), the `write` subcommand added to `src/cli/run.ts`, and SIGINT wiring in
+`src/cli/index.ts`. Per the review model, scope spans Phases 1-3; Phases 1 and 2 were
+re-reviewed APPROVED in the prior entries and are unchanged at this HEAD. progress.json marks
+Tasks 3.1, 3.2, 3.3 `completed`.
+
+---
+
+## Working Tree, Build, Lint, Tests, CI
+
+PASS. `git status --porcelain` is empty -- the review ran against exactly the committed state.
+Local HEAD `ae60eba` equals `origin/temp-requirements` (0 commits ahead). `npm run build`
+(tsc, strict) compiles clean. `npm run lint` (eslint over src/ and tests/) is clean. `npm test`
+reports 55 passed / 55 total across 8 suites. CI is green on the exact HEAD: GitHub Actions run
+27738435098, `headSha=ae60ebae...`, `conclusion=success` on the temp-requirements branch.
+
+---
+
+## gh-toy-aqd -- JSON output mode (--json)
+
+PASS. The acceptance criteria are met:
+
+- **Accepted on any subcommand.** `--json` is a global flag parsed by `parseArgs`
+  (`src/cli/parse.ts`) independent of position, then threaded through `createOutputWriter`.
+  The plan's intent ("demonstrated by a real subcommand that produces structured output")
+  is satisfied by the new `write` subcommand in `run.ts`, not just the placeholder default.
+- **Output is valid JSON.** `tests/cli-json.test.ts` drives `run(["write", <tmp>, "--json"])`,
+  `JSON.parse`s stdout, and asserts it equals `{command:"write", path:<tmp>, status:"ok"}`.
+  In JSON mode the writer's `text()` is a no-op, so no human text interleaves into the JSON
+  stream -- the success test parses cleanly, confirming no stray output.
+- **Human-readable default.** `run(["write", <tmp>])` (no --json) emits `Wrote <tmp>` to stdout
+  and the test asserts the output is NOT a JSON object (`JSON.parse(...)` throws).
+- **Errors also JSON-formatted.** `run(["write", "--json"])` (missing filename) returns 1 and
+  emits `{"error":"write requires a filename"}` on stdout; the text-mode counterpart
+  `run(["write"])` returns 1 and emits `Error: write requires a filename` on stderr with no
+  stdout output. This exercises BOTH `OutputWriter.error()` branches, closing the item the
+  Phase 1 reviewer explicitly deferred to Phase 3. The non-zero exit on the error path matches
+  the plan's contract.
+
+NOTE (non-blocking, style): in `run.ts` the `write` success path calls `writer.text(...)` and
+`writer.json(...)` unconditionally rather than branching on `parsed.json` (as the `--version`
+path does). This is correct because the inactive method no-ops in each mode -- verified by the
+passing JSON success test that parses cleanly -- but it is slightly inconsistent with the
+mode-conditional style used elsewhere and relies on the writer's no-op contract for correctness.
+Acceptable as-is; worth keeping in mind if a future writer ever stops no-opping.
+
+---
+
+## gh-toy-69s -- SIGINT graceful shutdown
+
+PASS. The acceptance criteria are met:
+
+- **Prints `Interrupted.` and exits 130, no stack trace.** `src/cli/signals.ts` exports a pure,
+  injectable `createSigintHandler({cleanup, write, exit})` whose returned handler calls
+  `cleanup()` -> `write("Interrupted.\n")` -> `exit(130)`, in that order, and never throws or
+  rethrows (so no stack trace). `tests/cli-signals.test.ts` asserts the exact string,
+  `exit(130)`, and the call order with injected fakes -- the binding gate per the plan (real
+  Ctrl-C delivery under Windows/PowerShell is confirmatory only).
+- **No stdout corruption.** The shim (`src/cli/index.ts`) wires the handler to write to
+  `process.stderr`, so any JSON already emitted on stdout is not corrupted by the interrupt
+  message. This matches the plan's design decision.
+- **Partial output files cleaned up.** The handler's `cleanup` is wired to `cleanupAll` from the
+  temp-file registry. The `write` subcommand `register()`s the file it creates, so an interrupt
+  removes registered partial output. The registry's `cleanupAll` is best-effort (try/catch
+  around `fs.rmSync(path, {force:true})`) and never throws, tested directly.
+- **index.ts shim is the right home.** Process-level `SIGINT`/`process.exit` concerns live only
+  in the shim, which is excluded from coverage; the testable logic lives in `signals.ts`. DRY
+  constraint honored -- no parallel parser/runner/entrypoint introduced.
+
+---
+
+## Temp-file registry
+
+PASS. `src/cli/tempfiles.ts` exports exactly the three specified functions with no `any`:
+`register` (push), `cleanupAll` (best-effort delete + clear), `list` (returns a copy).
+`tests/cli-tempfiles.test.ts` covers register-then-list, the defensive-copy property (mutating
+the returned array does not affect the registry), real-file deletion + emptied list, and
+best-effort delete of a non-existent path (does not throw). Coverage is meaningful, not
+box-ticking.
+
+---
+
+## Test Quality
+
+PASS with one NOTE. New suites are focused and each case covers a distinct behavior (JSON
+success, text success, JSON error, text error; registry register/copy/delete/missing-path;
+signal order/string/code). No redundant overlap of concern.
+
+NOTE (non-blocking): in `tests/cli-signals.test.ts`, the case titled "does not throw even if
+cleanup throws internally" injects a no-op `cleanup` that never actually throws, so it does not
+exercise a throwing-cleanup scenario -- it only confirms the handler does not throw with
+well-behaved deps. The handler itself does not guard a throwing `cleanup` (a throw there would
+propagate and could surface a trace). Because the production wiring injects `cleanupAll`, which
+is itself try/catch-guarded and provably non-throwing, the end-to-end "no stack trace" guarantee
+holds. This is a test-naming/coverage nuance, not a correctness defect; not required for
+approval, but the title should be corrected or the test should inject a throwing cleanup to match
+its description.
+
+---
+
+## File Hygiene
+
+PASS. `git diff --name-only main..temp-requirements` lists only source (`src/cli/*.ts`), tests
+(`tests/cli-*.test.ts`), sprint tracking (PLAN.md, requirements.md, progress.json, feedback.md),
+and build config the CLI needs (package.json, jest.config.ts). No temp/scratch files, no
+tool/harness config, no stale `plan-NNN`/`progress-NNN` artifacts. No `console.log` and no `any`
+anywhere under `src/cli/` (grep-confirmed). `dist/` and `.beads/` are gitignored, not staged.
+
+---
+
+## Done-Criteria Check (PLAN.md Tasks 3.1-3.3)
+
+PASS. Task 3.1: tempfiles registry with the three exports, `write` subcommand replacing the
+placeholder dispatch, both new test suites green, both `error()` branches exercised -- all
+present. Task 3.2: `createSigintHandler` factory + shim wiring + signals test -- all present.
+Task 3.3 VERIFY: build/lint/test green, no any, no console.log, committed AND pushed, CI green
+on pushed HEAD `ae60eba`. Every done-criterion is satisfied.
+
+---
+
+## Summary
+
+Phase 3 (JSON output mode + SIGINT graceful shutdown) is APPROVED. Both issues meet their
+requirements.md acceptance criteria: `--json` is accepted on a real subcommand with valid-JSON
+success output, text default, and JSON-formatted errors on a non-zero exit; SIGINT prints
+exactly `Interrupted.`, exits 130 with no stack trace, and triggers best-effort cleanup of
+registered partial files. The Phase 1 deferred error-path coverage is now closed. Phases 1-2
+remain intact (no regression). Clean tree, green build/lint/55 tests, green CI on HEAD.
+
+Two non-blocking NOTEs for future polish: (1) the `write` success path calls both writer methods
+unconditionally instead of branching on mode (correct due to no-op contract); (2) the signals
+"does not throw even if cleanup throws" test does not actually inject a throwing cleanup -- its
+title overstates what it verifies. Neither affects correctness or acceptance; nothing is required
+before merge.
+
+---
+
 # CLI Features Sprint -- Code Review (Phase 1: CLI Foundation, re-review)
 
 **Reviewer:** claude-opus-4-8 (reviewer-p1-i1)
