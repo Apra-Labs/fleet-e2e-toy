@@ -1,58 +1,70 @@
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "npm run lint:fix 2\u003e/dev/null || true",
-            "type": "command"
-          }
-        ],
-        "matcher": "Write|Edit"
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "command": "bd prime",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "bash .claude/hooks/block-destructive.sh",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "bd prime",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ]
-  },
-  "mcpServers": {},
-  "permissions": {
-    "allow": [
-      "Bash(gh *)",
-      "Bash(git *)",
-      "Bash(npm test*)",
-      "Bash(npm run *)",
-      "Bash(npx jest*)"
-    ]
+  {
+    "hooks": {                                                                                                                                                                                                                                                                    
+      "PostToolUse": [
+        {
+          "hooks": [
+            {
+              "command": "npm run lint:fix 2>/dev/null || true",
+              "type": "command"
+            }
+          ],
+          "matcher": "Write|Edit"
+        }
+      ],
+      "PreCompact": [
+        {
+          "hooks": [
+            {
+              "command": "bd prime",
+              "type": "command"
+            }
+          ],
+          "matcher": ""
+        }
+      ],
+      "PreToolUse": [
+        {
+          "hooks": [
+            {
+              "command": "bash .claude/hooks/block-destructive.sh",
+              "type": "command"
+            }
+          ],
+          "matcher": "Bash"
+        }
+      ],
+      "SessionStart": [
+        {
+          "hooks": [
+            {
+              "command": "bd prime",
+              "type": "command"
+            }
+          ],
+          "matcher": ""
+        }
+      ]
+    },
+    "mcpServers": {},
+    "permissions": {
+      "allow": [
+        "Bash(gh *)",
+        "Bash(git *)",
+        "Bash(npm install)",
+        "Bash(npm install *)",
+        "Bash(npm ci)",
+        "Bash(npm ci *)",
+        "Bash(npm start)",
+        "Bash(npm start *)",
+        "Bash(npm test*)",
+        "Bash(npm run *)",
+        "Bash(npx jest*)",
+        "Bash(npx kill-port *)",
+        "Bash(curl *)",
+        "Bash(lsof *)",
+        "Bash(kill *)",
+        "Bash(fuser *)",
+        "Bash(pkill *)"
+      ]
+    }
   }
-}

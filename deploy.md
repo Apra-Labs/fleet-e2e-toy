@@ -3,7 +3,7 @@
 ## Deploy
 
 Install all npm dependencies, then compile the TypeScript source.
-Start the server in the background on port 3001 and wait a few seconds for it to become ready.
+Start the server in the background on port 3001 using `npm run start:test` and wait a few seconds for it to become ready.
 
 ## Smoke test
 
