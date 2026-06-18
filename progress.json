@@ -93,6 +93,7 @@
   ],
   "token_log": [
     {"agent":"plan-reviewer-r0","model":"claude-sonnet-4-6","tokens":{"input":12800,"output":1950,"cache_read":0}},
-    {"agent":"reviewer-p1-i1","model":"claude-opus-4-8","tokens":{"input":61000,"output":4200,"cache_read":0}}
+    {"agent":"reviewer-p1-i1","model":"claude-opus-4-8","tokens":{"input":61000,"output":4200,"cache_read":0}},
+    {"agent":"reviewer-p2-i1","model":"claude-sonnet-4-6","tokens":{"input":38000,"output":3200,"cache_read":0}}
   ]
 }
