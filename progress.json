@@ -57,8 +57,9 @@
       "id": "3.2",
       "title": "SIGINT graceful shutdown (testable handler + shim wiring)",
       "phase": "3",
-      "status": "pending",
-      "model": "claude-sonnet-4-6"
+      "status": "completed",
+      "model": "claude-sonnet-4-6",
+      "notes": "Created src/cli/signals.ts with createSigintHandler factory (injectable deps). Updated src/cli/index.ts shim to register SIGINT handler using cleanupAll and process.stderr. Added tests/cli-signals.test.ts (4 tests). 55 tests pass, build and lint clean."
     },
     {
       "id": "3.3",
