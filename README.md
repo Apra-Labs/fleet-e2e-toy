@@ -26,9 +26,32 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 55 tests, all passing
 npm start       # http://localhost:3000
 ```
+
+## CLI
+
+The project ships a `fleet-e2e-toy` CLI (built from `src/cli/`):
+
+```bash
+npm run build              # compile TypeScript
+npm run cli -- --version   # print version and exit
+npm run cli -- write out.txt           # write a file, human-readable output
+npm run cli -- write out.txt --json    # write a file, JSON output
+```
+
+### Global flags
+
+| Flag | Description |
+|------|-------------|
+| `--version`, `-v` | Print `fleet-e2e-toy v<version>` and exit 0 |
+| `--json` | Emit all output as JSON; errors as `{"error":"..."}` on stdout |
+| `--help`, `-h` | Parsed but not yet dispatched |
+
+### SIGINT handling
+
+Ctrl-C prints `Interrupted.` to stderr, runs best-effort cleanup of any files created during the run, and exits with code 130.
 
 ## API Endpoints
 
