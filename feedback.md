@@ -1,99 +1,137 @@
-# CLI Features Sprint -- Plan Review
+# CLI Features Sprint -- Code Review (Phase 1: CLI Foundation)
 
-**Reviewer:** claude-sonnet-4-6 (plan-reviewer-r0)
-**Date:** 2026-06-17 00:00:00+00:00
+**Reviewer:** claude-opus-4-8 (reviewer-p1-i1)
+**Date:** 2026-06-18 04:15:00+00:00
 **Verdict:** APPROVED
 
 > See the recent git history of this file to understand the context of this review.
+> The prior entry (commit 8da3ccf) was the **plan review** (APPROVED). This is the
+> first **code review**, covering Phase 1 (Tasks 1.1 and 1.2).
 
 ---
 
-## Structural Validity
+## Context & Scope
 
-PASS. The `phases` array in progress.json is non-empty (3 phases). The `tasks` array is non-empty (8 tasks). Every phase contains a verify task (1.3, 2.2, 3.3). Every phase entry in progress.json carries both `model` and `reviewer_model` fields. All model IDs are from the permitted set: `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`, and `claude-opus-4-8`. No structural violations found.
+Reviewing Phase 1 "CLI Foundation (shared abstraction)" on branch `temp-requirements`
+(sprint label `sprint/cli-features`). The named branch `sprint/cli-features` does not exist
+locally or on the remote; `temp-requirements` is the active working branch carrying the sprint
+tracking files (PLAN.md, requirements.md, progress.json, feedback.md) and the Phase 1 work.
+HEAD is `48162f2`.
 
----
+Phase 1 commits reviewed:
+- `a7e57fc` Tasks 1.1 & 1.2: CLI foundation -- entrypoint, parser, output abstraction, tests
+- `48162f2` Task 1.3: mark Phase 1 tasks complete in progress.json
 
-## Done Criteria (per task)
-
-PASS. Each work task defines observable completion conditions that two developers would interpret identically. Task 1.1's done criteria specify `npm run build` compiling clean and manual invocation producing placeholder output. Task 1.2's done criteria are `npm test` passing. Task 2.1's done criteria include both automated (`npm test`) and manual (`npm run cli -- --version` + exit code check) verification. Tasks 3.1 and 3.2 follow the same pattern. Verify tasks (1.3, 2.2, 3.3) describe what the reviewer confirms, not just "review this phase," which makes them actionable checklists rather than vague gates.
-
----
-
-## Cohesion and Coupling
-
-PASS. Phase 1 correctly co-locates all foundation concerns (parser, output writer, runner, types, shim, and their tests) because they share one data model (`ParsedArgs`) and one code path (`run()`). Separating them would force later tasks to re-open half-finished abstractions. Phase 2 is a single isolated code path (the `--version` branch in `run.ts`). Phase 3 co-locates SIGINT and JSON output mode because both depend on `OutputWriter` and the temp-file registry -- the rationale in the plan is sound: touching the signal/exit path twice would be riskier than doing it in one pass. Coupling between phases is minimal and unidirectional: Phase 2 imports from Phase 1 outputs; Phase 3 extends Phase 1 outputs.
-
----
-
-## Key Abstractions Front-Loaded
-
-PASS. `ParsedArgs`, `OutputWriter`, and `run()` are all defined in Phase 1, Task 1.1 -- before any feature task references them. The temp-file registry (`tempfiles.ts`) and signal abstraction (`signals.ts`) are introduced in Phase 3 alongside the tasks that need them, which is correct: they are not shared across phases, so introducing them earlier would be premature.
+progress.json marks Tasks 1.1 and 1.2 `completed`; Task 1.3 (VERIFY) is `pending` and is
+satisfied by this review.
 
 ---
 
-## Riskiest Assumption Validated in Task 1
+## Working Tree, Build, Lint, Tests
 
-PASS. The plan's "Critical discovery" section identifies the highest-risk assumption: there is no existing CLI to extend. Task 1.1 validates this by building and compiling the foundation (proving `tsconfig.json` constraints, ts-node compatibility, and `package.json` bin wiring) before any feature work proceeds. The plan also documents that yargs is only a transitive dependency, and the decision to avoid it is confirmed in Task 1.1's scope. The risk about Windows/ts-node shebang interaction is explicitly called out in Task 1.1's "Could block" note.
+PASS. `git status --porcelain` is empty -- clean tree, review ran against exactly the committed
+state. `npm run build` (tsc, strict mode) compiles with no errors. `npm run lint` (eslint) is
+clean. `npm test` reports 39 passed / 39 total across 4 suites, including the two new CLI suites
+(cli-parse: 12 tests, cli-run: 6 tests). Existing notes/validation suites still pass -- no
+regression.
 
----
-
-## DRY / Reuse of Early Abstractions
-
-PASS. Tasks 2.1, 3.1, and 3.2 all explicitly extend or edit the files created in Phase 1 (`run.ts`, `output.ts`, `index.ts`) rather than introducing parallel implementations. The `OutputWriter` interface is the single channel for all output in Phases 2 and 3. No duplicated error-formatting logic is introduced.
-
----
-
-## Phase Boundaries at Cohesion Boundaries
-
-PASS. Phase 1 produces a reviewable, testable increment: a compilable CLI with a passing test suite and observable placeholder output. Phase 2 produces a reviewable increment: `--version` is a complete, user-visible feature with its own test file. Phase 3 produces a reviewable increment: two acceptance criteria (SIGINT and JSON mode) that share enough implementation surface (writer, cleanup registry) to be a coherent unit. Each phase boundary is a natural stopping point for a reviewer.
+CI: green for HEAD `48162f2` (`test: completed success` via GitHub Actions on Apra-Labs/fleet-e2e-toy).
 
 ---
 
-## Model Assignments and Streak Clustering
+## Done Criteria (Task 1.1 -- entrypoint, parser, output abstraction)
 
-PASS. Tasks 1.1, 1.2, and 1.3 (Phase 1) are all assigned `claude-sonnet-4-6`, forming a single streak. Tasks 2.1 and 2.2 (Phase 2) are both `claude-haiku-4-5-20251001` -- appropriately sized for the simpler `--version` feature (one branch, one test file). Tasks 3.1, 3.2, and 3.3 (Phase 3) are all `claude-sonnet-4-6`, forming a streak for the more complex signal/JSON work. Reviewer models (`claude-opus-4-8` for Phases 1 and 3, `claude-sonnet-4-6` for Phase 2) are distinct from doer models where complexity warrants stronger review. Model-to-complexity fit is appropriate.
+PASS. Every file the plan specified exists with the specified shape:
+- `src/cli/types.ts` -- `ParsedArgs` and `OutputWriter` interfaces exactly as planned, no `any`.
+- `src/cli/parse.ts` -- hand-rolled `parseArgs`: recognizes `--version`/`-v`, `--json`,
+  `--help`/`-h`; first non-flag token becomes `command`; unknown flags preserved into `args`
+  (not fatal). No transitive yargs dependency pulled in, per the plan's decision.
+- `src/cli/output.ts` -- `createOutputWriter(json)` routes all output through
+  `process.stdout`/`process.stderr` (no `console.log`). Text mode: `text()` -> stdout,
+  `error()` -> `Error: <msg>` on stderr. JSON mode: `json()` -> serialized stdout,
+  `error()` -> `{"error":"<msg>"}` on stdout, `text()` suppressed. This matches the planned
+  error-formatting contract that Phases 2/3 will reuse.
+- `src/cli/run.ts` -- `async run(argv): Promise<number>` parses, builds writer, dispatches a
+  placeholder, returns an exit code, does NOT call `process.exit` (stays unit-testable). Good.
+- `src/cli/index.ts` -- thin shim with `#!/usr/bin/env node`, the only place `process.exit` is
+  called for normal flow. Correctly excluded from coverage in jest.config.ts (mirrors the
+  existing `!src/index.ts` exclusion).
+- `package.json` -- `bin.fleet-e2e-toy -> dist/cli/index.js` and `cli` ts-node script added.
+
+Manual checks from the plan's done criteria reproduced:
+- `npm run cli -- somecommand` -> `fleet-e2e-toy: command=somecommand`
+- `npm run cli -- --json somecommand` -> `{"status":"ok","command":"somecommand","args":[]}`
+  (valid JSON).
+
+Convention compliance: no `any` types and no `console.log` anywhere under `src/cli/` (grep
+confirmed). CLI stdout/stderr writes are appropriate here -- the CLAUDE.md `console.log` ban is
+scoped to route handlers, and the entrypoint correctly uses `process.stdout.write` regardless.
 
 ---
 
-## Single-Dispatch Completability
+## Done Criteria (Task 1.2 -- foundation tests)
 
-PASS. Each task is scoped to a small, bounded set of files. The largest task (1.1) creates five new files and edits two, all closely related. No task requires cross-cutting changes to more than one module boundary. Each task can be completed in a single agent dispatch without needing to wait for external state.
+PASS. Coverage is meaningful, not box-checking:
+- `tests/cli-parse.test.ts` (12 tests): each flag and alias (`--version`/`-v`, `--json`,
+  `--help`/`-h`), command extraction, command+positional args, flags-before-command,
+  mixed flag/command/arg ordering, unknown-flag preservation, flags-only (no command), and
+  empty argv defaults. This exercises every branch of `parseArgs`.
+- `tests/cli-run.test.ts` (6 tests): exit code, human text in default mode, valid-JSON in
+  `--json` mode (asserted via `JSON.parse`), command name in JSON, no-command in text (`(none)`),
+  no-command in JSON (`null`). Uses `process.stdout/stderr` spies with `mockRestore()` in
+  `afterEach`, so other suites are unaffected -- confirmed by the full suite passing.
 
----
-
-## Dependencies Satisfied in Order
-
-PASS. Task 1.2 (tests) depends on files from 1.1; 1.1 precedes it. Task 2.1 depends on `run.ts` from Phase 1; Phase 1 is a gate. Task 3.1 depends on the `OutputWriter` from Phase 1; Phase 1 is a gate. Task 3.2 depends on `tempfiles.ts` from Task 3.1; 3.1 precedes 3.2. No hidden ordering violations found.
-
----
-
-## Vague or Ambiguous Tasks
-
-PASS. The plan is specific enough that two developers would produce consistent implementations. File names, interface shapes, exact output strings, exit codes, and function signatures are all specified. The one area that could cause minor ambiguity -- what "demonstrable command" to add in Task 3.1 for temp-file testing -- is a low-stakes implementation detail, not a design decision, and does not constitute dangerous ambiguity.
+No redundant/overlapping tests of note; each asserts a distinct behavior.
 
 ---
 
-## Hidden Dependencies
+## Test Coverage Gap Assessment (not blocking)
 
-PASS. The only non-obvious dependency is that Task 3.2 (`index.ts` SIGINT wiring) needs the `tempfiles` module from Task 3.1, and that `signals.ts` needs `OutputWriter` from Phase 1. Both are called out explicitly in the task descriptions. No hidden cross-phase coupling was identified.
-
----
-
-## Risk Register
-
-PASS. The plan includes a risk register with three entries: JSON-mode SIGINT (intentionally out of scope with rationale), Windows Ctrl-C semantics (unit-test gate identified as binding), and `bin` execution path (dev vs. production invocation difference noted). All three are genuine, plan-level risks -- not implementation details. The acceptance of "JSON-mode SIGINT is out of scope" is defensible given the requirements only mandate `Interrupted.` + exit 130 + no stack trace, none of which require JSON formatting.
-
-One additional risk worth noting (not blocking): the `../../package.json` import from `src/cli/` may trigger a TypeScript `rootDir` error because the imported file is outside `rootDir: ./src`. The plan acknowledges this in Task 2.1's "Could block" and provides a mitigation (a typed re-export constant under `src/cli/`). The mitigation is sound; the risk is documented.
+NOTE. `OutputWriter.error()` (both the text-mode `Error: <msg>` stderr path and the json-mode
+`{"error":...}` path) is implemented in Phase 1 but not yet directly exercised by a test. This is
+**appropriately deferred**, not a Phase 1 hole: the plan routes error-path coverage to Phase 3
+Task 3.1 (`tests/cli-json.test.ts` asserts the error-under-json shape and non-zero return). There
+is no error-producing code path in the Phase 1 placeholder runner to test against yet. I am
+flagging it only so the Phase 3 reviewer confirms the `error()` paths do get covered when the
+first real error case lands; if Phase 3 ships without exercising both `error()` branches, that
+phase should not close.
 
 ---
 
 ## Requirements Alignment
 
-PASS. All three acceptance criteria from requirements.md are covered: `--version`/`-v` exits 0 with exact string (Phase 2), SIGINT prints `Interrupted.` and exits 130 with no stack trace and temp-file cleanup (Phase 3, Task 3.2), `--json` accepted on any subcommand with valid JSON output and JSON-formatted errors (Phase 3, Task 3.1). The plan correctly identifies that the boilerplate Express/supertest context in requirements.md is not relevant to the CLI work and does not let it distort the design.
+PASS (foundation-level). Phase 1 does not implement any of the three user-facing acceptance
+criteria (`--version`, SIGINT, `--json` mode) -- by design; those are Phases 2 and 3. What Phase 1
+delivers is the shared abstraction those features hang off: a parser that already recognizes the
+`--version`/`-v`/`--json` tokens, and an `OutputWriter` whose text/json/error contract matches the
+exact output strings the later acceptance criteria require (`fleet-e2e-toy v1.0.0`,
+`{"error":"..."}`). The foundation is correctly aligned with downstream requirements intent.
+
+---
+
+## File Hygiene
+
+PASS. `git diff --name-only main..temp-requirements` lists 13 files, all justifiable:
+- Sprint tracking: PLAN.md, requirements.md, progress.json, feedback.md.
+- CLI source: src/cli/{types,parse,output,run,index}.ts.
+- Tests: tests/cli-parse.test.ts, tests/cli-run.test.ts.
+- Config edits the plan explicitly called for: jest.config.ts (coverage exclusion for the shim),
+  package.json (bin + cli script).
+No scratch files (`*.tmp`, `*.base64`, `*.txt`), no harness/tool config (`.claude/settings.json`,
+`permissions.json`), no stale `plan-NNN`/`progress-NNN` artifacts.
 
 ---
 
 ## Summary
 
-The plan passes all structural checks: phases and tasks arrays are populated, every phase has a verify task, all phase entries carry both `model` and `reviewer_model`, and all model IDs are from the permitted set. The design is coherent: the shared abstraction (`ParsedArgs`, `OutputWriter`, `run()`) is established in Phase 1 before any feature task uses it, phase boundaries align with cohesion boundaries, model assignments match complexity, and all three requirements are fully covered. The risk register is present and addresses real risks. No blocking issues found.
+Phase 1 is solid and complete. The working tree is clean, build and lint are clean, all 39 tests
+pass, and CI is green on HEAD. Tasks 1.1 and 1.2 meet every done criterion in PLAN.md, including
+the manual `npm run cli` checks. The shared abstraction (`ParsedArgs`, `OutputWriter`, `run()`) is
+correctly front-loaded, kept unit-testable (no `process.exit` in `run`), and conforms to project
+conventions (no `any`, no `console.log`, errors wrapped as `{ error: ... }`). Test coverage of the
+foundation is meaningful. File hygiene is clean.
+
+One deferred item for the Phase 3 reviewer to track: `OutputWriter.error()`'s two branches are not
+yet directly tested -- they should be covered when the first real error path lands in Phase 3.
+
+Verdict: APPROVED. Task 1.3 (VERIFY Phase 1) is satisfied.
