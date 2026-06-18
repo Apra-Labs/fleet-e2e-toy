@@ -1,3 +1,133 @@
+# CLI Features Sprint -- Final Code Review (all phases, gh-toy-4ef / gh-toy-69s / gh-toy-aqd)
+
+**Reviewer:** claude-opus-4-8 (final-review)
+**Date:** 2026-06-18 05:30:00+00:00
+**Verdict:** APPROVED
+
+> See the recent git history of this file to understand the context of this review.
+> Prior entries below: Phase 3 (APPROVED, reviewer-p3-i1), Phase 1 re-review (APPROVED),
+> Phase 2 re-review (APPROVED), plus the original plan/Phase-1/Phase-2 entries and the
+> Phase 2 CHANGES NEEDED (861136c) that targeted the unrelated `feat/p1-cli-features` branch.
+> This is the consolidating final review across Phases 1-3 at HEAD 331c2b0 on temp-requirements,
+> re-running every gate against the committed state and re-verifying all three requirements.
+
+---
+
+## Context & Scope
+
+Branch `temp-requirements`, HEAD `331c2b0`, base `main`. The branch is 21 commits ahead of
+`main`, 0 behind. Per the review model, scope spans all phases (1-3). progress.json marks every
+task (1.1-3.3) `completed`. This pass independently re-verified the source, re-ran build/lint/the
+full test suite against the committed state, and confirmed CI on the exact HEAD -- it does not
+merely defer to the prior per-phase approvals.
+
+---
+
+## Working Tree, Build, Lint, Tests, CI
+
+PASS. `git status --porcelain` is empty -- the review ran against exactly the committed state, and
+local HEAD `331c2b0` equals `origin/temp-requirements`. `npm run build` (tsc, strict) compiles
+clean. `npm run lint` (eslint over `src/` and `tests/`) is clean. `npm test` reports 55 passed /
+55 total across 8 suites (cli-parse, cli-run, cli-version, cli-json, cli-tempfiles, cli-signals,
+validation, notes). CI is green on the exact HEAD: GitHub Actions run 27738743721,
+`headSha=331c2b0624...`, `conclusion=success`, `status=completed`.
+
+---
+
+## gh-toy-4ef -- --version flag (Phase 2)
+
+PASS. `src/cli/run.ts` short-circuits on `parsed.version` before any subcommand dispatch. Text
+mode prints `fleet-e2e-toy v1.0.0` (version sourced from `package.json` via `import pkg`, not
+hardcoded), exit 0; JSON mode prints `{"name":"fleet-e2e-toy","version":"1.0.0"}`. The `name`
+literal is intentionally `fleet-e2e-toy` (not `pkg.name`, which is `noteapi`) to satisfy the
+acceptance string. `tests/cli-version.test.ts` covers `--version`, `-v` alias, `--version --json`,
+and `--version notes` (precedence) -- all four acceptance facets. Re-confirmed against the file.
+
+---
+
+## gh-toy-aqd -- JSON output mode (--json) (Phase 3)
+
+PASS. `--json` is a global flag parsed positionally-independent by `parseArgs` and threaded
+through `createOutputWriter`. Acceptance demonstrated on a real `write` subcommand (not the
+placeholder): `run(["write", <tmp>, "--json"])` returns 0 and emits a single valid JSON document
+`{command,path,status}` (JSON-parsed in the test); default text mode emits `Wrote <tmp>` and the
+test asserts it is NOT a JSON object; the missing-filename error under `--json` returns 1 with
+`{"error":"write requires a filename"}` on stdout, and the text-mode error returns 1 with
+`Error: write requires a filename` on stderr and zero stdout. Both `OutputWriter.error()` branches
+are now exercised, closing the item the original Phase 1 review deferred. The JSON-success test
+parses cleanly, proving no human text interleaves into the JSON stream (text() no-ops in JSON
+mode). Verified in `src/cli/run.ts`, `src/cli/output.ts`, and `tests/cli-json.test.ts`.
+
+---
+
+## gh-toy-69s -- SIGINT graceful shutdown (Phase 3)
+
+PASS. `src/cli/signals.ts` exports a pure, injectable `createSigintHandler({cleanup, write, exit})`
+whose handler runs `cleanup()` -> `write("Interrupted.\n")` -> `exit(130)` in order and never
+throws/rethrows (no stack trace). `tests/cli-signals.test.ts` asserts the exact string, exit code
+130, and call order with injected fakes -- the binding gate (real Ctrl-C under Windows/PowerShell
+is confirmatory only). The shim `src/cli/index.ts` wires the handler to `process.stderr` (so any
+JSON already on stdout is uncorrupted) and to `cleanupAll`, so an interrupt removes registered
+partial output. `cleanupAll` (`src/cli/tempfiles.ts`) is best-effort (try/catch around
+`fs.rmSync(path,{force:true})`), tested against a real file and a missing path; `list()` returns
+a defensive copy, also tested. Process-level concerns live only in the coverage-excluded shim.
+
+---
+
+## Test Quality & Coverage
+
+PASS with one carried-forward NOTE. Each new suite case covers a distinct behavior (JSON success,
+text success, JSON error, text error; registry register/copy/delete/missing-path; signal
+order/string/code). No redundant overlap. Exposed surfaces -- parser branches, runner exit codes,
+both writer error branches, the registry trio, and the signal handler -- are all exercised.
+
+NOTE (non-blocking, carried from reviewer-p3-i1, still present at this HEAD): in
+`tests/cli-signals.test.ts` the case titled "does not throw even if cleanup throws internally"
+injects a non-throwing `cleanup`, so it does not actually exercise a throwing-cleanup path; the
+handler has no internal guard against a throwing `cleanup`. This is benign because production
+injects the try/catch-guarded `cleanupAll`, so the end-to-end "no stack trace" guarantee holds.
+Test-naming nuance, not a correctness defect -- not required for approval. A second non-blocking
+NOTE also carries forward: the `write` success path calls both `writer.text(...)` and
+`writer.json(...)` unconditionally (relying on the no-op contract) rather than branching on mode
+as the `--version` path does; correct as-is.
+
+---
+
+## File Hygiene
+
+PASS. `git diff --name-only main..temp-requirements` lists only: source (`src/cli/*.ts`), tests
+(`tests/cli-*.test.ts`), sprint tracking (PLAN.md, requirements.md, progress.json, feedback.md),
+and the build config the CLI requires (package.json adds a `bin` + `cli` script; jest.config.ts
+adds the `src/cli/index.ts` coverage exclusion). No temp/scratch files, no tool/harness config, no
+stale `plan-NNN`/`progress-NNN` artifacts. No `console.log` and no `any` under `src/cli/`. `dist/`
+and `.beads/` are gitignored, not staged. Every changed file is justified by the sprint.
+
+---
+
+## Done-Criteria Check (PLAN.md Tasks 1.1-3.3)
+
+PASS. Phase 1 foundation (parser, output writer, runner returning `Promise<number>` without
+`process.exit`, shim) is intact and was extended -- not forked -- by later phases (DRY constraint
+honored). Phase 2 `--version` meets every Task 2.1 done-criterion. Phase 3 Tasks 3.1/3.2 deliver
+the tempfiles registry, the `write` subcommand replacing the placeholder, the SIGINT factory +
+shim wiring, and all new test suites; Task 3.3 VERIFY (build/lint/test green, no any, no
+console.log, committed AND pushed, CI green) holds at this HEAD.
+
+---
+
+## Summary
+
+APPROVED. All three requirements meet their acceptance criteria: `--version`/`-v` prints
+`fleet-e2e-toy v1.0.0` (sourced from package.json) and exits 0 with a JSON variant and precedence
+over subcommands; `--json` is accepted on a real subcommand with valid-JSON success output, text
+default, and JSON-formatted errors on a non-zero exit; SIGINT prints exactly `Interrupted.`, exits
+130 with no stack trace, and triggers best-effort cleanup of registered partial files. The Phase 1
+deferred error-path coverage is closed. Clean tree; green build, lint, and 55/55 tests; green CI
+on HEAD 331c2b0. No file-hygiene issues. Two non-blocking test-polish NOTEs carry forward; neither
+affects correctness or acceptance, and nothing is required before merge.
+
+---
+
 # CLI Features Sprint -- Code Review (Phase 3: JSON output mode + SIGINT graceful shutdown)
 
 **Reviewer:** claude-opus-4-8 (reviewer-p3-i1)
