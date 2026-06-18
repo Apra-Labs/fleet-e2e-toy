@@ -1,211 +1,252 @@
 # Implementation Plan — CLI Features (gh-toy-4ef, gh-toy-69s, gh-toy-aqd)
 
+Branch: `temp-requirements` (canonical sprint branch; tracks `origin/temp-requirements`).
+
 ## Context & Findings (Phase 0 — Explore)
 
-**Source of truth:** `requirements.md` lists three issues. The boilerplate sentence in
-requirements.md ("API handlers go in src/api/ … supertest") is copied project context and is
-NOT relevant to these three issues — all three are **CLI** behaviors, not HTTP API behaviors.
+**Source of truth:** `requirements.md` lists three CLI issues. The trailing boilerplate in
+requirements.md ("API handlers go in src/api/ … supertest") is copied project context and is NOT
+relevant — all three issues are **CLI** behaviors, not HTTP API behaviors. Verified by reading the
+three acceptance criteria: each is about the command-line tool (`--version`, Ctrl-C, `--json`).
 
-**Critical discovery — there is no CLI to extend on this branch.**
-- The current branch (`temp-requirements`) has only the Express app: `src/app.ts`, `src/index.ts`,
-  `src/api/notes.ts`, `src/models/note.ts`, `src/utils/validation.ts`.
-- A `cli/README.md` exists *only on `main`* (commit `9a078c9`) and describes intended CLI features,
-  but contains **no actual CLI source code**. It is aspirational documentation, not an implementation.
-- Therefore this plan must **build a minimal CLI entrypoint first**, then layer the three features
-  onto it. The CLI is the shared abstraction every later task depends on (Phase 2 front-loading).
+**Current state of the branch (verified by reading source + running build/tests):**
+- A real CLI already exists under `src/cli/`: `types.ts`, `parse.ts`, `output.ts`, `run.ts`,
+  `index.ts`. This is the approved Phase 1 foundation (reviewer-p1-i1, APPROVED — see feedback.md).
+- `parseArgs(argv)` (`src/cli/parse.ts`) already recognizes `--version`/`-v`, `--json`,
+  `--help`/`-h`; first non-flag token is `command`; remaining tokens go to `args`; unknown flags are
+  preserved into `args` (non-fatal). Returns `ParsedArgs`. VERIFIED by reading the file.
+- `createOutputWriter(json)` (`src/cli/output.ts`) routes all output through
+  `process.stdout`/`process.stderr` (no `console.log`). Text mode: `text()` → stdout,
+  `error()` → `Error: <msg>` on stderr, `json()` is a no-op. JSON mode: `json()` → `JSON.stringify`
+  + newline to stdout, `error()` → `{"error":"<msg>"}` to stdout, `text()` is a no-op. VERIFIED.
+- `run(argv): Promise<number>` (`src/cli/run.ts`) parses args, builds the writer, handles
+  `--version` (text: `fleet-e2e-toy v${pkg.version}`; json: `{"name":"fleet-e2e-toy","version":...}`,
+  version sourced from `package.json`), then falls through to a **placeholder** default command that
+  prints `fleet-e2e-toy: command=<cmd>` (text) or `{"status":"ok","command":...,"args":...}` (json).
+  `run` does NOT call `process.exit` — it returns the exit code (kept unit-testable). VERIFIED.
+- `src/cli/index.ts` is a thin shim: `#!/usr/bin/env node` + `run(process.argv.slice(2)).then(code
+  => process.exit(code))`. This is the only place `process.exit` is called for normal flow. VERIFIED.
+- `--version` (gh-toy-4ef) is fully implemented and tested (`tests/cli-version.test.ts`, Phase 2,
+  reviewer verified on this branch). The CHANGES NEEDED entry in feedback.md targeted a *different*
+  out-of-band branch (`feat/p1-cli-features`) that ignored the foundation — NOT this branch. On
+  `temp-requirements` the version work matches the plan: sourced from package.json, JSON variant
+  present, precedence over subcommands. VERIFIED by reading run.ts + cli-version.test.ts.
 
-**Verified facts (assumptions checked):**
+**Verified build/test facts (assumptions checked by running them):**
+- `npm run build` (tsc, strict) compiles clean. VERIFIED (exit 0).
+- `npx jest` → 43 passed / 43 total across 5 suites (cli-parse 12, cli-run 6, cli-version 4,
+  validation, notes). VERIFIED.
+- `dist/cli/index.js` IS produced by the build, so the `bin` entry
+  (`"fleet-e2e-toy": "dist/cli/index.js"`) resolves. The `import pkg from "../../package.json"` in
+  run.ts does NOT shift the rootDir output layout. VERIFIED by listing `dist/cli/`.
+  (Note: `dist/` also contains stale artifacts — `cli.js`, `cli/apiClient.js`, `cli/commands.js`,
+  `cli/validators.js` — left over from other branches' builds. They are not in current `src/` and
+  are out of scope; `dist/` is gitignored build output, not a deliverable.)
 - `tsconfig.json`: `rootDir: ./src`, `outDir: ./dist`, `strict: true`, `resolveJsonModule: true`,
-  `esModuleInterop: true`. CLI source MUST live under `src/` to compile. Importing `package.json`
-  for the version string is supported (`resolveJsonModule`). VERIFIED by reading tsconfig.json.
-- `jest.config.ts`: `preset: ts-jest`, `roots: [<rootDir>/tests]`, `testMatch: ["**/*.test.ts"]`.
-  All tests MUST live in `tests/` and end in `.test.ts`. VERIFIED.
-- Test convention: plain unit tests import from `src/...` directly (see `tests/validation.test.ts`).
-  Supertest is used only for the HTTP app (`tests/notes.test.ts`). CLI tests will follow the
-  plain-unit-test pattern (import and invoke the CLI runner function), NOT supertest. VERIFIED.
-- `package.json` on this branch declares NO `bin` field and does NOT list `yargs` as a direct
-  dependency. `yargs@17.7.2` and `@types/yargs@17.0.35` exist in `node_modules`/lockfile only as
-  transitive deps. DECISION: do **not** rely on the transitive yargs; implement a tiny hand-rolled
-  argv parser (three flags + passthrough). This removes dependency-resolution risk and keeps the
-  foundation self-contained. VERIFIED by reading package.json + package-lock.json.
-- Project conventions (CLAUDE.md): no `any` types, no `console.log` in *route handlers* (CLI
-  entrypoint output is allowed and necessary — it is not a route handler), wrap errors as
-  `{ error: "message" }`. VERIFIED.
+  `esModuleInterop: true`. `jest.config.ts`: `preset ts-jest`, `roots: [tests]`,
+  `testMatch ["**/*.test.ts"]`, `collectCoverageFrom` excludes `src/index.ts` and `src/cli/index.ts`
+  (the two shims). VERIFIED.
+- CLI tests follow the plain-unit-test pattern (import + invoke the function, spy on
+  `process.stdout/stderr.write`, `mockRestore()` in `afterEach`); supertest is used only for the
+  HTTP app. VERIFIED by reading existing cli-*.test.ts.
+- `package.json` declares no `yargs` direct dependency; the parser is hand-rolled. No new external
+  deps are needed for the remaining work (`fs` is built-in). VERIFIED.
 
-**Design decisions resolving requirements ambiguity:**
-- Version string is exactly `fleet-e2e-toy v1.0.0` (literal, per acceptance criterion), sourced
-  from `package.json`'s `version` field formatted as `fleet-e2e-toy v${version}`.
-- `--version` and `-v` are aliases; both print the version and exit 0. `--version` takes precedence
-  over and short-circuits any subcommand (acceptance: "works alongside other flags").
-- SIGINT handler prints exactly `Interrupted.` to stderr, exits code 130, suppresses stack traces,
-  and removes any partial output files the CLI created during the run (tracked via a registry).
-- `--json` is a global flag accepted on any subcommand. When set: all normal output is a single
-  valid JSON document on stdout; errors are emitted as `{"error":"<message>"}` JSON (exit non-zero).
-  Default (no `--json`) is human-readable text. `--version` under `--json` prints
-  `{"name":"fleet-e2e-toy","version":"1.0.0"}`.
+**Carry-over note from the Phase 1 review (feedback.md):** `OutputWriter.error()` (both the
+text-mode `Error: <msg>` stderr branch and the json-mode `{"error":...}` branch) is implemented but
+not yet exercised by any test, because the placeholder runner has no error path. The Phase 1
+reviewer explicitly deferred this to Phase 3 and stated Phase 3 "should not close" unless both
+`error()` branches are covered. The remaining phase below MUST cover them.
+
+**Design decisions resolving requirements ambiguity (for the remaining work):**
+- **SIGINT (gh-toy-69s):** the handler prints exactly `Interrupted.` to **stderr**, removes any
+  partial output files the run created (via a temp-file registry), and exits with code **130**. No
+  stack trace is printed (the handler never throws; it calls `process.exit` directly). Because SIGINT
+  is handled in the shim (`index.ts`) which runs before/independent of per-command `--json` state, the
+  interrupt message is always the plain text `Interrupted.` on stderr — a JSON-shaped interrupt
+  message is explicitly out of scope (acceptance requires only the literal `Interrupted.` + exit 130
+  + no trace + cleaned partial files).
+- **`--json` (gh-toy-aqd):** `--json` is a global flag accepted on any subcommand. When set, all
+  normal command output is a single valid JSON document on stdout and errors are emitted as
+  `{"error":"<message>"}` on stdout with a **non-zero** exit code; default (no `--json`) is
+  human-readable text with errors as `Error: <msg>` on stderr. The acceptance "accepted on any
+  subcommand" is demonstrated by a real subcommand that produces structured output (not just the
+  placeholder) plus an error case, so both the success-JSON and error-JSON paths are observable.
 
 ---
 
-## Phase 1 — CLI Foundation (shared abstraction)
+## Phase 1 — CLI Foundation (shared abstraction) — COMPLETE
 
-Builds the entrypoint, argv parser, and output/exit abstractions that all three features use.
-This is one cohesive unit: the parser, the output writer, and the runner share one data model
-(`ParsedArgs`) and one code path (`run()`), so they belong in the same phase.
+Already implemented and APPROVED (reviewer-p1-i1). Listed for provenance; no work remains.
+The parser (`ParsedArgs`), output writer (`OutputWriter`), and runner (`run()`) are the shared
+abstractions every later task builds on. Do NOT reinvent them — reuse them.
 
-### Task 1.1 — Create CLI entrypoint, argv parser, and output abstraction
+### Task 1.1 — CLI entrypoint, argv parser, output abstraction — COMPLETE
 - **Type:** work
+- **Status:** completed (commit `a7e57fc`)
 - **Model:** claude-sonnet-4-6
-- **Files:**
-  - Create `src/cli/types.ts` — define `ParsedArgs` interface
-    (`{ command?: string; args: string[]; json: boolean; version: boolean; help: boolean }`)
-    and an `OutputWriter` interface (`{ text(s: string): void; json(o: unknown): void;
-    error(msg: string): void }`). No `any`.
-  - Create `src/cli/parse.ts` — export `parseArgs(argv: string[]): ParsedArgs`. Hand-rolled:
-    recognizes `--version`/`-v`, `--json`, `--help`/`-h`; first non-flag token is `command`;
-    remaining tokens go into `args`. Unknown flags are preserved into `args` (not fatal).
-  - Create `src/cli/output.ts` — export `createOutputWriter(json: boolean): OutputWriter`.
-    Text mode writes human strings to stdout via `process.stdout.write`; json mode buffers and
-    serializes with `JSON.stringify`. `error()` in text mode writes `Error: <msg>` to stderr; in
-    json mode writes `{"error":"<msg>"}` to stdout. Output goes through `process.stdout`/`stderr`
-    (NOT `console.log`).
-  - Create `src/cli/run.ts` — export `async function run(argv: string[]): Promise<number>` that
-    parses args, builds the writer, dispatches to a placeholder command (an `echo`/default command
-    that prints a recognizable string in both text and json modes), and returns an exit code.
-    `run` does NOT call `process.exit` (keeps it unit-testable); it returns the code.
-  - Create `src/cli/index.ts` — thin binary shim: `#!/usr/bin/env node`, calls
-    `run(process.argv.slice(2)).then(code => process.exit(code))`. This file is the only place
-    `process.exit` is allowed for normal flow.
-  - Edit `package.json` — add `"bin": { "fleet-e2e-toy": "dist/cli/index.js" }` and a script
-    `"cli": "ts-node src/cli/index.ts"`. Add `collectCoverageFrom` exclusion is not needed.
-  - Edit `jest.config.ts` — add `"!src/cli/index.ts"` to `collectCoverageFrom` (the shim is the
-    only un-unit-testable file, mirroring the existing `!src/index.ts` exclusion).
-- **Done when:** `npm run build` compiles with no errors; `npm run cli -- somecommand` prints the
-  placeholder output; `npm run cli -- --json somecommand` prints valid JSON. No `any` types; lint
-  passes (`npm run lint`).
-- **Could block:** ts-node ESM/shebang interaction on Windows — if the shebang causes issues under
-  `ts-node`, the `cli` script still works because ts-node ignores the shebang line.
+- **Files:** `src/cli/types.ts`, `src/cli/parse.ts`, `src/cli/output.ts`, `src/cli/run.ts`,
+  `src/cli/index.ts`; `package.json` (`bin` + `cli` script); `jest.config.ts` (coverage exclusion).
+- **Done:** build + lint clean; `npm run cli -- somecommand` and `--json somecommand` work.
 
-### Task 1.2 — Foundation tests
+### Task 1.2 — Foundation tests — COMPLETE
 - **Type:** work
+- **Status:** completed (commit `a7e57fc`)
 - **Model:** claude-sonnet-4-6
-- **Files:**
-  - Create `tests/cli-parse.test.ts` — unit tests for `parseArgs`: detects `--version`/`-v`,
-    `--json`, `--help`/`-h`; extracts command + args; preserves unknown flags.
-  - Create `tests/cli-run.test.ts` — calls `run([...])` and asserts the returned exit code and
-    captured stdout/stderr (spy on `process.stdout.write`/`process.stderr.write`). Covers text vs
-    json placeholder output. Follows the plain-unit-test pattern from `tests/validation.test.ts`
-    (no supertest).
-- **Done when:** `npm test` passes including the new files; existing tests still pass.
-- **Could block:** capturing `process.stdout.write` requires a spy/restore in `afterEach` — ensure
-  mocks are restored so other tests are unaffected.
+- **Files:** `tests/cli-parse.test.ts` (12 tests), `tests/cli-run.test.ts` (6 tests).
+- **Done:** full suite green.
 
-### Task 1.3 — VERIFY Phase 1
+### Task 1.3 — VERIFY Phase 1 — COMPLETE
 - **Type:** verify
-- The doer stops here. Reviewer confirms: CLI foundation compiles, `run()` is testable and returns
-  exit codes, output abstraction supports text+json, no `any`, no `console.log`, lint+tests green.
+- **Status:** completed (reviewer-p1-i1, APPROVED).
 
 ---
 
-## Phase 2 — `--version` flag (gh-toy-4ef, P1)
+## Phase 2 — `--version` flag (gh-toy-4ef, P1) — COMPLETE
 
-Smallest, lowest-risk feature; builds directly on the foundation. Isolated change (1 code path).
+Already implemented and verified on this branch. Listed for provenance; no work remains.
 
-### Task 2.1 — Implement and test `--version`
+### Task 2.1 — Implement and test `--version` — COMPLETE
 - **Type:** work
+- **Status:** completed (commits `6259c02`, `ec8aa1d`)
 - **Model:** claude-haiku-4-5-20251001
-- **Files:**
-  - Edit `src/cli/run.ts` — at the start of `run`, after parsing, if `parsed.version` is true:
-    in text mode write exactly `fleet-e2e-toy v1.0.0` to stdout; in json mode write
-    `{"name":"fleet-e2e-toy","version":"1.0.0"}`. Return `0`. The version number is read from
-    `package.json` (`import pkg from "../../package.json"`, allowed by `resolveJsonModule`) and
-    formatted as `fleet-e2e-toy v${pkg.version}` — do NOT hardcode the number.
-  - Verify version short-circuits before command dispatch so `--version somecommand` still prints
-    the version (acceptance: "works alongside other flags").
-  - Create `tests/cli-version.test.ts` — assert `run(["--version"])` and `run(["-v"])` return `0`
-    and print `fleet-e2e-toy v1.0.0`; assert `run(["--version","--json"])` prints the JSON form and
-    returns `0`; assert `run(["--version","notes"])` still prints version (precedence).
-- **Done when:** `npm test` passes; manual `npm run cli -- --version` prints `fleet-e2e-toy v1.0.0`
-  and `echo $?` / `$LASTEXITCODE` is 0.
-- **Could block:** importing JSON across `rootDir` — `../../package.json` is outside `src`. If tsc
-  complains, set the import to use `resolveJsonModule` (already on) and, if needed, add the file via
-  a typed `version` constant module under `src/cli/` that re-exports `pkg.version`; prefer the
-  direct JSON import first.
+- **Files:** `src/cli/run.ts` (version short-circuit, sourced from `package.json`),
+  `tests/cli-version.test.ts` (4 tests).
+- **Done:** `--version`/`-v` print `fleet-e2e-toy v1.0.0` and exit 0; `--version --json` prints
+  `{"name":"fleet-e2e-toy","version":"1.0.0"}`; `--version <cmd>` still prints version (precedence).
 
-### Task 2.2 — VERIFY Phase 2
+### Task 2.2 — VERIFY Phase 2 — COMPLETE
 - **Type:** verify
-- Reviewer confirms `--version`/`-v` exit 0, exact string, json variant valid, precedence over
-  subcommands, version sourced from package.json.
+- **Status:** completed (verified on `temp-requirements`; the CHANGES NEEDED feedback.md entry
+  applied to the unrelated `feat/p1-cli-features` branch, not this one).
 
 ---
 
-## Phase 3 — SIGINT handling + JSON output mode (gh-toy-69s P2, gh-toy-aqd P2)
+## Phase 3 — JSON output mode + SIGINT graceful shutdown (gh-toy-aqd P2, gh-toy-69s P2)
 
-These two features share one data model and code path: graceful exit and error formatting both
-depend on the `OutputWriter` and on a temp-file registry, and the SIGINT cleanup path must emit its
-message in a way consistent with `--json` error formatting. Implementing them together avoids
-touching the signal/exit code path twice. Cohesive unit → one phase.
+This is the only phase with remaining work. The two features share one code path and data model:
+both depend on the `OutputWriter` error contract and on a temp-file registry, and the SIGINT cleanup
+path must remove the same partial files that the JSON-producing command creates. Implementing them
+together avoids touching the signal/exit/output code twice. Cohesive unit → one phase. All three
+work tasks run on the same model (claude-sonnet-4-6) so they batch into one doer dispatch (one
+streak); the combined context (5 small CLI files + 3 test files) fits comfortably.
 
-### Task 3.1 — Temp-file registry + JSON output mode wiring
+DRY constraint: every task below MUST reuse `parseArgs`, `OutputWriter`/`createOutputWriter`, and
+`run()` from Phase 1. Do not introduce a parallel parser, a second output abstraction, or a new
+entrypoint.
+
+### Task 3.1 — Temp-file registry + a real JSON-capable subcommand
 - **Type:** work
 - **Model:** claude-sonnet-4-6
 - **Files:**
-  - Create `src/cli/tempfiles.ts` — a registry: `register(path: string): void`,
-    `cleanupAll(): void` (best-effort `fs.rmSync` with `{ force: true }`, swallow errors), and
-    `list(): string[]`. Used so SIGINT can remove partial output files (acceptance: "partial output
-    files cleaned up"). No `any`.
-  - Edit `src/cli/run.ts` / command dispatch — ensure every command emits through the
-    `OutputWriter` so `--json` produces a single valid JSON document and text mode stays default.
-    Add a demonstrable command that writes an output file (registered with the temp registry) so the
-    cleanup behavior is observable and testable.
-  - Edit `src/cli/output.ts` if needed so error formatting is identical between the SIGINT path and
-    normal errors (`{"error":"..."}` in json, `Error: ...` on stderr in text).
-  - Create `tests/cli-json.test.ts` — for a sample command, assert `--json` output parses with
-    `JSON.parse` and matches expected shape; assert default output is human text; assert an error
-    case under `--json` yields `{"error": "..."}` and a non-zero return code.
-- **Done when:** `npm test` passes; `npm run cli -- <cmd> --json` output passes `JSON.parse`;
-  error-under-json case returns non-zero and valid JSON.
-- **Could block:** ensuring JSON mode never interleaves stray text — all writes must route through
-  the writer; audit for any direct `process.stdout.write` outside the writer.
+  - Create `src/cli/tempfiles.ts` — a module-level registry with exactly three exports, no `any`:
+    - `register(path: string): void` — records a path the CLI created during the run.
+    - `cleanupAll(): void` — best-effort delete of every registered path using
+      `fs.rmSync(path, { force: true })` inside a try/catch that swallows errors (cleanup must never
+      throw), then clears the registry.
+    - `list(): string[]` — returns a copy of the currently registered paths (for tests).
+    Use Node's built-in `fs` (`import * as fs from "fs"`). No external deps.
+  - Edit `src/cli/run.ts` — replace the placeholder default dispatch with a small, real command so
+    `--json` acceptance is demonstrable. Add a `write <filename>` subcommand: it writes a file at
+    `<filename>` containing a fixed payload, calls `register(<filename>)`, and reports success.
+    - Text mode: `writer.text("Wrote " + filename)`.
+    - JSON mode: `writer.json({ command: "write", path: filename, status: "ok" })`.
+    - Keep the existing `--version` short-circuit and a sensible default for an unknown/empty command
+      (the current placeholder behavior is acceptable for the no-command case).
+    - Error path: if `write` is invoked with no filename, call `writer.error("write requires a
+      filename")` and return a **non-zero** exit code (e.g. `1`). This is the first real error path
+      and exercises BOTH `OutputWriter.error()` branches (text `Error: ...` on stderr; json
+      `{"error":"..."}` on stdout) — required to satisfy the Phase 1 reviewer's deferred item.
+    - All output MUST go through the `OutputWriter` — no direct `process.stdout.write` in run.ts
+      outside the writer. Audit and confirm.
+  - Create `tests/cli-tempfiles.test.ts` — unit tests for the registry: `register` then `list`
+    returns the path; `cleanupAll` deletes a real temp file created under `os.tmpdir()` and empties
+    `list()`; `cleanupAll` on a non-existent path does not throw (best-effort). Restore/cleanup any
+    real files in `afterEach`.
+  - Create `tests/cli-json.test.ts` — drive `run([...])` (reuse the stdout/stderr spy pattern from
+    `tests/cli-run.test.ts`, `mockRestore()` in `afterEach`):
+    - `run(["write", "<tmpfile>", "--json"])` → returns 0, stdout parses with `JSON.parse` and
+      equals `{ command: "write", path: "<tmpfile>", status: "ok" }`; the file exists afterward;
+      clean the file up in the test.
+    - `run(["write", "<tmpfile>"])` (text mode) → returns 0, stdout contains `Wrote <tmpfile>`,
+      stdout is NOT valid JSON-of-an-object (human text), file exists; clean up.
+    - `run(["write", "--json"])` (missing filename) → returns non-zero; stdout parses as
+      `{ error: "write requires a filename" }`.
+    - `run(["write"])` (missing filename, text mode) → returns non-zero; stderr contains
+      `Error: write requires a filename`.
+- **Done when:** `npm run build` clean; `npm test` green including the two new suites; manual
+  `npm run cli -- write out.txt --json` prints valid JSON and creates `out.txt`;
+  `npm run cli -- write out.txt` prints `Wrote out.txt`. No `any`; `npm run lint` clean.
+- **Could block:** test temp files must be written to a writable location (use `os.tmpdir()` +
+  unique names) and removed in `afterEach` so the suite is idempotent. Ensure JSON mode never
+  interleaves stray text — all writes route through the writer (audit run.ts).
 
-### Task 3.2 — SIGINT graceful shutdown
+### Task 3.2 — SIGINT graceful shutdown (testable handler + shim wiring)
 - **Type:** work
 - **Model:** claude-sonnet-4-6
 - **Files:**
-  - Edit `src/cli/index.ts` (the shim — the legitimate place for process-level concerns) — register
-    `process.on("SIGINT", handler)`. Handler: call `tempfiles.cleanupAll()`, write `Interrupted.`
-    (to stderr in text mode; the shim is pre-`--json` parse, so print plain `Interrupted.` to
-    stderr to guarantee "no stack trace" — JSON-mode SIGINT is out of scope and noted as a risk),
-    then `process.exit(130)`. Ensure no stack trace is printed.
-  - Extract the SIGINT handler into a testable function in `src/cli/signals.ts`
-    (`createSigintHandler(cleanup, write, exit)`) so it can be unit-tested without sending a real
-    signal; `index.ts` wires the real `process`/`tempfiles` into it.
-  - Create `tests/cli-signals.test.ts` — call the handler with injected fakes; assert it invokes
-    cleanup, writes exactly `Interrupted.`, and calls exit with `130`. No real signal needed.
-- **Done when:** `npm test` passes; manual check: start a long-running `npm run cli -- <cmd>`,
-  press Ctrl-C → prints `Interrupted.`, no stack trace, exit code 130, any registered temp file is
-  gone.
-- **Could block:** Windows Ctrl-C delivery under PowerShell can differ; the unit test (injected
-  fakes) is the authoritative gate, manual check is confirmatory.
+  - Create `src/cli/signals.ts` — export a pure, injectable factory so the handler is unit-testable
+    without sending a real signal, no `any`:
+    `createSigintHandler(deps: { cleanup: () => void; write: (s: string) => void; exit: (code: number) => void }): () => void`.
+    The returned handler, when invoked: calls `deps.cleanup()`, then `deps.write("Interrupted.\n")`,
+    then `deps.exit(130)`. It must not throw and must not print a stack trace (it never rethrows).
+  - Edit `src/cli/index.ts` (the shim — the legitimate place for process-level concerns) — before
+    invoking `run`, register the handler:
+    `process.on("SIGINT", createSigintHandler({ cleanup: cleanupAll, write: s =>
+    process.stderr.write(s), exit: code => process.exit(code) }))`, importing `cleanupAll` from
+    `./tempfiles` and `createSigintHandler` from `./signals`. Keep the existing
+    `run(process.argv.slice(2)).then(code => process.exit(code))` flow. The message goes to stderr so
+    stdout JSON output (if any was already emitted) is not corrupted, and acceptance "no stack trace"
+    is guaranteed because the handler exits directly.
+  - Create `tests/cli-signals.test.ts` — call `createSigintHandler` with injected fakes
+    (jest mock functions for `cleanup`, `write`, `exit`); invoke the returned handler; assert
+    `cleanup` was called, `write` was called with exactly `"Interrupted.\n"`, and `exit` was called
+    with `130`, in that order. No real signal sent.
+- **Done when:** `npm test` green including `tests/cli-signals.test.ts`; `npm run build` clean;
+  `npm run lint` clean; manual check: run a long-lived `npm run cli -- write big.txt` and press
+  Ctrl-C → stderr shows `Interrupted.`, no stack trace, exit code 130 (`$LASTEXITCODE` in
+  PowerShell / `echo $?` in bash), and `big.txt` is removed if it was registered.
+- **Could block:** Windows Ctrl-C delivery under PowerShell can differ from POSIX; the unit test
+  with injected fakes is the binding acceptance gate, the manual Ctrl-C check is confirmatory only.
+  `src/cli/index.ts` is excluded from coverage (it is the shim) so the handler logic lives in
+  `signals.ts` to stay covered.
 
 ### Task 3.3 — VERIFY Phase 3
 - **Type:** verify
-- Reviewer confirms: `--json` valid on any subcommand with valid JSON output and JSON-formatted
-  errors; human-readable default preserved; SIGINT prints `Interrupted.`, exits 130, no stack trace,
-  temp files cleaned. Full suite + lint green.
+- **Model:** (reviewer — assigned by orchestrator, runs on strongest available model)
+- The doer stops here. Reviewer confirms, against the committed state on `temp-requirements`:
+  - `--json` accepted on a real subcommand; success output is a single valid JSON document
+    (`JSON.parse` succeeds); default output is human-readable text; an error case under `--json`
+    yields `{"error":"..."}` on stdout with a non-zero exit code; the text-mode error yields
+    `Error: ...` on stderr — i.e. BOTH `OutputWriter.error()` branches are now exercised (closes the
+    Phase 1 deferred item).
+  - SIGINT handler prints exactly `Interrupted.`, exits 130, prints no stack trace, and triggers
+    temp-file cleanup; `createSigintHandler` is unit-tested with injected fakes.
+  - Temp-file registry register/cleanup/list behavior is tested, including best-effort delete of a
+    missing path.
+  - `npm run build`, `npm run lint`, and `npm test` are all green; no `any`; no `console.log`;
+    work is committed AND pushed (CI green on the pushed HEAD).
 
 ---
 
 ## Risk Register (unverifiable-at-plan-time items)
 
-- **JSON-mode SIGINT:** SIGINT fires in the shim before/independent of `--json` parsing; the handler
-  emits plain `Interrupted.` on stderr. Emitting a JSON-shaped interrupt message is intentionally
-  out of scope (acceptance only requires the literal `Interrupted.` + exit 130 + no trace).
+- **JSON-mode SIGINT:** SIGINT is handled in the shim before/independent of per-command `--json`
+  state; the handler always emits plain `Interrupted.` on stderr. A JSON-shaped interrupt message is
+  intentionally out of scope (acceptance requires only the literal `Interrupted.` + exit 130 + no
+  trace + cleaned files).
 - **Windows Ctrl-C semantics:** real-signal manual verification may behave differently under
-  PowerShell vs POSIX; unit tests with injected fakes are the binding acceptance gate.
-- **`bin` execution:** `dist/cli/index.js` only exists after `npm run build`; the `cli` ts-node
-  script is the dev-time invocation path used by manual checks.
+  PowerShell vs POSIX; the `cli-signals.test.ts` unit test (injected fakes) is the binding gate.
+- **Stale `dist/` artifacts:** `dist/` contains leftover compiled files from other branches
+  (`cli.js`, `cli/apiClient.js`, `cli/commands.js`, `cli/validators.js`). `dist/` is build output
+  (gitignored), not a deliverable; a clean rebuild (`rm -rf dist && npm run build`) regenerates only
+  current-src outputs. Not addressed by any task; flagged only so a reviewer does not mistake stale
+  output for source.
 
 ## Out of Scope
-- No changes to the Express API (`src/api/`, `src/app.ts`), notes model, or HTTP validation.
-- No new external dependencies (no yargs as a direct dep) — hand-rolled parser only.
-- The aspirational `cli/README.md` on `main` is not imported or reconciled here.
+- No changes to the Express API (`src/api/`, `src/app.ts`, `src/index.ts`), notes model, or HTTP
+  validation.
+- No new external dependencies — hand-rolled parser only; `fs`/`os` are Node built-ins.
+- No JSON-formatted SIGINT message (see Risk Register).
+- No reconciliation with the divergent `feat/p1-cli-features` branch; `temp-requirements` is
+  canonical.
