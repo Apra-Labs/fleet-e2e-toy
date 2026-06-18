@@ -1,38 +1,21 @@
 # integ-test-playbook.md
 
-Integration test environment for NoteAPI. The app is stateless and in-memory,
-so setup is just a clean server start; teardown is a process kill.
+Integration test environment for NoteAPI. The app is stateless and in-memory — there
+is no external database or message broker. All state is lost on restart, which makes
+reset trivial.
 
 ## Setup
 
-```bash
-npm ci
-npm run build
-PORT=3001 npm start &
-echo $! > .server.pid
-# Wait for the server to be ready
-for i in $(seq 1 10); do
-  curl -sf http://localhost:3001/notes && break
-  sleep 1
-done
-```
+Install all npm dependencies and compile the TypeScript source.
+Start the server in the background on port 3001.
+Wait until `http://localhost:3001/health` returns 200 before proceeding (retry up to 10 times, 1 second apart).
 
 ## Reset
 
-```bash
-# The in-memory store resets on restart — kill and restart the server
-kill $(cat .server.pid) 2>/dev/null || true
-PORT=3001 npm start &
-echo $! > .server.pid
-for i in $(seq 1 10); do
-  curl -sf http://localhost:3001/notes && break
-  sleep 1
-done
-```
+Stop any process listening on port 3001, then start the server again on port 3001.
+Wait until `http://localhost:3001/health` returns 200 before proceeding.
+This clears all in-memory data, returning the app to a clean state.
 
 ## Teardown
 
-```bash
-kill $(cat .server.pid) 2>/dev/null || true
-rm -f .server.pid
-```
+Stop any process listening on port 3001.

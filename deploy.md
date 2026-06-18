@@ -2,20 +2,14 @@
 
 ## Deploy
 
-```bash
-npm ci
-npm run build
-PORT=3001 npm start &
-echo $! > .server.pid
-```
+Install all npm dependencies, then compile the TypeScript source.
+Start the server in the background on port 3001 and wait a few seconds for it to become ready.
 
 ## Smoke test
 
-```bash
-curl -sf http://localhost:3001/notes && echo "OK" || exit 1
-```
-
-Exit 0 = healthy. Any other exit = deployment failed.
+Send an HTTP GET to `http://localhost:3001/health`.
+A 200 response with `{"status":"ok"}` means the deployment is healthy.
+Any other response or connection failure means the deployment failed.
 
 ## CI
 
@@ -23,12 +17,8 @@ Exit 0 = healthy. Any other exit = deployment failed.
 trigger: auto
 ```
 
-CI fires automatically on push to `main` and `feature/**` branches via `.github/workflows/ci.yml`.
-It runs lint → test → build. Integration tests are separate (see `integ-test-playbook.md`).
+CI fires automatically on push via `.github/workflows/ci.yml`. It runs lint, tests, and build.
 
 ## Teardown
 
-```bash
-kill $(cat .server.pid) 2>/dev/null || true
-rm -f .server.pid
-```
+Stop any process listening on port 3001.
