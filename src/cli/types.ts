@@ -8,5 +8,7 @@ export interface CliArgs {
     q?: string;
     help?: boolean;
     version?: boolean;
+    h?: boolean;
+    v?: boolean;
   };
 }

@@ -1,4 +1,6 @@
 import { parseArgs } from "./parser";
+import { printHelp } from "./help";
+import { getVersion } from "./version";
 
 function listHandler(): void {
   console.log("List handler called");
@@ -23,6 +25,18 @@ function deleteHandler(): void {
 function main(): void {
   const args = parseArgs(process.argv);
 
+  // Check for --version / -v before any subcommand dispatch
+  if (args.flags.version || args.flags["v"]) {
+    process.stdout.write(`fleet-e2e-toy v${getVersion()}\n`);
+    process.exit(0);
+  }
+
+  // Check for --help / -h before subcommand dispatch
+  if (args.flags.help || args.flags["h"]) {
+    printHelp(args.subcommand || undefined);
+    process.exit(0);
+  }
+
   switch (args.subcommand) {
     case "list":
       listHandler();
@@ -41,9 +55,11 @@ function main(): void {
       break;
     default:
       if (args.subcommand === "") {
-        console.log("No subcommand provided");
+        printHelp();
+        process.exit(0);
       } else {
-        console.log(`Unknown subcommand: ${args.subcommand}`);
+        process.stderr.write(`Unknown subcommand: ${args.subcommand}\n`);
+        process.exit(1);
       }
   }
 }
