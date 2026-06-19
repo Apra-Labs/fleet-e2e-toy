@@ -1,7 +1,9 @@
-# Plan Reviewer Feedback
+Two issues found across the three epics:
 
-Two issues found:
+1. **gh-toy-7yo has gh-toy-13t listed as a dependency (test-blocks-test, criterion 5 + 7)**
+   gh-toy-7yo ([test] CLI help output and input validation errors) lists gh-toy-13t ([test] CLI rejects blank required flags end-to-end) in its DEPENDS ON chain. A test task should never gate another test task — the implementation tasks (gh-toy-pz1 and gh-toy-ihi) already provide the real gate. Remove gh-toy-13t from gh-toy-7yo's dependency list; gh-toy-7yo should depend only on the impl tasks (gh-toy-yxd, gh-toy-674, gh-toy-pz1, gh-toy-ihi).
 
-1. **gh-toy-9w2 has duplicate/conflicting acceptance criteria sections.** The task has two separate "ACCEPTANCE CRITERIA" blocks. The first correctly scopes to `src/cli/index.ts`, `src/cli/parser.ts`, `src/cli/types.ts` + the npm script, and says "No API client yet". The second block (copy-paste artifact) adds "apiClient.ts exports the 5 functions returning typed results" which is the scope of gh-toy-9oh, not gh-toy-9w2. Remove the second acceptance criteria block from gh-toy-9w2 so the scope is unambiguous.
-
-2. **gh-toy-13t and gh-toy-674 duplicate work.** Both tasks create `tests/cli/validate.test.ts` covering the same `isBlank`/`validateRequired` helpers, and both define acceptance criteria around the same blank-string rejection behavior. gh-toy-674 already creates `src/cli/validate.ts` + `tests/cli/validate.test.ts` with full unit test coverage. gh-toy-13t then says "extend tests/cli/validate.test.ts" for the same cases. One of these must be removed or clearly differentiated: either collapse gh-toy-13t into gh-toy-674 (gh-toy-674 already covers everything in gh-toy-13t), or redefine gh-toy-13t to cover only the end-to-end CLI invocation assertions (blank flag rejected at the command level) and remove the unit-test assertions from its acceptance criteria since those belong to gh-toy-674.
+2. **gh-toy-13t and gh-toy-7yo have overlapping test scope (criterion 7 — duplicate work)**
+   gh-toy-13t acceptance criteria: assert that blank --title, --content, --id each print 'Error: <field> must not be empty' to stderr and exit 1.
+   gh-toy-7yo acceptance criteria (excerpt): "invalid inputs (--title '', --id '   ') exit non-zero with a clear error on stderr and NO stack trace."
+   Both tasks assert blank-input rejection for the same CLI commands via child-process invocation. This is duplicate coverage. Fix: narrow gh-toy-7yo's validation assertions to stack-trace absence only (i.e., assert stderr contains no 'at ' frames), leaving the full exit-code and message assertions exclusively in gh-toy-13t. Update gh-toy-7yo's description and acceptance criteria accordingly.
