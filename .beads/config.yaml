@@ -54,3 +54,5 @@ no-db: true
 # - github.repo
 
 sync.remote: "git+https://github.com/Apra-Labs/fleet-e2e-toy"
+
+export.auto: true
