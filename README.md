@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 76 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,31 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+A command-line interface for the NoteAPI is available via `npm run cli`:
+
+```bash
+npm run cli -- list                            # list all notes
+npm run cli -- list --tag=work                 # filter by tag
+npm run cli -- list --q=meeting                # full-text search
+npm run cli -- read --id=<uuid>                # get a note
+npm run cli -- create --title="T" --content="C"  # create a note
+npm run cli -- update --id=<uuid> --title="New"  # update a note
+npm run cli -- delete --id=<uuid>              # delete a note
+npm run cli -- --help                          # global help
+npm run cli -- create --help                   # per-subcommand help
+npm run cli -- --version                       # print version
+```
+
+Set `NOTEAPI_URL` to point the CLI at a non-default server:
+
+```bash
+NOTEAPI_URL=http://localhost:3001 npm run cli -- list
+```
+
+See `docs/cli-architecture.md` for design details and known constraints.
 
 ## Tech Stack
 
