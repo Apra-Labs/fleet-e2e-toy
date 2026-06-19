@@ -1,11 +1,13 @@
 import { updateNote } from "../apiClient";
 import { CliArgs } from "../types";
 import { UpdateNoteInput } from "../../models/note";
+import { validateRequired } from "../validate";
 
 export async function updateCommand(args: CliArgs): Promise<void> {
   const id = args.flags.id;
-  if (!id || id.trim() === "") {
-    process.stderr.write("Error: --id is required\n");
+  const idError = validateRequired("--id", id);
+  if (idError) {
+    process.stderr.write(`${idError}\n`);
     process.exit(1);
   }
 
@@ -20,7 +22,7 @@ export async function updateCommand(args: CliArgs): Promise<void> {
   }
 
   try {
-    const note = await updateNote(id, update);
+    const note = await updateNote(id as string, update);
     process.stdout.write(`id: ${note.id}\n`);
     process.stdout.write(`title: ${note.title}\n`);
     process.stdout.write(`content: ${note.content}\n`);

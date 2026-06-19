@@ -1,24 +1,27 @@
 import { createNote } from "../apiClient";
 import { CliArgs } from "../types";
 import { CreateNoteInput } from "../../models/note";
+import { validateRequired } from "../validate";
 
 export async function createCommand(args: CliArgs): Promise<void> {
   const title = args.flags.title;
   const content = args.flags.content;
 
-  if (!title || title.trim() === "") {
-    process.stderr.write("Error: --title is required\n");
+  const titleError = validateRequired("--title", title);
+  if (titleError) {
+    process.stderr.write(`${titleError}\n`);
     process.exit(1);
   }
 
-  if (!content || content.trim() === "") {
-    process.stderr.write("Error: --content is required\n");
+  const contentError = validateRequired("--content", content);
+  if (contentError) {
+    process.stderr.write(`${contentError}\n`);
     process.exit(1);
   }
 
   const tags: string[] = args.flags.tag ? [args.flags.tag] : [];
 
-  const input: CreateNoteInput = { title, content, tags };
+  const input: CreateNoteInput = { title: title as string, content: content as string, tags };
 
   try {
     const note = await createNote(input);

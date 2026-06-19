@@ -30,7 +30,7 @@ export function parseArgs(argv: string[]): CliArgs {
     const arg = args[i];
 
     if (arg.startsWith("--")) {
-      // Long flag format: --key=value or --key
+      // Long flag format: --key=value or --key value or --key (boolean)
       const flagContent = arg.slice(2);
       const eqIndex = flagContent.indexOf("=");
 
@@ -38,10 +38,18 @@ export function parseArgs(argv: string[]): CliArgs {
         const key = flagContent.slice(0, eqIndex);
         const value = flagContent.slice(eqIndex + 1);
         flags[key] = value;
+        i++;
       } else {
-        flags[flagContent] = true;
+        // Check if the next argument is a value (not a flag)
+        const nextArg = args[i + 1];
+        if (nextArg !== undefined && !nextArg.startsWith("-")) {
+          flags[flagContent] = nextArg;
+          i += 2;
+        } else {
+          flags[flagContent] = true;
+          i++;
+        }
       }
-      i++;
     } else if (arg.startsWith("-") && arg.length === 2) {
       // Short flag format: -h, -v
       const key = arg.slice(1);

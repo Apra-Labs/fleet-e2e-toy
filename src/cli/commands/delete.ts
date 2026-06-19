@@ -1,16 +1,18 @@
 import { deleteNote } from "../apiClient";
 import { CliArgs } from "../types";
+import { validateRequired } from "../validate";
 
 export async function deleteCommand(args: CliArgs): Promise<void> {
   const id = args.flags.id;
-  if (!id || id.trim() === "") {
-    process.stderr.write("Error: --id is required\n");
+  const idError = validateRequired("--id", id);
+  if (idError) {
+    process.stderr.write(`${idError}\n`);
     process.exit(1);
   }
 
   try {
-    await deleteNote(id);
-    process.stdout.write(`Note ${id} deleted\n`);
+    await deleteNote(id as string);
+    process.stdout.write(`Note ${id as string} deleted\n`);
     process.exit(0);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

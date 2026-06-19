@@ -1,15 +1,17 @@
 import { getNote } from "../apiClient";
 import { CliArgs } from "../types";
+import { validateRequired } from "../validate";
 
 export async function readCommand(args: CliArgs): Promise<void> {
   const id = args.flags.id;
-  if (!id || id.trim() === "") {
-    process.stderr.write("Error: --id is required\n");
+  const idError = validateRequired("--id", id);
+  if (idError) {
+    process.stderr.write(`${idError}\n`);
     process.exit(1);
   }
 
   try {
-    const note = await getNote(id);
+    const note = await getNote(id as string);
     process.stdout.write(`id: ${note.id}\n`);
     process.stdout.write(`title: ${note.title}\n`);
     process.stdout.write(`content: ${note.content}\n`);
