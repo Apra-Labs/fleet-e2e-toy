@@ -53,4 +53,5 @@ no-db: true
 # - github.org
 # - github.repo
 
-sync.remote: "git+https://github.com/Apra-Labs/fleet-e2e-toy"
+# sync.remote disabled — no Dolt push for this toy project
+# sync.remote: "git+https://github.com/Apra-Labs/fleet-e2e-toy"
