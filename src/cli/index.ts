@@ -1,26 +1,11 @@
 import { parseArgs } from "./parser";
 import { printHelp } from "./help";
 import { getVersion } from "./version";
-
-function listHandler(): void {
-  console.log("List handler called");
-}
-
-function readHandler(): void {
-  console.log("Read handler called");
-}
-
-function createHandler(): void {
-  console.log("Create handler called");
-}
-
-function updateHandler(): void {
-  console.log("Update handler called");
-}
-
-function deleteHandler(): void {
-  console.log("Delete handler called");
-}
+import { listCommand } from "./commands/list";
+import { readCommand } from "./commands/read";
+import { createCommand } from "./commands/create";
+import { updateCommand } from "./commands/update";
+import { deleteCommand } from "./commands/delete";
 
 function main(): void {
   const args = parseArgs(process.argv);
@@ -39,19 +24,19 @@ function main(): void {
 
   switch (args.subcommand) {
     case "list":
-      listHandler();
+      listCommand(args).catch(() => process.exit(1));
       break;
     case "read":
-      readHandler();
+      readCommand(args).catch(() => process.exit(1));
       break;
     case "create":
-      createHandler();
+      createCommand(args).catch(() => process.exit(1));
       break;
     case "update":
-      updateHandler();
+      updateCommand(args).catch(() => process.exit(1));
       break;
     case "delete":
-      deleteHandler();
+      deleteCommand(args).catch(() => process.exit(1));
       break;
     default:
       if (args.subcommand === "") {
