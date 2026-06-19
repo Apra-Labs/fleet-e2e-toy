@@ -11,17 +11,6 @@
         "matcher": "Write|Edit"
       }
     ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "command": "bd prime",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ],
     "PreToolUse": [
       {
         "hooks": [
@@ -37,7 +26,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime",
+            "command": "bd prime --hook-json",
             "type": "command"
           }
         ],
@@ -50,9 +39,21 @@
     "allow": [
       "Bash(gh *)",
       "Bash(git *)",
+      "Bash(npm install)",
+      "Bash(npm install *)",
+      "Bash(npm ci)",
+      "Bash(npm ci *)",
+      "Bash(npm start)",
+      "Bash(npm start *)",
       "Bash(npm test*)",
       "Bash(npm run *)",
-      "Bash(npx jest*)"
+      "Bash(npx jest*)",
+      "Bash(npx kill-port *)",
+      "Bash(curl *)",
+      "Bash(lsof *)",
+      "Bash(kill *)",
+      "Bash(fuser *)",
+      "Bash(pkill *)"
     ]
   }
 }
