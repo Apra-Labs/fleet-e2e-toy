@@ -1,0 +1,22 @@
+{"cycle":1,"phase":"Plan","label":"cycle-state","model":"claude-haiku-4-5","context":"","outTokens":2271,"costUsd":0.0114}
+{"cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":895,"costUsd":0.0045}
+{"cycle":1,"phase":"Develop","label":"doer-c1-i0-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-3de","outTokens":4602,"costUsd":0.069}
+{"cycle":1,"phase":"Develop","label":"reviewer-c1-i1","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-3de","outTokens":2335,"costUsd":0.035}
+{"cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1090,"costUsd":0.0054}
+{"cycle":1,"phase":"Develop","label":"doer-c1-i1-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-13t, gh-toy-wh7, gh-toy-x42, gh-toy-0iu, gh-toy-tbf, gh-toy-tex, gh-toy-ds5, gh-toy-61o, gh-toy-1rq","outTokens":11270,"costUsd":0.1691}
+{"cycle":1,"phase":"Develop","label":"reviewer-c1-i2","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-13t, gh-toy-wh7, gh-toy-x42, gh-toy-0iu, gh-toy-tbf, gh-toy-tex, gh-toy-ds5, gh-toy-61o, gh-toy-1rq","outTokens":3225,"costUsd":0.0484}
+{"cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1086,"costUsd":0.0054}
+{"cycle":1,"phase":"Develop","label":"doer-c1-i2-4","model":"claude-haiku-4-5","context":"tasks gh-toy-h3p, gh-toy-4k5","outTokens":5890,"costUsd":0.0295}
+{"cycle":1,"phase":"Develop","label":"doer-c1-i2-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-xoe, gh-toy-oth, gh-toy-tgy, gh-toy-0j9, gh-toy-q1x, gh-toy-k41","outTokens":20907,"costUsd":0.3136}
+{"cycle":1,"phase":"Develop","label":"reviewer-c1-i3","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-h3p, gh-toy-4k5, gh-toy-xoe, gh-toy-oth, gh-toy-tgy, gh-toy-0j9, gh-toy-q1x, gh-toy-k41","outTokens":4073,"costUsd":0.0611}
+{"cycle":1,"phase":"Develop","label":"feedback-commit-reviewer-c1-i3","model":"claude-haiku-4-5","context":"","outTokens":898,"costUsd":0.0045}
+{"cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":912,"costUsd":0.0046}
+{"cycle":1,"phase":"Develop","label":"doer-c1-i3-4","model":"claude-haiku-4-5","context":"tasks gh-toy-h3p, gh-toy-4k5","outTokens":7044,"costUsd":0.0352}
+{"cycle":1,"phase":"Develop","label":"reviewer-c1-i4","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-h3p, gh-toy-4k5","outTokens":2377,"costUsd":0.0357}
+{"cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1091,"costUsd":0.0055}
+{"cycle":1,"phase":"Develop","label":"push-c1","model":"claude-haiku-4-5","context":"","outTokens":165,"costUsd":0.0008}
+{"cycle":1,"phase":"Develop","label":"head-sha-c1","model":"claude-haiku-4-5","context":"","outTokens":233,"costUsd":0.0012}
+{"cycle":1,"phase":"Test","label":"deployer-c1","model":"claude-sonnet-4-6","context":"","outTokens":1239,"costUsd":0.0186}
+{"cycle":1,"phase":"Test","label":"integ-runner-c1","model":"claude-sonnet-4-6","context":"","outTokens":2351,"costUsd":0.0353}
+{"cycle":1,"phase":"Test","label":"teardown-c1","model":"claude-sonnet-4-6","context":"","outTokens":456,"costUsd":0.0068}
+{"cycle":1,"phase":"Develop","label":"check-blockers","model":"claude-haiku-4-5","context":"","outTokens":1602,"costUsd":0.008}
