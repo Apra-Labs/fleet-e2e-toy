@@ -64,6 +64,12 @@ export async function main(argv: string[]): Promise<number> {
   }
 }
 
+// Handle SIGINT (Ctrl-C) gracefully: print 'Interrupted.' and exit with code 130
+process.on("SIGINT", () => {
+  process.stderr.write("Interrupted.\n");
+  process.exit(130);
+});
+
 // Entry point when run directly
 if (require.main === module) {
   main(process.argv.slice(2))
