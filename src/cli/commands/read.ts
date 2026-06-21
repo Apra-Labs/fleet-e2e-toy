@@ -17,10 +17,15 @@ function formatNote(note: Note): string {
 
 export async function readCommand(parsed: ParsedArgs): Promise<void> {
   const id = requireFlag(parsed.flags, "id");
+  const jsonMode = parsed.flags["json"] === true;
 
   try {
     const note = await apiClient.getNote(id);
-    process.stdout.write(formatNote(note) + "\n");
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify(note) + "\n");
+    } else {
+      process.stdout.write(formatNote(note) + "\n");
+    }
   } catch (err) {
     if (err instanceof CliError) {
       throw err;

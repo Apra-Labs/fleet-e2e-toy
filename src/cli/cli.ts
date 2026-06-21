@@ -54,6 +54,7 @@ export async function main(argv: string[]): Promise<number> {
     await handler(parsed);
     return 0;
   } catch (err) {
+    // Errors are always JSON-formatted (even without --json flag, per convention)
     if (err instanceof CliError) {
       process.stderr.write(JSON.stringify({ error: err.message }) + "\n");
     } else {

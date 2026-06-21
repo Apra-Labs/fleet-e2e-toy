@@ -18,6 +18,7 @@ export async function updateCommand(parsed: ParsedArgs): Promise<void> {
   const id = requireFlag(parsed.flags, "id");
   const title = optionalFlag(parsed.flags, "title");
   const content = optionalFlag(parsed.flags, "content");
+  const jsonMode = parsed.flags["json"] === true;
 
   if (!title && !content) {
     throw new CliError("At least one of --title or --content is required");
@@ -29,7 +30,11 @@ export async function updateCommand(parsed: ParsedArgs): Promise<void> {
 
   try {
     const note = await apiClient.updateNote(id, input);
-    process.stdout.write(formatNote(note) + "\n");
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify(note) + "\n");
+    } else {
+      process.stdout.write(formatNote(note) + "\n");
+    }
   } catch (err) {
     if (err instanceof CliError) {
       throw err;

@@ -16,6 +16,7 @@ function formatNote(note: Note): string {
 export async function createCommand(parsed: ParsedArgs): Promise<void> {
   const title = requireFlag(parsed.flags, "title");
   const content = requireFlag(parsed.flags, "content");
+  const jsonMode = parsed.flags["json"] === true;
 
   // Collect tags: --tag may be repeated; for simplicity accept comma-separated too
   const tagValue = parsed.flags["tag"];
@@ -28,7 +29,11 @@ export async function createCommand(parsed: ParsedArgs): Promise<void> {
 
   try {
     const note = await apiClient.createNote({ title, content, tags });
-    process.stdout.write(formatNote(note) + "\n");
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify(note) + "\n");
+    } else {
+      process.stdout.write(formatNote(note) + "\n");
+    }
   } catch (err) {
     if (err instanceof CliError) {
       throw err;

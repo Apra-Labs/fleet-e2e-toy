@@ -11,6 +11,7 @@ function formatNote(note: Note): string {
 export async function listCommand(parsed: ParsedArgs): Promise<void> {
   const tag = optionalFlag(parsed.flags, "tag");
   const q = optionalFlag(parsed.flags, "q");
+  const jsonMode = parsed.flags["json"] === true;
 
   // Build query string: if both are provided, combine them
   let query: string | undefined;
@@ -25,6 +26,11 @@ export async function listCommand(parsed: ParsedArgs): Promise<void> {
     const filtered = tag
       ? notes.filter((n) => n.tags.includes(tag))
       : notes;
+
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify(filtered) + "\n");
+      return;
+    }
 
     if (filtered.length === 0) {
       process.stdout.write("No notes found\n");

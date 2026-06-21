@@ -4,10 +4,15 @@ import { requireFlag } from "../validate";
 
 export async function deleteCommand(parsed: ParsedArgs): Promise<void> {
   const id = requireFlag(parsed.flags, "id");
+  const jsonMode = parsed.flags["json"] === true;
 
   try {
     await apiClient.deleteNote(id);
-    process.stdout.write(`Note ${id} deleted successfully\n`);
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify({ deleted: true, id }) + "\n");
+    } else {
+      process.stdout.write(`Note ${id} deleted successfully\n`);
+    }
   } catch (err) {
     if (err instanceof CliError) {
       throw err;
