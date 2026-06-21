@@ -20,3 +20,14 @@
 {"cycle":1,"phase":"Test","label":"integ-runner-c1","model":"claude-sonnet-4-6","context":"","outTokens":2351,"costUsd":0.0353}
 {"cycle":1,"phase":"Test","label":"teardown-c1","model":"claude-sonnet-4-6","context":"","outTokens":456,"costUsd":0.0068}
 {"cycle":1,"phase":"Develop","label":"check-blockers","model":"claude-haiku-4-5","context":"","outTokens":1602,"costUsd":0.008}
+{"cycle":2,"phase":"Plan","label":"cycle-state","model":"claude-haiku-4-5","context":"","outTokens":2285,"costUsd":0.0114}
+{"cycle":2,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":2752,"costUsd":0.0138}
+{"cycle":2,"phase":"Develop","label":"doer-c2-i0-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-1gq, gh-toy-4r2, gh-toy-1c0, gh-toy-8rt, gh-toy-wym, gh-toy-9gw, gh-toy-0ta, gh-toy-0i6, gh-toy-nxr, gh-toy-s5k, gh-toy-aqd, gh-toy-69s, gh-toy-24g","outTokens":18922,"costUsd":0.2838}
+{"cycle":2,"phase":"Develop","label":"reviewer-c2-i1","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-1gq, gh-toy-4r2, gh-toy-1c0, gh-toy-8rt, gh-toy-wym, gh-toy-9gw, gh-toy-0ta, gh-toy-0i6, gh-toy-nxr, gh-toy-s5k, gh-toy-aqd, gh-toy-69s, gh-toy-24g","outTokens":7258,"costUsd":0.1089}
+{"cycle":2,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":674,"costUsd":0.0034}
+{"cycle":2,"phase":"Develop","label":"push-c2","model":"claude-haiku-4-5","context":"","outTokens":237,"costUsd":0.0012}
+{"cycle":2,"phase":"Develop","label":"head-sha-c2","model":"claude-haiku-4-5","context":"","outTokens":243,"costUsd":0.0012}
+{"cycle":2,"phase":"Test","label":"deployer-c2","model":"claude-sonnet-4-6","context":"","outTokens":1371,"costUsd":0.0206}
+{"cycle":2,"phase":"Test","label":"integ-runner-c2","model":"claude-sonnet-4-6","context":"","outTokens":996,"costUsd":0.0149}
+{"cycle":2,"phase":"Test","label":"teardown-c2","model":"claude-sonnet-4-6","context":"","outTokens":428,"costUsd":0.0064}
+{"cycle":2,"phase":"Develop","label":"check-blockers","model":"claude-haiku-4-5","context":"","outTokens":1026,"costUsd":0.0051}
