@@ -1,34 +1,57 @@
 import { main } from "../../src/cli/cli";
 
 describe("CLI version flag", () => {
-  let stdoutSpy: jest.SpyInstance;
-  let stderrSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation(() => true as any);
-    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation(() => true as any);
-  });
-
-  afterEach(() => {
-    stdoutSpy.mockRestore();
-    stderrSpy.mockRestore();
-  });
-
   it("--version flag prints version and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
+
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
+
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
     const exitCode = await main(["--version"]);
 
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
     expect(exitCode).toBe(0);
-    expect(stdoutSpy).toHaveBeenCalledTimes(1);
-    const output = stdoutSpy.mock.calls[0][0] as string;
+    const output = stdoutChunks.join("");
     expect(output).toMatch(/fleet-e2e-toy v\d+\.\d+\.\d+/);
   });
 
   it("-v flag prints version and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
+
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
+
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
     const exitCode = await main(["-v"]);
 
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
     expect(exitCode).toBe(0);
-    expect(stdoutSpy).toHaveBeenCalledTimes(1);
-    const output = stdoutSpy.mock.calls[0][0] as string;
+    const output = stdoutChunks.join("");
     expect(output).toMatch(/fleet-e2e-toy v\d+\.\d+\.\d+/);
   });
 

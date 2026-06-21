@@ -1,66 +1,121 @@
 import { main } from "../../src/cli/cli";
 
 describe("CLI help system", () => {
-  let stdoutSpy: jest.SpyInstance;
-  let stderrSpy: jest.SpyInstance;
+  it("--help prints global help and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
 
-  beforeEach(() => {
-    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation(() => true as any);
-    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation(() => true as any);
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
+
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
+    const exitCode = await main(["--help"]);
+
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
+    expect(exitCode).toBe(0);
+    const output = stdoutChunks.join("");
+    expect(output).toContain("list");
+    expect(output).toContain("read");
+    expect(output).toContain("create");
+    expect(output).toContain("update");
+    expect(output).toContain("delete");
   });
 
-  afterEach(() => {
-    stdoutSpy.mockRestore();
-    stderrSpy.mockRestore();
+  it("-h prints global help and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
+
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
+
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
+    const exitCode = await main(["-h"]);
+
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
+    expect(exitCode).toBe(0);
+    const output = stdoutChunks.join("");
+    expect(output).toContain("list");
+    expect(output).toContain("read");
+    expect(output).toContain("create");
+    expect(output).toContain("update");
+    expect(output).toContain("delete");
   });
 
-  describe("global help", () => {
-    it("--help prints global help and exits 0", async () => {
-      const exitCode = await main(["--help"]);
+  it("create --help prints create command help and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
 
-      expect(exitCode).toBe(0);
-      expect(stdoutSpy).toHaveBeenCalledTimes(1);
-      const output = stdoutSpy.mock.calls[0][0] as string;
-      expect(output).toContain("list");
-      expect(output).toContain("read");
-      expect(output).toContain("create");
-      expect(output).toContain("update");
-      expect(output).toContain("delete");
-    });
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
 
-    it("-h prints global help and exits 0", async () => {
-      const exitCode = await main(["-h"]);
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
 
-      expect(exitCode).toBe(0);
-      expect(stdoutSpy).toHaveBeenCalledTimes(1);
-      const output = stdoutSpy.mock.calls[0][0] as string;
-      expect(output).toContain("list");
-      expect(output).toContain("read");
-      expect(output).toContain("create");
-      expect(output).toContain("update");
-      expect(output).toContain("delete");
-    });
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
+    const exitCode = await main(["create", "--help"]);
+
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
+    expect(exitCode).toBe(0);
+    const output = stdoutChunks.join("");
+    expect(output).toContain("--title");
+    expect(output).toContain("--content");
   });
 
-  describe("per-command help", () => {
-    it("create --help prints create command help and exits 0", async () => {
-      const exitCode = await main(["create", "--help"]);
+  it("create -h prints create command help and exits 0", async () => {
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
 
-      expect(exitCode).toBe(0);
-      expect(stdoutSpy).toHaveBeenCalledTimes(1);
-      const output = stdoutSpy.mock.calls[0][0] as string;
-      expect(output).toContain("--title");
-      expect(output).toContain("--content");
-    });
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
 
-    it("create -h prints create command help and exits 0", async () => {
-      const exitCode = await main(["create", "-h"]);
+    process.stdout.write = ((chunk: string) => {
+      stdoutChunks.push(chunk);
+      return true;
+    }) as typeof process.stdout.write;
 
-      expect(exitCode).toBe(0);
-      expect(stdoutSpy).toHaveBeenCalledTimes(1);
-      const output = stdoutSpy.mock.calls[0][0] as string;
-      expect(output).toContain("--title");
-      expect(output).toContain("--content");
-    });
+    process.stderr.write = ((chunk: string) => {
+      stderrChunks.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+
+    const exitCode = await main(["create", "-h"]);
+
+    process.stdout.write = origStdoutWrite;
+    process.stderr.write = origStderrWrite;
+
+    expect(exitCode).toBe(0);
+    const output = stdoutChunks.join("");
+    expect(output).toContain("--title");
+    expect(output).toContain("--content");
   });
 });
