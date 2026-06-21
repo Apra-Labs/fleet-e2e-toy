@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 111 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,26 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+A command-line interface is included at `src/cli/cli.ts` (compiled to `dist/cli/cli.js`).
+
+```bash
+node dist/cli/cli.js --help                          # global help
+node dist/cli/cli.js --version                       # print version and exit
+node dist/cli/cli.js list [--tag <tag>] [--q <q>]   # list notes
+node dist/cli/cli.js read --id <id>                  # get one note
+node dist/cli/cli.js create --title <t> --content <c> [--tag <tag>]
+node dist/cli/cli.js update --id <id> [--title <t>] [--content <c>]
+node dist/cli/cli.js delete --id <id>
+```
+
+All commands accept `--json` for machine-readable JSON output. Errors are always written to stderr as `{ "error": "message" }`. Exit codes: 0 success, 1 error, 130 interrupted (Ctrl-C).
+
+The CLI base URL is resolved in priority order: `NOTEAPI_URL` env var, `url` in `~/.fleet-e2e-toy.yaml`, default `http://localhost:3000`.
+
+See `docs/cli-architecture.md` and `docs/cli-commands.md` for full details.
 
 ## Tech Stack
 
