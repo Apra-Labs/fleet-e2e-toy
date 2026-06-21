@@ -1,7 +1,10 @@
 import { Note, CreateNoteInput, UpdateNoteInput } from "../models/note";
 import { CliError } from "./types";
+import { loadConfig } from "./config";
 
-const baseUrl = process.env.NOTEAPI_URL ?? "http://localhost:3000";
+// Priority: NOTEAPI_URL env var > config file url > default
+const _config = loadConfig();
+const baseUrl = process.env.NOTEAPI_URL ?? _config.url ?? "http://localhost:3000";
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (res.ok) {
