@@ -75,11 +75,72 @@
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 0,
-    "last_updated": null,
-    "cycle_avg": null,
-    "reviewer_ratio_avg": null,
+    "sprints_sampled": 1,
+    "last_updated": "2026-06-22",
+    "cycle_avg": 2,
+    "reviewer_ratio_avg": 0.44004665942641086,
     "bucket_avg_tokens": {},
-    "roles": {}
+    "roles": {
+      "cycle-state": {
+        "avg_output_tokens": 0,
+        "sample_n": 1
+      },
+      "planner": {
+        "avg_output_tokens": 0,
+        "sample_n": 2
+      },
+      "plan-reviewer": {
+        "avg_output_tokens": 0,
+        "sample_n": 2
+      },
+      "feedback-commit-plan-reviewer": {
+        "avg_output_tokens": 0,
+        "sample_n": 1
+      },
+      "write-quote": {
+        "avg_output_tokens": 1979,
+        "sample_n": 1
+      },
+      "ready-streaks": {
+        "avg_output_tokens": 2084.4285714285716,
+        "sample_n": 7
+      },
+      "doer": {
+        "avg_output_tokens": 6215.25,
+        "sample_n": 8
+      },
+      "reviewer": {
+        "avg_output_tokens": 3646.6666666666665,
+        "sample_n": 6
+      },
+      "feedback-commit-reviewer": {
+        "avg_output_tokens": 1833,
+        "sample_n": 2
+      },
+      "push": {
+        "avg_output_tokens": 145,
+        "sample_n": 1
+      },
+      "head-sha": {
+        "avg_output_tokens": 241,
+        "sample_n": 1
+      },
+      "deployer": {
+        "avg_output_tokens": 1258,
+        "sample_n": 1
+      },
+      "integ-runner": {
+        "avg_output_tokens": 3977,
+        "sample_n": 1
+      },
+      "teardown": {
+        "avg_output_tokens": 419,
+        "sample_n": 1
+      },
+      "check-blockers": {
+        "avg_output_tokens": 1419,
+        "sample_n": 1
+      }
+    }
   }
 }
