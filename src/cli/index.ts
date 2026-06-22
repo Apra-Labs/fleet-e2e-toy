@@ -1,6 +1,7 @@
 import { parseArgs } from "./parser";
 import { CommandResult, ParsedArgs } from "./types";
 import { getVersionString } from "./version";
+import { globalHelp, commandHelp } from "./help";
 
 /**
  * Dispatch a parsed command to its handler.
@@ -37,6 +38,16 @@ export async function main(argv: string[]): Promise<number> {
     if (parsed.flags.version === true || parsed.flags.v === true) {
       const versionString = getVersionString();
       process.stdout.write(versionString + "\n");
+      return 0;
+    }
+
+    // Check for --help or -h flag
+    if (parsed.flags.help === true || parsed.flags.h === true) {
+      if (parsed.command !== undefined) {
+        process.stdout.write(commandHelp(parsed.command) + "\n");
+      } else {
+        process.stdout.write(globalHelp() + "\n");
+      }
       return 0;
     }
 
