@@ -62,4 +62,30 @@ describe("main", () => {
   it("returns a numeric exit code and never throws", async () => {
     await expect(main(["bogus-command"])).resolves.toEqual(expect.any(Number));
   });
+
+  it("main(['--version']) returns 0 and prints version to stdout", async () => {
+    const writeSpyStdout = jest.spyOn(process.stdout, "write").mockImplementation();
+    try {
+      const code = await main(["--version"]);
+      expect(code).toBe(0);
+      expect(writeSpyStdout).toHaveBeenCalled();
+      const output = writeSpyStdout.mock.calls.join("");
+      expect(output).toContain("noteapi v1.0.0");
+    } finally {
+      writeSpyStdout.mockRestore();
+    }
+  });
+
+  it("main(['-v']) returns 0 and prints version to stdout", async () => {
+    const writeSpyStdout = jest.spyOn(process.stdout, "write").mockImplementation();
+    try {
+      const code = await main(["-v"]);
+      expect(code).toBe(0);
+      expect(writeSpyStdout).toHaveBeenCalled();
+      const output = writeSpyStdout.mock.calls.join("");
+      expect(output).toContain("noteapi v1.0.0");
+    } finally {
+      writeSpyStdout.mockRestore();
+    }
+  });
 });
