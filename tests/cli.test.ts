@@ -88,4 +88,46 @@ describe("main", () => {
       writeSpyStdout.mockRestore();
     }
   });
+
+  it("main(['--help']) prints global usage and returns 0", async () => {
+    const stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation();
+    try {
+      const code = await main(["--help"]);
+      expect(code).toBe(0);
+      const output = stdoutSpy.mock.calls.map((c) => c[0]).join("");
+      expect(output).toContain("list");
+      expect(output).toContain("read");
+      expect(output).toContain("create");
+      expect(output).toContain("update");
+      expect(output).toContain("delete");
+    } finally {
+      stdoutSpy.mockRestore();
+    }
+  });
+
+  it("main(['-h']) prints global usage and returns 0", async () => {
+    const stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation();
+    try {
+      const code = await main(["-h"]);
+      expect(code).toBe(0);
+      const output = stdoutSpy.mock.calls.map((c) => c[0]).join("");
+      expect(output).toContain("list");
+      expect(output).toContain("create");
+    } finally {
+      stdoutSpy.mockRestore();
+    }
+  });
+
+  it("main(['create', '--help']) prints per-command usage and returns 0", async () => {
+    const stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation();
+    try {
+      const code = await main(["create", "--help"]);
+      expect(code).toBe(0);
+      const output = stdoutSpy.mock.calls.map((c) => c[0]).join("");
+      expect(output).toContain("--title");
+      expect(output).toContain("--content");
+    } finally {
+      stdoutSpy.mockRestore();
+    }
+  });
 });
