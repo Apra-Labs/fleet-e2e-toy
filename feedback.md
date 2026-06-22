@@ -1,11 +1,41 @@
-Two missing dependency edges cause feasibility gaps:
+Build passes, lint is clean, all 38 tests pass. Two tasks have acceptance-criteria gaps in test coverage:
 
-1. gh-toy-hxb ("Implement list and read CLI subcommands") calls `validateRequired` from `src/cli/validate.ts`, which is created by gh-toy-13t. However gh-toy-hxb does not declare a dependency on gh-toy-13t. Fix: `bd dep add gh-toy-hxb gh-toy-13t`
+---
 
-2. gh-toy-ddh ("Implement create, update, delete CLI subcommands") also uses `validateRequired` (acceptance criteria explicitly state "all use validateRequired") but does not depend on gh-toy-13t either. It inherits gh-toy-hxb as a blocker but gh-toy-hxb itself has the missing dep above, so a transitive fix still requires this to be explicit. Fix: `bd dep add gh-toy-ddh gh-toy-13t`
+**gh-toy-8ga — [impl] Add --version/-v flag to CLI** (REOPENED)
 
-Task size warnings (not blocking, classified as L below):
-- gh-toy-gez touches 5 files (index.ts, parser.ts, types.ts, run.ts, package.json) — exceeds the 3-file guideline for M; classified L.
-- gh-toy-ddh touches 4 files (create.ts, update.ts, delete.ts, index.ts) — exceeds 3-file guideline; classified L.
+The implementation is correct: `--version` and `-v` both cause `main()` to print `fleet-e2e-toy v1.0.0` and return 0. The version number is sourced from `package.json`.
 
-All other criteria pass: every epic has at least one covering feature; every feature has a [test] task; acceptance criteria are concrete for all tasks; test tasks are downstream of impl tasks; bd ready shows no features or epics (no backwards wiring); no scope creep or duplicate work; all tasks have model metadata.
+Missing tests in `tests/cli.test.ts`:
+- No test for `main(['--version'])` verifying it returns 0.
+- No test for `main(['-v'])` verifying it returns 0.
+- No test capturing the printed string (e.g. via `jest.spyOn(process.stdout, 'write')`).
+
+The acceptance criteria states: "Running CLI with --version or -v prints exactly 'fleet-e2e-toy v1.0.0' to stdout and main() returns 0." Currently only the parser behaviour is tested (`parseArgs(['--version']).flags.version === true`), not the `main()` return value or stdout output.
+
+Side note: `/src/cli/version.ts` line 13 hardcodes the string prefix `fleet-e2e-toy` rather than reading `package.json`'s `name` field (which is `noteapi`). The version number is read from package.json, but the task description says "reading version from package.json (import or fs read)" and "reads version from package.json not a hardcoded duplicate." The prefix should also be read from `packageJson.name` to be truly sourced from package.json.
+
+---
+
+**gh-toy-hxg — [impl] Add --help/-h help system** (REOPENED)
+
+The implementation is correct: `src/cli/help.ts` exists, `globalHelp()` and `commandHelp(command)` work, all five subcommands are listed, and `main()` routes both paths correctly.
+
+Missing tests in `tests/cli.test.ts`:
+- No test for `main(['--help'])` returning 0.
+- No test for `main(['-h'])` returning 0.
+- No test for `main(['create', '--help'])` (or any subcommand) returning 0 with per-command help output.
+
+The acceptance criteria states: "main(['--help']) and main(['-h']) print global usage and return 0; main(['<cmd>','--help']) prints per-command usage and returns 0." Currently only `parseArgs(['--help']).flags.help === true` is tested.
+
+---
+
+**gh-toy-teo — [impl] Add CLI API client for NoteAPI** (APPROVED)
+
+`src/cli/apiClient.ts` exists and exports all five required functions (`listNotes`, `getNote`, `createNote`, `updateNote`, `deleteNote`) with correct signatures. Base URL is configurable via `NOTEAPI_URL` env var. Non-2xx responses throw an `Error` with the server-provided message. No `any` types; imports from `src/models/note`. tsc passes. No tests were required by the AC and none were added.
+
+---
+
+**gh-toy-13t — [impl] Add input validation for empty or blank strings** (APPROVED)
+
+`src/cli/validate.ts` exports `validateRequired(name, value)` and `ValidationError`. The function rejects `undefined`, empty, and whitespace-only strings, returning the trimmed value on success. `tests/cliValidate.test.ts` covers all cases including field name in error message. The AC's "required CLI flags reject" clause is satisfied at the unit level; full CLI integration awaits downstream command-handler tasks (gh-toy-hxb, gh-toy-ddh), which is acceptable at this stage.
