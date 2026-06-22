@@ -2,14 +2,13 @@ import { parseArgs } from "./parser";
 import { CommandResult, ParsedArgs } from "./types";
 import { getVersionString } from "./version";
 import { globalHelp, commandHelp } from "./help";
+import { runList } from "./commands/list";
+import { runRead } from "./commands/read";
 
 /**
  * Dispatch a parsed command to its handler.
- *
- * For now no subcommands are registered; unknown (or missing) commands
- * produce a non-zero result. Later tasks add real subcommands here.
  */
-function dispatch(parsed: ParsedArgs): CommandResult {
+async function dispatch(parsed: ParsedArgs): Promise<CommandResult> {
   const { command } = parsed;
 
   if (command === undefined) {
@@ -17,6 +16,14 @@ function dispatch(parsed: ParsedArgs): CommandResult {
       code: 1,
       stderr: JSON.stringify({ error: "No command provided" }),
     };
+  }
+
+  if (command === "list") {
+    return runList(parsed.flags);
+  }
+
+  if (command === "read") {
+    return runRead(parsed.flags);
   }
 
   return {
@@ -51,7 +58,7 @@ export async function main(argv: string[]): Promise<number> {
       return 0;
     }
 
-    const result = dispatch(parsed);
+    const result = await dispatch(parsed);
 
     if (result.stdout !== undefined) {
       process.stdout.write(result.stdout + "\n");
