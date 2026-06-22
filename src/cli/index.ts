@@ -4,6 +4,9 @@ import { getVersionString } from "./version";
 import { globalHelp, commandHelp } from "./help";
 import { runList } from "./commands/list";
 import { runRead } from "./commands/read";
+import { runCreate } from "./commands/create";
+import { runUpdate } from "./commands/update";
+import { runDelete } from "./commands/delete";
 
 /**
  * Dispatch a parsed command to its handler.
@@ -24,6 +27,18 @@ async function dispatch(parsed: ParsedArgs): Promise<CommandResult> {
 
   if (command === "read") {
     return runRead(parsed.flags);
+  }
+
+  if (command === "create") {
+    return runCreate(parsed.flags);
+  }
+
+  if (command === "update") {
+    return runUpdate(parsed.flags);
+  }
+
+  if (command === "delete") {
+    return runDelete(parsed.flags);
   }
 
   return {
