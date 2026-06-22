@@ -29,14 +29,14 @@ bd -C "$REPO_ROOT" init --from-jsonl --prefix gh-toy || true
 
 # 6. Identify and delete any issues not in the canonical JSONL
 echo "Pruning non-canonical issues..."
-canonical=$(python3 -c "
+canonical=$(python -c "
 import json, sys
 with open('$REPO_ROOT/.beads/issues.jsonl') as f:
     ids = [json.loads(l)['id'] for l in f if l.strip()]
 print(' '.join(ids))
 ")
 
-junk=$(bd -C "$REPO_ROOT" list --all --json 2>/dev/null | python3 -c "
+junk=$(bd -C "$REPO_ROOT" list --all --json 2>/dev/null | python -c "
 import json, sys
 canonical = set('$canonical'.split())
 issues = json.load(sys.stdin)
