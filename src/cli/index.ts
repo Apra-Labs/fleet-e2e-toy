@@ -1,5 +1,6 @@
 import { parseArgs } from "./parser";
 import { CommandResult, ParsedArgs } from "./types";
+import { getVersionString } from "./version";
 
 /**
  * Dispatch a parsed command to its handler.
@@ -31,6 +32,14 @@ function dispatch(parsed: ParsedArgs): CommandResult {
 export async function main(argv: string[]): Promise<number> {
   try {
     const parsed = parseArgs(argv);
+
+    // Check for --version or -v flag before dispatching to any command
+    if (parsed.flags.version === true || parsed.flags.v === true) {
+      const versionString = getVersionString();
+      process.stdout.write(versionString + "\n");
+      return 0;
+    }
+
     const result = dispatch(parsed);
 
     if (result.stdout !== undefined) {
