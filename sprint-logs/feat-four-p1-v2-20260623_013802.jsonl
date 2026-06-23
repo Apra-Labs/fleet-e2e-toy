@@ -4,3 +4,7 @@
 {"ts":"2026-06-23T05:49:23Z","cycle":1,"phase":"Plan","label":"planner-c1-r0","model":"claude-opus-4-8","context":"planning epics gh-toy-13t, gh-toy-4ef, gh-toy-7rp, gh-toy-mi2","outTokens":10192,"costUsd":0.2548}
 {"ts":"2026-06-23T05:49:23Z","cycle":1,"phase":"Plan","label":"plan-reviewer-c1-r0","model":"claude-sonnet-4-6","context":"reviewing plan for epics gh-toy-13t, gh-toy-4ef, gh-toy-7rp, gh-toy-mi2","outTokens":2871,"costUsd":0.0431}
 {"ts":"2026-06-23T05:49:23Z","cycle":1,"phase":"Plan","label":"write-quote-c1","model":"claude-haiku-4-5","context":"","outTokens":859,"costUsd":0.0043}
+{"ts":"2026-06-23T05:58:01Z","cycle":1,"phase":"Plan","label":"log-append-plan-c1","model":"claude-haiku-4-5","context":"5 new entries","outTokens":1199,"costUsd":0.006}
+{"ts":"2026-06-23T05:58:01Z","cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1597,"costUsd":0.008}
+{"ts":"2026-06-23T05:58:01Z","cycle":1,"phase":"Develop","label":"doer-c1-i0-4","model":"claude-opus-4-8","context":"tasks gh-toy-qj9","outTokens":5620,"costUsd":0.1405}
+{"ts":"2026-06-23T05:58:01Z","cycle":1,"phase":"Develop","label":"reviewer-c1-i1","model":"claude-opus-4-8","context":"reviewing tasks gh-toy-qj9","outTokens":3187,"costUsd":0.0797}
