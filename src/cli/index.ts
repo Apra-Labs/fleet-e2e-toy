@@ -14,6 +14,8 @@
 import { ParsedArgs, parseArgs } from "./args";
 import { printHelp } from "./help";
 import { printVersion } from "./version";
+import { listCommand } from "./commands/list";
+import { readCommand } from "./commands/read";
 
 const TOOL_NAME = "fleet-e2e-toy";
 
@@ -21,7 +23,10 @@ const TOOL_NAME = "fleet-e2e-toy";
 export type CommandHandler = (args: ParsedArgs) => number;
 
 /** Dispatch table mapping subcommand names to their handlers. */
-export const commands: Record<string, CommandHandler> = {};
+export const commands: Record<string, CommandHandler> = {
+  list: listCommand,
+  read: readCommand,
+};
 
 function printUsage(): void {
   process.stderr.write(
