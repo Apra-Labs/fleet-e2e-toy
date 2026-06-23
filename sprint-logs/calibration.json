@@ -75,98 +75,106 @@
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 2,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 1.5,
-    "reviewer_ratio_avg": 0.3482948752115203,
+    "sprints_sampled": 3,
+    "last_updated": "2026-06-23",
+    "cycle_avg": 1.3333333333333333,
+    "reviewer_ratio_avg": 0.3858105010925689,
     "bucket_avg_tokens": {},
     "roles": {
       "cycle-state": {
-        "avg_output_tokens": 708.5,
-        "sample_n": 2
+        "avg_output_tokens": 924,
+        "sample_n": 3
       },
       "planner": {
-        "avg_output_tokens": 4574,
-        "sample_n": 3
+        "avg_output_tokens": 6446.666666666667,
+        "sample_n": 4
       },
       "plan-reviewer": {
-        "avg_output_tokens": 1808,
-        "sample_n": 3
+        "avg_output_tokens": 2162.3333333333335,
+        "sample_n": 4
       },
       "feedback-commit-plan-reviewer": {
         "avg_output_tokens": 0,
         "sample_n": 1
       },
       "write-quote": {
-        "avg_output_tokens": 1847,
-        "sample_n": 2
+        "avg_output_tokens": 1517.6666666666667,
+        "sample_n": 3
       },
       "ready-streaks": {
-        "avg_output_tokens": 1881.7142857142858,
-        "sample_n": 12
+        "avg_output_tokens": 1815.0317460317463,
+        "sample_n": 18
       },
       "doer": {
-        "avg_output_tokens": 9598.25,
-        "sample_n": 12
+        "avg_output_tokens": 8629.1,
+        "sample_n": 17
       },
       "reviewer": {
-        "avg_output_tokens": 3488.458333333333,
-        "sample_n": 10
+        "avg_output_tokens": 3353.4388888888884,
+        "sample_n": 15
       },
       "feedback-commit-reviewer": {
         "avg_output_tokens": 1833,
         "sample_n": 2
       },
       "push": {
-        "avg_output_tokens": 146,
-        "sample_n": 2
+        "avg_output_tokens": 151.33333333333334,
+        "sample_n": 3
       },
       "head-sha": {
-        "avg_output_tokens": 229.5,
-        "sample_n": 2
+        "avg_output_tokens": 225.33333333333334,
+        "sample_n": 3
       },
       "deployer": {
-        "avg_output_tokens": 1253.5,
-        "sample_n": 2
+        "avg_output_tokens": 1305.6666666666667,
+        "sample_n": 3
       },
       "integ-runner": {
-        "avg_output_tokens": 4387,
-        "sample_n": 2
+        "avg_output_tokens": 4182.333333333333,
+        "sample_n": 3
       },
       "teardown": {
-        "avg_output_tokens": 383,
-        "sample_n": 2
+        "avg_output_tokens": 401.6666666666667,
+        "sample_n": 3
       },
       "check-blockers": {
-        "avg_output_tokens": 1509.5,
-        "sample_n": 2
+        "avg_output_tokens": 1537,
+        "sample_n": 3
       },
       "setup": {
-        "avg_output_tokens": 3693,
-        "sample_n": 1
+        "avg_output_tokens": 3695.6666666666665,
+        "sample_n": 2
       },
       "log-append-iter": {
-        "avg_output_tokens": 1270.5,
-        "sample_n": 4
+        "avg_output_tokens": 1221.8666666666666,
+        "sample_n": 9
       },
       "log-append-test": {
-        "avg_output_tokens": 937,
-        "sample_n": 1
+        "avg_output_tokens": 1072,
+        "sample_n": 2
       },
       "log-append-end": {
-        "avg_output_tokens": 587,
-        "sample_n": 1
+        "avg_output_tokens": 670,
+        "sample_n": 2
       },
       "ci-watcher": {
-        "avg_output_tokens": 831,
-        "sample_n": 1
+        "avg_output_tokens": 913,
+        "sample_n": 2
       },
       "ci-task-create": {
-        "avg_output_tokens": 336,
-        "sample_n": 1
+        "avg_output_tokens": 349.6666666666667,
+        "sample_n": 2
       },
       "final-reviewer": {
-        "avg_output_tokens": 6265,
+        "avg_output_tokens": 6187,
+        "sample_n": 2
+      },
+      "log-append-setup": {
+        "avg_output_tokens": 844,
+        "sample_n": 1
+      },
+      "log-append-plan": {
+        "avg_output_tokens": 1199,
         "sample_n": 1
       }
     }
