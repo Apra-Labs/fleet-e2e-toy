@@ -14,3 +14,7 @@
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1947,"costUsd":0.0097}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"doer-c1-i2-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-lgo, gh-toy-8sx, gh-toy-tjp, gh-toy-kiz","outTokens":17467,"costUsd":0.262}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"reviewer-c1-i3","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-lgo, gh-toy-8sx, gh-toy-tjp, gh-toy-kiz","outTokens":2905,"costUsd":0.0436}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i3","model":"claude-haiku-4-5","context":"4 new entries","outTokens":871,"costUsd":0.0044}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1619,"costUsd":0.0081}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"doer-c1-i3-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-5ek","outTokens":17712,"costUsd":0.2657}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"reviewer-c1-i4","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-5ek","outTokens":2426,"costUsd":0.0364}
