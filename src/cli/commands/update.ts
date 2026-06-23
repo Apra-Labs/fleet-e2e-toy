@@ -1,5 +1,6 @@
 import { updateNote, CliError } from "../client";
 import { UpdateNoteInput } from "../../models/note";
+import { assertNonBlank } from "../validation";
 
 interface ParsedArgs {
   id?: string;
@@ -30,6 +31,16 @@ export async function updateCommand(args: string[]): Promise<number> {
 
   if (!id) {
     process.stderr.write("Error: --id <id> is required\n");
+    return 1;
+  }
+
+  try {
+    assertNonBlank("id", id);
+    if (title !== undefined) assertNonBlank("title", title);
+    if (content !== undefined) assertNonBlank("content", content);
+  } catch (err) {
+    const message = err instanceof CliError ? err.message : String(err);
+    process.stderr.write(`${message}\n`);
     return 1;
   }
 

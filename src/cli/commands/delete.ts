@@ -1,4 +1,5 @@
 import { deleteNote, CliError } from "../client";
+import { assertNonBlank } from "../validation";
 
 function parseArgs(args: string[]): { id?: string } {
   const result: { id?: string } = {};
@@ -15,6 +16,14 @@ export async function deleteCommand(args: string[]): Promise<number> {
 
   if (!id) {
     process.stderr.write("Error: --id <id> is required\n");
+    return 1;
+  }
+
+  try {
+    assertNonBlank("id", id);
+  } catch (err) {
+    const message = err instanceof CliError ? err.message : String(err);
+    process.stderr.write(`${message}\n`);
     return 1;
   }
 

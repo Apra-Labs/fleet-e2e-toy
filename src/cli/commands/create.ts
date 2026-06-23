@@ -1,5 +1,6 @@
 import { createNote, CliError } from "../client";
 import { CreateNoteInput } from "../../models/note";
+import { assertNonBlank } from "../validation";
 
 interface ParsedArgs {
   title?: string;
@@ -31,6 +32,15 @@ export async function createCommand(args: string[]): Promise<number> {
 
   if (!content) {
     process.stderr.write("Error: --content <content> is required\n");
+    return 1;
+  }
+
+  try {
+    assertNonBlank("title", title);
+    assertNonBlank("content", content);
+  } catch (err) {
+    const message = err instanceof CliError ? err.message : String(err);
+    process.stderr.write(`${message}\n`);
     return 1;
   }
 
