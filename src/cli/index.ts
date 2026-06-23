@@ -12,6 +12,7 @@
  */
 
 import { ParsedArgs, parseArgs } from "./args";
+import { printVersion } from "./version";
 
 const TOOL_NAME = "fleet-e2e-toy";
 
@@ -43,6 +44,12 @@ export function run(argv: string[]): number {
   } catch {
     printError("Error: failed to parse arguments");
     return 1;
+  }
+
+  // --version / -v takes precedence over everything else (including subcommands)
+  if (parsed.flags["version"] === true || parsed.flags["v"] === true) {
+    printVersion();
+    return 0;
   }
 
   if (parsed.command === undefined) {
