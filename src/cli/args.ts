@@ -79,3 +79,17 @@ export function parseArgs(argv: string[]): ParsedArgs {
 
   return { command, flags, positionals };
 }
+
+/**
+ * Validate that a CLI argument value is a non-empty, non-whitespace-only string.
+ * Returns the trimmed value on success, or throws an error with a clear message.
+ */
+export function validateNonBlank(value: string | boolean | undefined, argName: string): string {
+  if (value === undefined || value === true || value === false) {
+    throw new Error(`Argument '${argName}' is required`);
+  }
+  if (typeof value === "string" && value.trim().length === 0) {
+    throw new Error(`Argument '${argName}' must not be empty or whitespace-only`);
+  }
+  return (value as string).trim();
+}
