@@ -1,6 +1,6 @@
-# NoteAPI — Demo Project for Agentic AI Workshop (Advanced)
+# fleet-e2e-toy — Demo Project for Agentic AI Workshop (Advanced)
 
-A deliberately simple REST API used as a live demo prop for the [Agentic AI Workshop (Advanced)](https://github.com/Apra-Labs). The API itself is boring on purpose — the value is in the **agentic configuration around it**.
+A deliberately simple REST API and companion CLI used as a live demo prop for the [Agentic AI Workshop (Advanced)](https://github.com/Apra-Labs). The API itself is boring on purpose — the value is in the **agentic configuration around it**.
 
 ## What This Repo Demonstrates
 
@@ -26,9 +26,29 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 46 tests, all passing
 npm start       # http://localhost:3000
 ```
+
+## CLI
+
+After building (`npm run build`), the `fleet-e2e-toy` binary is available:
+
+```bash
+fleet-e2e-toy --version          # print version
+fleet-e2e-toy --help             # global help
+fleet-e2e-toy list               # list all notes
+fleet-e2e-toy list --tag mytag   # filter by tag
+fleet-e2e-toy list --q keyword   # search
+fleet-e2e-toy read --id <id>     # read one note
+fleet-e2e-toy create --title "T" --content "C" [--tag t1 --tag t2]
+fleet-e2e-toy update --id <id> [--title "T"] [--content "C"] [--tag t]
+fleet-e2e-toy delete --id <id>
+```
+
+The CLI connects to `http://localhost:3000` by default. Override with `API_BASE_URL=http://host:port`.
+
+See `docs/cli-architecture.md` for design details.
 
 ## API Endpoints
 
