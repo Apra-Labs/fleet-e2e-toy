@@ -9,12 +9,18 @@
  * later tasks; this scaffold provides the dispatch and exit-code plumbing.
  */
 
+import { listCommand } from "./commands/list";
+import { readCommand } from "./commands/read";
+
 const USAGE = "Usage: fleet-e2e-toy <command> [options]";
 
 type CommandHandler = (args: string[]) => Promise<number> | number;
 
 // Handler map — subcommands are registered here as they are implemented.
-const commands: Record<string, CommandHandler> = {};
+const commands: Record<string, CommandHandler> = {
+  list: listCommand,
+  read: readCommand,
+};
 
 async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
