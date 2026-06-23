@@ -16,6 +16,9 @@ import { printHelp } from "./help";
 import { printVersion } from "./version";
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
+import { createCommand } from "./commands/create";
+import { updateCommand } from "./commands/update";
+import { deleteCommand } from "./commands/delete";
 
 const TOOL_NAME = "fleet-e2e-toy";
 
@@ -26,6 +29,9 @@ export type CommandHandler = (args: ParsedArgs) => number;
 export const commands: Record<string, CommandHandler> = {
   list: listCommand,
   read: readCommand,
+  create: createCommand,
+  update: updateCommand,
+  delete: deleteCommand,
 };
 
 function printUsage(): void {
