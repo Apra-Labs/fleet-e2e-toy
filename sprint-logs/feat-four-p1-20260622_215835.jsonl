@@ -25,3 +25,5 @@
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Test","label":"deployer-c1","model":"claude-sonnet-4-6","context":"","outTokens":1249,"costUsd":0.0187}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Test","label":"integ-runner-c1","model":"claude-sonnet-4-6","context":"","outTokens":4797,"costUsd":0.072}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Test","label":"teardown-c1","model":"claude-sonnet-4-6","context":"","outTokens":347,"costUsd":0.0052}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Test","label":"log-append-test-c1","model":"claude-haiku-4-5","context":"7 new entries","outTokens":937,"costUsd":0.0047}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"check-blockers","model":"claude-haiku-4-5","context":"","outTokens":1600,"costUsd":0.008}
