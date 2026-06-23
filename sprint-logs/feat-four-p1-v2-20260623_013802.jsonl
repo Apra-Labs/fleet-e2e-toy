@@ -33,3 +33,10 @@
 {"ts":"2026-06-23T06:54:58Z","cycle":1,"phase":"Test","label":"teardown-c1","model":"claude-sonnet-4-6","context":"","outTokens":439,"costUsd":0.0066}
 {"ts":"2026-06-23T06:57:21Z","cycle":1,"phase":"Test","label":"log-append-test-c1","model":"claude-haiku-4-5","context":"7 new entries","outTokens":1342,"costUsd":0.0067}
 {"ts":"2026-06-23T06:57:21Z","cycle":1,"phase":"Develop","label":"check-blockers","model":"claude-haiku-4-5","context":"","outTokens":1592,"costUsd":0.008}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Test","label":"log-append-end-c1","model":"claude-haiku-4-5","context":"2 new entries","outTokens":836,"costUsd":0.0042}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"ci-watcher","model":"claude-haiku-4-5","context":"","outTokens":1077,"costUsd":0.0054}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"ci-task-create","model":"claude-haiku-4-5","context":"","outTokens":377,"costUsd":0.0019}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"final-reviewer","model":"claude-opus-4-8","context":"","outTokens":6031,"costUsd":0.1508}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"harvester","model":"claude-sonnet-4-6","context":"","outTokens":6099,"costUsd":0.0915}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"calibration-update","model":"claude-haiku-4-5","context":"","outTokens":4814,"costUsd":0.0241}
+{"ts":"2026-06-23T07:09:53Z","cycle":1,"phase":"Harvest","label":"harvest-pr","model":"claude-sonnet-4-6","context":"","outTokens":1582,"costUsd":0.0237}
