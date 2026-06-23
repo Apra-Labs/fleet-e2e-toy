@@ -12,6 +12,7 @@
  */
 
 import { ParsedArgs, parseArgs } from "./args";
+import { printHelp } from "./help";
 import { printVersion } from "./version";
 
 const TOOL_NAME = "fleet-e2e-toy";
@@ -52,9 +53,15 @@ export function run(argv: string[]): number {
     return 0;
   }
 
+  // --help / -h: global help when no command, per-subcommand help when combined
+  if (parsed.flags["help"] === true || parsed.flags["h"] === true) {
+    printHelp(parsed.command);
+    return 0;
+  }
+
   if (parsed.command === undefined) {
-    printUsage();
-    return 1;
+    printHelp();
+    return 0;
   }
 
   const handler = commands[parsed.command];
