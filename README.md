@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 83 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,36 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+A command-line client ships alongside the API server. It communicates with the API over HTTP and requires the server to be running.
+
+```bash
+npm run cli -- --help              # global usage
+npm run cli -- --version           # print version and exit
+npm run cli -- list                # list all notes
+npm run cli -- list --tag work     # filter by tag
+npm run cli -- list --q "meeting"  # search by query
+npm run cli -- read --id <id>      # read a note by ID
+npm run cli -- create --title "My note" --content "Body text" --tags "work,ideas"
+npm run cli -- update --id <id> --title "New title"
+npm run cli -- delete --id <id>
+```
+
+The server address defaults to `http://localhost:3000`. Override with `API_URL`:
+
+```bash
+API_URL=http://localhost:3001 npm run cli -- list
+```
+
+Per-subcommand help is available:
+
+```bash
+npm run cli -- create --help
+```
+
+See `docs/cli-architecture.md` for design details.
 
 ## Tech Stack
 
