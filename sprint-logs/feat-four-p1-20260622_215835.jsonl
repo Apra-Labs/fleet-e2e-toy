@@ -6,3 +6,7 @@
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1562,"costUsd":0.0078}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"doer-c1-i0-4","model":"claude-opus-4-8","context":"tasks gh-toy-yt2","outTokens":4632,"costUsd":0.1158}
 {"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"reviewer-c1-i1","model":"claude-opus-4-8","context":"reviewing tasks gh-toy-yt2","outTokens":3640,"costUsd":0.091}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i1","model":"claude-haiku-4-5","context":"8 new entries","outTokens":2420,"costUsd":0.0121}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"ready-streaks","model":"claude-haiku-4-5","context":"","outTokens":1741,"costUsd":0.0087}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"doer-c1-i1-4","model":"claude-sonnet-4-6","context":"tasks gh-toy-13t, gh-toy-fyj, gh-toy-egq, gh-toy-9y3","outTokens":12114,"costUsd":0.1817}
+{"ts":"2026-06-22T21:58:35Z","cycle":1,"phase":"Develop","label":"reviewer-c1-i2","model":"claude-sonnet-4-6","context":"reviewing tasks gh-toy-13t, gh-toy-fyj, gh-toy-egq, gh-toy-9y3","outTokens":4350,"costUsd":0.0653}
