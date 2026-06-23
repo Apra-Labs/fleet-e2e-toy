@@ -11,6 +11,9 @@
 
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
+import { createCommand } from "./commands/create";
+import { updateCommand } from "./commands/update";
+import { deleteCommand } from "./commands/delete";
 import { VERSION } from "./version";
 import { printHelp } from "./help";
 
@@ -20,6 +23,9 @@ type CommandHandler = (args: string[]) => Promise<number> | number;
 const commands: Record<string, CommandHandler> = {
   list: listCommand,
   read: readCommand,
+  create: createCommand,
+  update: updateCommand,
+  delete: deleteCommand,
 };
 
 async function run(argv: string[]): Promise<number> {
