@@ -23,7 +23,7 @@ git -C "$REPO_ROOT" fetch origin main
 git -C "$REPO_ROOT" reset --hard origin/main
 
 # 4. Delete all local branches except main
-local_branches=$(git -C "$REPO_ROOT" branch | grep -v '^\* ' | tr -d ' ')
+local_branches=$(git -C "$REPO_ROOT" branch | grep -v '^\* ' | tr -d ' ' || true)
 if [ -n "$local_branches" ]; then
   echo "Deleting local branches: $local_branches"
   echo "$local_branches" | xargs git -C "$REPO_ROOT" branch -D
