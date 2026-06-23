@@ -11,6 +11,7 @@
 
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
+import { VERSION } from "./version";
 
 const USAGE = "Usage: fleet-e2e-toy <command> [options]";
 
@@ -23,6 +24,12 @@ const commands: Record<string, CommandHandler> = {
 };
 
 async function run(argv: string[]): Promise<number> {
+  // Global flags intercepted before subcommand dispatch.
+  if (argv.includes("--version") || argv.includes("-v")) {
+    process.stdout.write(`${VERSION}\n`);
+    return 0;
+  }
+
   const [command, ...rest] = argv;
 
   if (!command) {
