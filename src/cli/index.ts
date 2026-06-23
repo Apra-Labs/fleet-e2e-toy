@@ -12,8 +12,7 @@
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
 import { VERSION } from "./version";
-
-const USAGE = "Usage: fleet-e2e-toy <command> [options]";
+import { printHelp } from "./help";
 
 type CommandHandler = (args: string[]) => Promise<number> | number;
 
@@ -32,9 +31,14 @@ async function run(argv: string[]): Promise<number> {
 
   const [command, ...rest] = argv;
 
-  if (!command) {
-    process.stderr.write(`${USAGE}\n`);
-    return 1;
+  // Help: per-command when a known subcommand precedes --help/-h, global otherwise.
+  if (!command || argv.includes("--help") || argv.includes("-h")) {
+    const subcommand =
+      command && (argv.includes("--help") || argv.includes("-h"))
+        ? command
+        : undefined;
+    printHelp(subcommand);
+    return 0;
   }
 
   const handler = commands[command];
