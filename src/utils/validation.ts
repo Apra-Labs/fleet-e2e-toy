@@ -18,10 +18,14 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
+  } else if (obj.title.trim().length > 200) {
+    errors.push({ field: "title", message: "Title must be 200 characters or fewer" });
   }
 
   if (typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (obj.content.length > 10000) {
+    errors.push({ field: "content", message: "Content must be 10000 characters or fewer" });
   }
 
   if (obj.tags !== undefined) {
@@ -55,10 +59,14 @@ export function validateUpdateInput(
 
   if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
     errors.push({ field: "title", message: "Title must be a non-empty string" });
+  } else if (obj.title !== undefined && typeof obj.title === "string" && obj.title.trim().length > 200) {
+    errors.push({ field: "title", message: "Title must be 200 characters or fewer" });
   }
 
   if (obj.content !== undefined && typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (obj.content !== undefined && typeof obj.content === "string" && obj.content.length > 10000) {
+    errors.push({ field: "content", message: "Content must be 10000 characters or fewer" });
   }
 
   if (obj.tags !== undefined) {
