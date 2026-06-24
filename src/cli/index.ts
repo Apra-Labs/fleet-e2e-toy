@@ -1,5 +1,7 @@
 #!/usr/bin/env ts-node
 import { parseArgs } from "./args";
+import { handleList } from "./commands/list";
+import { handleRead } from "./commands/read";
 
 function printUsage() {
   console.log("Usage: fleet-e2e-toy <command> [options]");
@@ -71,10 +73,10 @@ async function main() {
   // Subcommands dispatcher placeholders
   switch (command) {
     case "list":
-      console.log("list command called with options:", options);
+      await handleList(options);
       break;
     case "read":
-      console.log("read command called with options:", options);
+      await handleRead(options);
       break;
     case "create":
       console.log("create command called with options:", options);
