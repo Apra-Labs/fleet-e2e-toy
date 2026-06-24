@@ -27,6 +27,8 @@ export function validateCreateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if ((obj.tags as string[]).some((t) => t.trim().length === 0)) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only strings" });
     }
   }
 
@@ -64,6 +66,8 @@ export function validateUpdateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if ((obj.tags as string[]).some((t) => t.trim().length === 0)) {
+      errors.push({ field: "tags", message: "Tags must not contain empty or whitespace-only strings" });
     }
   }
 

@@ -42,6 +42,30 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects whitespace-only title", () => {
+    const result = validateCreateInput({ title: "   ", content: "Body" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("title");
+    }
+  });
+
+  it("rejects tags with empty string elements", () => {
+    const result = validateCreateInput({ title: "T", content: "B", tags: ["work", ""] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
+
+  it("rejects tags with whitespace-only elements", () => {
+    const result = validateCreateInput({ title: "T", content: "B", tags: ["  "] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -62,5 +86,18 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+
+  it("rejects whitespace-only title", () => {
+    const result = validateUpdateInput({ title: "   " });
+    expect(result.valid).toBe(false);
+  });
+
+  it("rejects tags with empty string elements", () => {
+    const result = validateUpdateInput({ tags: [""] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
   });
 });
