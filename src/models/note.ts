@@ -36,7 +36,7 @@ export const noteStore = {
       ...updates,
       id: existing.id,
       createdAt: existing.createdAt,
-      updatedAt: existing.updatedAt,
+      updatedAt: new Date().toISOString(),
     };
     notes.set(id, updated);
     return updated;
