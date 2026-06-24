@@ -91,9 +91,9 @@
       "title": "Argument & Empty/Blank String Validation",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.8",
-      "commit": null,
+      "commit": "b3d65aa2b0cdf198470eef2bce089bbc5cc14606",
       "notes": ""
     },
     {
@@ -102,7 +102,7 @@
       "title": "CLI Unit & Integration Tests",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "verify",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh-toy-j5m.9",
       "commit": null,
       "notes": ""
