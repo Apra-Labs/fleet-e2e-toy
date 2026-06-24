@@ -14,7 +14,7 @@ export function makeCreateCommand(): Command {
         validateRequiredString(options.content, "content");
         const result = await httpClient({
           method: "POST",
-          path: "/notes",
+          path: "/api/notes",
           body: { title: options.title, content: options.content },
         });
         process.stdout.write(JSON.stringify(result, null, 2) + "\n");

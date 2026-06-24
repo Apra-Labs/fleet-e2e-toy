@@ -10,7 +10,7 @@ export function makeReadCommand(): Command {
     .action(async (options: { id: string }) => {
       try {
         validateRequiredString(options.id, "id");
-        const result = await httpClient({ method: "GET", path: `/notes/${options.id}` });
+        const result = await httpClient({ method: "GET", path: `/api/notes/${options.id}` });
         process.stdout.write(JSON.stringify(result, null, 2) + "\n");
       } catch (err) {
         if (err instanceof CliError) {

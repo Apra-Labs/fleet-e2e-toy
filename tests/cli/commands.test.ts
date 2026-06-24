@@ -72,10 +72,10 @@ async function runCommand(makeCmd: () => import("commander").Command, args: stri
 // ─── list ────────────────────────────────────────────────────────────────────
 
 describe("list subcommand", () => {
-  it("calls GET /notes with no params", async () => {
+  it("calls GET /api/notes with no params", async () => {
     mockHttpClient.mockResolvedValueOnce([]);
     await runCommand(makeListCommand, []);
-    expect(mockHttpClient).toHaveBeenCalledWith({ method: "GET", path: "/notes" });
+    expect(mockHttpClient).toHaveBeenCalledWith({ method: "GET", path: "/api/notes" });
   });
 
   it("appends --tag as query param", async () => {
@@ -83,7 +83,7 @@ describe("list subcommand", () => {
     await runCommand(makeListCommand, ["--tag", "work"]);
     expect(mockHttpClient).toHaveBeenCalledWith({
       method: "GET",
-      path: "/notes?tag=work",
+      path: "/api/notes?tag=work",
     });
   });
 
@@ -92,7 +92,7 @@ describe("list subcommand", () => {
     await runCommand(makeListCommand, ["--q", "hello"]);
     expect(mockHttpClient).toHaveBeenCalledWith({
       method: "GET",
-      path: "/notes?q=hello",
+      path: "/api/notes?q=hello",
     });
   });
 
@@ -113,10 +113,10 @@ describe("list subcommand", () => {
 // ─── read ────────────────────────────────────────────────────────────────────
 
 describe("read subcommand", () => {
-  it("calls GET /notes/:id", async () => {
+  it("calls GET /api/notes/:id", async () => {
     mockHttpClient.mockResolvedValueOnce({ id: "42", title: "T" });
     await runCommand(makeReadCommand, ["--id", "42"]);
-    expect(mockHttpClient).toHaveBeenCalledWith({ method: "GET", path: "/notes/42" });
+    expect(mockHttpClient).toHaveBeenCalledWith({ method: "GET", path: "/api/notes/42" });
   });
 
   it("prints note JSON to stdout", async () => {
@@ -135,12 +135,12 @@ describe("read subcommand", () => {
 // ─── create ──────────────────────────────────────────────────────────────────
 
 describe("create subcommand", () => {
-  it("calls POST /notes with title and content", async () => {
+  it("calls POST /api/notes with title and content", async () => {
     mockHttpClient.mockResolvedValueOnce({ id: "1", title: "T", content: "C" });
     await runCommand(makeCreateCommand, ["--title", "T", "--content", "C"]);
     expect(mockHttpClient).toHaveBeenCalledWith({
       method: "POST",
-      path: "/notes",
+      path: "/api/notes",
       body: { title: "T", content: "C" },
     });
   });
@@ -170,22 +170,22 @@ describe("create subcommand", () => {
 // ─── update ──────────────────────────────────────────────────────────────────
 
 describe("update subcommand", () => {
-  it("calls PUT /notes/:id with title", async () => {
+  it("calls PUT /api/notes/:id with title", async () => {
     mockHttpClient.mockResolvedValueOnce({ id: "1", title: "New" });
     await runCommand(makeUpdateCommand, ["--id", "1", "--title", "New"]);
     expect(mockHttpClient).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/notes/1",
+      path: "/api/notes/1",
       body: { title: "New" },
     });
   });
 
-  it("calls PUT /notes/:id with content", async () => {
+  it("calls PUT /api/notes/:id with content", async () => {
     mockHttpClient.mockResolvedValueOnce({ id: "1", content: "Body" });
     await runCommand(makeUpdateCommand, ["--id", "1", "--content", "Body"]);
     expect(mockHttpClient).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/notes/1",
+      path: "/api/notes/1",
       body: { content: "Body" },
     });
   });
@@ -208,10 +208,10 @@ describe("update subcommand", () => {
 // ─── delete ──────────────────────────────────────────────────────────────────
 
 describe("delete subcommand", () => {
-  it("calls DELETE /notes/:id", async () => {
+  it("calls DELETE /api/notes/:id", async () => {
     mockHttpClient.mockResolvedValueOnce(null);
     await runCommand(makeDeleteCommand, ["--id", "3"]);
-    expect(mockHttpClient).toHaveBeenCalledWith({ method: "DELETE", path: "/notes/3" });
+    expect(mockHttpClient).toHaveBeenCalledWith({ method: "DELETE", path: "/api/notes/3" });
   });
 
   it("prints success message to stdout", async () => {

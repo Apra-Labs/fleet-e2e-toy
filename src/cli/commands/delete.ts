@@ -10,7 +10,7 @@ export function makeDeleteCommand(): Command {
     .action(async (options: { id: string }) => {
       try {
         validateRequiredString(options.id, "id");
-        await httpClient({ method: "DELETE", path: `/notes/${options.id}` });
+        await httpClient({ method: "DELETE", path: `/api/notes/${options.id}` });
         process.stdout.write("Note deleted successfully.\n");
       } catch (err) {
         if (err instanceof CliError) {

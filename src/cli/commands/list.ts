@@ -12,7 +12,7 @@ export function makeListCommand(): Command {
       if (options.tag) params.set("tag", options.tag);
       if (options.q) params.set("q", options.q);
       const query = params.toString();
-      const path = query ? `/notes?${query}` : "/notes";
+      const path = query ? `/api/notes?${query}` : "/api/notes";
 
       try {
         const result = await httpClient({ method: "GET", path });

@@ -16,7 +16,7 @@ export interface HttpClientOptions {
 }
 
 export async function httpClient(options: HttpClientOptions): Promise<unknown> {
-  const baseUrl = options.baseUrl ?? "http://localhost:3000";
+  const baseUrl = options.baseUrl ?? process.env.NOTECLI_BASE_URL ?? "http://localhost:3000";
   const url = `${baseUrl}${options.path}`;
 
   let response: Response;

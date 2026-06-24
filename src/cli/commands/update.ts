@@ -24,7 +24,7 @@ export function makeUpdateCommand(): Command {
 
         const result = await httpClient({
           method: "PUT",
-          path: `/notes/${options.id}`,
+          path: `/api/notes/${options.id}`,
           body,
         });
         process.stdout.write(JSON.stringify(result, null, 2) + "\n");
