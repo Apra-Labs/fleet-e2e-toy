@@ -38,43 +38,57 @@ This plan outlines the design and implementation steps for adding a CLI (`fleet-
 ### Phase 2: CRUD Commands (gh-toy-mi2)
 
 #### Task 3: Implement list and read commands
-- **Description:** Add the `list` (supports `--tag` and `--q` options) and `read` (requires `--id`) subcommands. Ensure output formats are printed cleanly to `stdout` (plain text by default, or JSON if flag is set, matching the schema).
+- **Description:** Add the `list` (supports `--tag` and `--q` options) and `read` (requires `--id`) subcommands. Ensure output formats are printed cleanly to `stdout` in plain text.
 - **Files:** `src/cli/commands/list.ts`, `src/cli/commands/read.ts`, `src/cli/index.ts`
 - **Model:** Gemini 3.5 Flash (Medium)
 - **Done when:** `./tool list` prints notes and `./tool read --id <id>` fetches a note or exits with `1` on error.
 - **Blockers:** Task 2
 
-#### Task 4: Implement create, update, and delete commands
-- **Description:** Add the `create` (requires `--title` and `--content`), `update` (requires `--id`, optional `--title`/`--content`), and `delete` (requires `--id`) subcommands. Ensure correct payload assembly and HTTP methods are executed against the backend server.
-- **Files:** `src/cli/commands/create.ts`, `src/cli/commands/update.ts`, `src/cli/commands/delete.ts`, `src/cli/index.ts`
+#### Task 4: Implement create command
+- **Description:** Add the `create` (requires `--title` and `--content`) subcommand. Ensure correct payload assembly and POST HTTP request is executed against the backend server.
+- **Files:** `src/cli/commands/create.ts`, `src/cli/index.ts`
 - **Model:** Gemini 3.5 Flash (Medium)
-- **Done when:** Mutation commands execute successfully, print API results, and delete returns proper status codes.
+- **Done when:** `./tool create --title "Title" --content "Content"` executes successfully and prints the created note details.
+- **Blockers:** Task 2
+
+#### Task 5: Implement update command
+- **Description:** Add the `update` (requires `--id`, optional `--title` and/or `--content`) subcommand. Ensure correct payload assembly and PUT HTTP request is executed against the backend server.
+- **Files:** `src/cli/commands/update.ts`, `src/cli/index.ts`
+- **Model:** Gemini 3.5 Flash (Medium)
+- **Done when:** `./tool update --id <id> --title "New Title"` executes successfully and prints the updated note details.
+- **Blockers:** Task 2
+
+#### Task 6: Implement delete command
+- **Description:** Add the `delete` (requires `--id`) subcommand. Ensure DELETE HTTP request is executed against the backend server.
+- **Files:** `src/cli/commands/delete.ts`, `src/cli/index.ts`
+- **Model:** Gemini 3.5 Flash (Medium)
+- **Done when:** `./tool delete --id <id>` executes successfully and exits 0.
 - **Blockers:** Task 2
 
 ---
 
 ### Phase 3: Help System, Validation & Verification (gh-toy-7rp, gh-toy-13t)
 
-#### Task 5: Global and Command Help Flags
+#### Task 7: Global and Command Help Flags
 - **Description:** Handle `--help` and `-h` flags globally and per-subcommand. Print detailed command usage and options to `stdout` and exit with code `0`.
 - **Files:** `src/cli/help.ts`, `src/cli/index.ts`
 - **Model:** Gemini 3.5 Flash (Medium)
 - **Done when:** `./tool --help` and `./tool list -h` print help text and exit with status code `0`.
-- **Blockers:** Task 3, Task 4
+- **Blockers:** Task 3, Task 4, Task 5, Task 6
 
-#### Task 6: Argument & Empty/Blank String Validation
+#### Task 8: Argument & Empty/Blank String Validation
 - **Description:** Validate user arguments. If a user passes an empty string `""` or whitespace-only string `"   "` for any subcommand argument or option, reject it immediately with a clear error message. Ensure all validation and API errors are caught at the entry point and logged without stack trace outputs.
 - **Files:** `src/cli/validation.ts`, `src/cli/index.ts`
 - **Model:** Gemini 3.5 Flash (Medium)
 - **Done when:** `./tool create --title ""` exits with `1` and prints `Error: title must not be empty`, displaying no stack trace.
-- **Blockers:** Task 4
+- **Blockers:** Task 3, Task 4, Task 5, Task 6
 
-#### Task 7: CLI Unit & Integration Tests
+#### Task 9: CLI Unit & Integration Tests
 - **Description:** Write automated end-to-end tests for the CLI subcommands using Jest, spinning up the test server, executing the commands via child process, and checking stdout/stderr outputs and exit codes. Add unit tests for blank string validation.
 - **Files:** `tests/cli.test.ts`
 - **Model:** Gemini 3.5 Flash (Medium)
 - **Done when:** Running `npm test` runs all CLI and REST tests successfully.
-- **Blockers:** Task 5, Task 6
+- **Blockers:** Task 7, Task 8
 
 ---
 
