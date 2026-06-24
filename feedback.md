@@ -2,36 +2,26 @@ APPROVED
 
 ## Notes
 
-### Coverage
-All three source issues are covered:
-- gh-toy-mi2 (CRUD commands): m5w.3 (list, read) + m5w.4 (create, update, delete)
-- gh-toy-7rp (help system + validation): m5w.5 (help/unknown-subcommand) + m5w.2 (validation helpers)
-- gh-toy-13t (empty/blank validation): m5w.2 (validation.ts reusing src/utils/validation.ts conventions) + m5w.6 (explicit test coverage for empty string and whitespace-only cases)
+### Quality Gates (m5w.7)
+- `npm run build` — exits 0, no TypeScript errors. `dist/cli/index.js` is produced with proper shebang.
+- `npm run lint` — exits 0, no lint errors.
+- `npm test` — 6 suites, 65 tests, all passing.
 
-### Issue 1: m5w.5 dependency underspecified (minor)
-m5w.5 notes only list `depends-on: gh-toy-m5w.1`, but its AC includes "All error paths (validation, network, API non-2xx) print human-readable messages with no stack traces." Polishing subcommand error paths requires m5w.3 and m5w.4 to exist first. In practice the doer should treat m5w.5 as blocked until m5w.3 and m5w.4 are done. The notes should ideally read `depends-on: gh-toy-m5w.3, gh-toy-m5w.4` in addition to m5w.1. Not a blocker given the dependency chain is documented elsewhere, but worth noting.
+### Per-task verdict against acceptance criteria
 
-### Issue 2: m5w.1 premium-tier assignment (accepted)
-Premium is higher than strictly needed for a scaffold task (creates ~3 files: src/cli/index.ts, edits package.json and tsconfig.json). However, requirements.md explicitly flags this as the riskiest task whose errors would cascade to all subsequent tasks. The premium assignment is defensible and accepted.
+- **gh-toy-m5w.1 (scaffold)** — PASS. `commander` is in package.json deps, `src/cli/index.ts` compiles and runs, `dist/cli/index.js` exists, `npx ts-node src/cli/index.ts --help` shows program name. `package.json` `bin.notecli` wired.
+- **gh-toy-m5w.2 (client + validation)** — PASS. `src/cli/client.ts` exports `httpClient` (default `http://localhost:3000`, accepts method/path/body, returns parsed JSON on 2xx) and `CliError` (typed, carries `status: number | null`, no leaked stack). `src/cli/validation.ts` exports `validateRequiredString` and `validateOptionalString` that reject empty / whitespace-only values and embed the flag name in the message. Both modules are smoke-imported in `src/cli/index.ts`.
+- **gh-toy-m5w.3 (list, read)** — PASS. `list` calls `GET /notes` with optional `--tag` / `--q` query params; `read` calls `GET /notes/:id`. Both use the client wrapper, print JSON to stdout, and exit non-zero on `CliError` with a clean message (no stack trace).
+- **gh-toy-m5w.4 (create, update, delete)** — PASS. `create` POSTs `{title, content}`, validates both required fields. `update` PUTs `/notes/:id`, requires at least one of `--title` / `--content` (verified at runtime with a clear stderr message), and validates non-blankness of any provided value. `delete` DELETEs `/notes/:id` and prints a success message. All exit non-zero on API error via the client wrapper.
+- **gh-toy-m5w.5 (help + unknown + error UX)** — PASS. `--help` / `-h` exit 0 listing all five subcommands (verified via child-process test). Per-subcommand `--help` works and exits 0. Unknown subcommand handler in `src/cli/index.ts` writes `Error: unknown subcommand '<name>'` plus usage to stderr and exits 1. Errors do not leak stack traces.
+- **gh-toy-m5w.6 (unit tests)** — PASS. `tests/cli/` contains: `validation.test.ts` (empty `""` and whitespace `"   "` both covered for required and optional helpers, flag name asserted in message), `client.test.ts` (2xx, non-2xx with CliError + status, network failure with null status, JSON body on POST, 204 No Content), `commands.test.ts` (one+ test per subcommand verifying HTTP method/path/body via mocked client, plus empty/blank-flag rejection for create/update), `help.test.ts` (--help, -h, per-subcommand --help all exit 0; unknown subcommand exits non-zero with usage on stderr).
+- **gh-toy-m5w.7 (quality gate)** — PASS. All three gates green; no fixes needed.
 
-### Issue 3: m5w.3 assigned standard-tier for an S-bucket task (acceptable)
-m5w.3 covers two read-only subcommands using already-built helpers, making it S-complexity. Standard is one tier above what a cheap model might handle, but the extra headroom costs little and reduces rework risk given this is the first subcommand implementation.
+### Minor observation (non-blocking, no reopen required)
+In the subcommand error handlers, the non-`CliError` branch writes `Error: ${String(err)}`. Because `String(err)` of an `Error` object yields `"Error: <message>"`, the user-visible line becomes e.g. `Error: Error: --title must be a non-empty string`. The message is still clear and the non-zero exit is correct, so this meets the AC, but a future polish could use `err instanceof Error ? err.message : String(err)` to drop the duplicate `Error:` prefix. Not opening a follow-up task — easy to fix opportunistically.
 
-### Acceptance Criteria Quality
-All tasks have concrete, testable acceptance criteria. m5w.6 explicitly calls for both the empty-string and whitespace-only test cases required by gh-toy-13t. m5w.7 is appropriately mechanical (run gates, fix any issues).
+### Earlier feedback.md history accounted for
+The prior `feedback.md` was the plan-reviewer's APPROVED verdict on the task graph (commit 00a4ad2). It raised: (1) m5w.5 dependency under-specification, (2) m5w.1 premium-tier defensible for risk, (3) m5w.3 standard-tier acceptable. These were planning-side notes, not implementation findings, and the executed work is consistent with the plan as approved.
 
-### Dependency Direction
-Linear chain is correct: m5w.1 → m5w.2 → {m5w.3, m5w.4} → m5w.6 → m5w.7, with m5w.5 branching from m5w.1 (with the caveat in Issue 1). No cycles detected.
-
-### Task Sizing
-- m5w.1: M (package.json + tsconfig.json + src/cli/index.ts, plus bin wiring — moderate scope with tsconfig path risk)
-- m5w.2: M (two new modules: src/cli/client.ts with typed CliError + src/cli/validation.ts)
-- m5w.3: S (two read-only subcommands wired into existing scaffold using existing helpers)
-- m5w.4: M (three write subcommands with conditional validation for update's at-least-one-field requirement)
-- m5w.5: S (help flags are largely automatic in commander; unknown-subcommand handler + error message polish is narrow scope)
-- m5w.6: L (tests/cli/ directory with multiple test files: validation, client, per-subcommand, help, unknown-command)
-- m5w.7: S (mechanical quality gate: run build/lint/test, fix any surface issues)
-
-## taskAssignments
-
-[{"id":"gh-toy-m5w.1","bucket":"M","model":"premium"},{"id":"gh-toy-m5w.2","bucket":"M","model":"standard"},{"id":"gh-toy-m5w.3","bucket":"S","model":"standard"},{"id":"gh-toy-m5w.4","bucket":"M","model":"standard"},{"id":"gh-toy-m5w.5","bucket":"S","model":"standard"},{"id":"gh-toy-m5w.6","bucket":"L","model":"standard"},{"id":"gh-toy-m5w.7","bucket":"S","model":"cheap"}]
+reopenIds: []
+newTasks: []
