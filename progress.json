@@ -6,7 +6,7 @@
   "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s8-TMfRok/repo",
   "transport": "remote",
   "epic": "gh-toy-j5m",
-  "lastDispatchedPhase": null,
+  "lastDispatchedPhase": 1,
   "tasks": [
     {
       "id": "T1",
@@ -14,9 +14,9 @@
       "title": "CLI Entrypoint, Dispatcher & Shell Wrappers",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.1",
-      "commit": null,
+      "commit": "13552ddabad46b4b4a145bfe3b57f405efa16758",
       "notes": ""
     },
     {
@@ -25,10 +25,10 @@
       "title": "API Client for REST NoteAPI",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-j5m.2",
-      "commit": null,
-      "notes": ""
+      "commit": "167b268c125174bb0311ba13354e523d53ddbb37",
+      "notes": "Build, lint, and tests all passed successfully. Phase 1 verification checkpoint complete."
     },
     {
       "id": "T3",
