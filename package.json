@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "REST API for managing notes with tags and search — demo project for Agentic AI Workshop (Advanced)",
   "main": "dist/index.js",
+  "bin": {
+    "notecli": "dist/cli/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
@@ -14,6 +17,7 @@
     "lint:fix": "eslint src/ tests/ --ext .ts --fix"
   },
   "dependencies": {
+    "commander": "^14.0.3",
     "express": "^4.21.0",
     "uuid": "^11.0.0"
   },
