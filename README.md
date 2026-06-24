@@ -26,8 +26,9 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 65 tests, all passing
 npm start       # http://localhost:3000
+npm run build   # produces dist/ including dist/cli/index.js
 ```
 
 ## API Endpoints
@@ -41,9 +42,26 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## CLI (`notecli`)
+
+After `npm run build`, the `notecli` binary is available at `dist/cli/index.js`. Set `NOTECLI_BASE_URL` to target a non-default server address (default: `http://localhost:3000`).
+
+```bash
+node dist/cli/index.js --help
+
+# Subcommands
+node dist/cli/index.js list [--tag <tag>] [--q <query>]
+node dist/cli/index.js read --id <id>
+node dist/cli/index.js create --title <title> --content <content>
+node dist/cli/index.js update --id <id> [--title <title>] [--content <content>]
+node dist/cli/index.js delete --id <id>
+```
+
+All subcommands print API JSON to stdout, write errors to stderr, and exit non-zero on failure. Empty or whitespace-only flag values are rejected before any network call. See `docs/cli-api-contracts.md` for the full contract.
+
 ## Tech Stack
 
-Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
+Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests. CLI uses Commander for argument parsing and Node.js built-in `fetch` for HTTP.
 
 ## License
 
