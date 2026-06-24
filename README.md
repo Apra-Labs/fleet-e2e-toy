@@ -34,12 +34,35 @@ npm start       # http://localhost:3000
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/notes` | List all notes (optional: `?tag=`, `?q=`) |
+| GET | `/api/notes` | List notes — paginated envelope (optional: `?tag=`, `?q=`, `?page=`, `?limit=`) |
 | GET | `/api/notes/:id` | Get a note by ID |
 | POST | `/api/notes` | Create a note |
-| PUT | `/api/notes/:id` | Update a note |
+| PUT | `/api/notes/:id` | Update a note — `updatedAt` is always refreshed |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+### GET /api/notes — Paginated Response
+
+The list endpoint returns a pagination envelope, not a bare array:
+
+```json
+{
+  "data": [...],
+  "total": 42,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 3
+}
+```
+
+`page` defaults to `1`; `limit` defaults to `20` (max `100`). Pagination is applied after `tag` and `q` filtering.
+
+### Input Constraints
+
+| Field | Rule |
+|-------|------|
+| `title` | Required on create; max 200 characters (measured after trim) |
+| `content` | Required on create; max 10 000 characters |
 
 ## Tech Stack
 
