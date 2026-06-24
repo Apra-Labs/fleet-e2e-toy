@@ -67,6 +67,7 @@ function printListHelp() {
 Options:
   --tag <tag>   Filter by tag
   --q <query>   Search in title and content
+  --json        Output raw JSON (default: formatted)
   --help, -h    Show this help message`);
 }
 
@@ -112,11 +113,22 @@ function parseArgs(args: string[]): Record<string, string | boolean> {
   let i = 0;
   while (i < args.length) {
     const arg = args[i];
-    if (arg.startsWith("--")) {
+    if (arg.startsWith("-") && !arg.startsWith("--")) {
+      const key = arg.slice(1);
+      if (key === "h" || key === "v") {
+        result[key] = true;
+      } else if (key.length > 1 && i + 1 < args.length && !args[i + 1].startsWith("-")) {
+        result[key] = args[i + 1];
+        i += 2;
+      } else {
+        result[key] = true;
+        i++;
+      }
+    } else if (arg.startsWith("--")) {
       const key = arg.slice(2);
       if (key === "help" || key === "h" || key === "version" || key === "v") {
         result[key] = true;
-      } else if (i + 1 < args.length && !args[i + 1].startsWith("--")) {
+      } else if (i + 1 < args.length && !args[i + 1].startsWith("--") && !args[i + 1].startsWith("-")) {
         result[key] = args[i + 1];
         i += 2;
       } else {
@@ -149,6 +161,7 @@ async function cmdList(args: string[]) {
 
   const tag = typeof opts.tag === "string" ? opts.tag : undefined;
   const q = typeof opts.q === "string" ? opts.q : undefined;
+  const jsonMode = opts.json === true;
 
   let path = "/api/notes";
   const params = new URLSearchParams();
@@ -159,7 +172,19 @@ async function cmdList(args: string[]) {
 
   try {
     const res = await request("GET", path);
-    console.log(res.body);
+    if (jsonMode) {
+      console.log(res.body);
+    } else {
+      const notes = JSON.parse(res.body);
+      if (notes.length === 0) {
+        console.log("No notes found.");
+      } else {
+        for (const note of notes) {
+          const tags = note.tags.length > 0 ? ` [${note.tags.join(", ")}]` : "";
+          console.log(`${note.id}: ${note.title}${tags}`);
+        }
+      }
+    }
     process.exit(0);
   } catch (err: any) {
     console.error(`Error: ${err.message}`);
