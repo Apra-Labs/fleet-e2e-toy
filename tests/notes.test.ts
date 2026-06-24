@@ -235,6 +235,96 @@ describe("DELETE /api/notes/:id", () => {
   });
 });
 
+describe("GET /api/notes pagination", () => {
+  async function createNotes(count: number): Promise<void> {
+    for (let i = 1; i <= count; i++) {
+      await request(app)
+        .post("/api/notes")
+        .send({ title: `Note ${i}`, content: `Content ${i}`, tags: i % 2 === 0 ? ["even"] : ["odd"] });
+    }
+  }
+
+  it("default returns 20 items with correct pagination metadata when >20 notes exist", async () => {
+    await createNotes(25);
+    const res = await request(app).get("/api/notes");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(20);
+    expect(res.body.total).toBe(25);
+    expect(res.body.page).toBe(1);
+    expect(res.body.limit).toBe(20);
+    expect(res.body.totalPages).toBe(2);
+  });
+
+  it("page=2&limit=10 returns the correct slice", async () => {
+    await createNotes(25);
+    const res = await request(app).get("/api/notes?page=2&limit=10");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(10);
+    expect(res.body.page).toBe(2);
+    expect(res.body.limit).toBe(10);
+    expect(res.body.total).toBe(25);
+    expect(res.body.totalPages).toBe(3);
+    // Second page with limit=10 should have items 11-20
+    expect(res.body.data[0].title).toBe("Note 11");
+    expect(res.body.data[9].title).toBe("Note 20");
+  });
+
+  it("pagination applies after tag filter", async () => {
+    await createNotes(25);
+    // Even-tagged notes: 2,4,6,8,10,12,14,16,18,20,22,24 = 12 notes
+    const res = await request(app).get("/api/notes?tag=even&page=1&limit=5");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(5);
+    expect(res.body.total).toBe(12);
+    expect(res.body.totalPages).toBe(3);
+  });
+
+  it("pagination applies after q search filter", async () => {
+    await createNotes(25);
+    // All notes have title "Note N" so searching "note" matches all 25
+    const res = await request(app).get("/api/notes?q=note&page=2&limit=10");
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(25);
+    expect(res.body.data).toHaveLength(10);
+    expect(res.body.page).toBe(2);
+  });
+
+  it("returns 400 for page=0", async () => {
+    const res = await request(app).get("/api/notes?page=0");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for negative page", async () => {
+    const res = await request(app).get("/api/notes?page=-1");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for non-integer page", async () => {
+    const res = await request(app).get("/api/notes?page=1.5");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for limit=0", async () => {
+    const res = await request(app).get("/api/notes?limit=0");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for negative limit", async () => {
+    const res = await request(app).get("/api/notes?limit=-5");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for non-integer limit", async () => {
+    const res = await request(app).get("/api/notes?limit=2.5");
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for limit>100", async () => {
+    const res = await request(app).get("/api/notes?limit=101");
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("GET /health", () => {
   it("returns ok status", async () => {
     const res = await request(app).get("/health");
