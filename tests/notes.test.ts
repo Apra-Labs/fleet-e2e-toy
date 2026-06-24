@@ -87,6 +87,40 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 when title exceeds 200 characters", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(201), content: "Body" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors[0].field).toBe("title");
+    expect(res.body.errors[0].message).toBe("Title must be 200 characters or fewer");
+  });
+
+  it("returns 201 when title is exactly 200 characters", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(200), content: "Body" });
+    expect(res.status).toBe(201);
+  });
+
+  it("returns 400 when content exceeds 10000 characters", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "a".repeat(10001) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors[0].field).toBe("content");
+    expect(res.body.errors[0].message).toBe("Content must be 10000 characters or fewer");
+  });
+
+  it("returns 201 when content is exactly 10000 characters", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Note", content: "a".repeat(10000) });
+    expect(res.status).toBe(201);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +143,56 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 when title exceeds 200 characters on PUT", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(201) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors[0].field).toBe("title");
+    expect(res.body.errors[0].message).toBe("Title must be 200 characters or fewer");
+  });
+
+  it("returns 200 when title is exactly 200 characters on PUT", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(200) });
+    expect(res.status).toBe(200);
+  });
+
+  it("returns 400 when content exceeds 10000 characters on PUT", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "a".repeat(10001) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toBeDefined();
+    expect(res.body.errors[0].field).toBe("content");
+    expect(res.body.errors[0].message).toBe("Content must be 10000 characters or fewer");
+  });
+
+  it("returns 200 when content is exactly 10000 characters on PUT", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "a".repeat(10000) });
+    expect(res.status).toBe(200);
   });
 
   it("updatedAt advances on PUT /api/notes/:id", async () => {
