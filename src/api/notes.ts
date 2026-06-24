@@ -5,7 +5,6 @@ import { validateCreateInput, validateUpdateInput } from "../utils/validation";
 
 const router = Router();
 
-// TODO: Add pagination to GET /api/notes (query params: page, limit)
 // TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
@@ -27,7 +26,38 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  const parsePositiveInt = (value: unknown, fallback: number): number | null => {
+    if (value === undefined) {
+      return fallback;
+    }
+    if (typeof value !== "string" || !/^\d+$/.test(value)) {
+      return null;
+    }
+    const parsed = parseInt(value, 10);
+    if (!Number.isInteger(parsed) || parsed < 1) {
+      return null;
+    }
+    return parsed;
+  };
+
+  const page = parsePositiveInt(req.query.page, 1);
+  if (page === null) {
+    res.status(400).json({ error: "Invalid page parameter" });
+    return;
+  }
+
+  const limit = parsePositiveInt(req.query.limit, 20);
+  if (limit === null || limit > 100) {
+    res.status(400).json({ error: "Invalid limit parameter" });
+    return;
+  }
+
+  const total = notes.length;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+  const start = (page - 1) * limit;
+  const data = notes.slice(start, start + limit);
+
+  res.json({ data, total, page, limit, totalPages });
 });
 
 // Get a single note by ID
