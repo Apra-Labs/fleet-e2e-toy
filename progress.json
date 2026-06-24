@@ -47,9 +47,9 @@
       "title": "Implement create command",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.4",
-      "commit": null,
+      "commit": "72f98203952028d41d5b1aed19744cf2fb623914",
       "notes": ""
     },
     {
@@ -58,7 +58,7 @@
       "title": "Implement update command",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh-toy-j5m.5",
       "commit": null,
       "notes": ""
