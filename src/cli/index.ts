@@ -2,6 +2,7 @@
 import { parseArgs } from "./args";
 import { handleList } from "./commands/list";
 import { handleRead } from "./commands/read";
+import { handleCreate } from "./commands/create";
 
 function printUsage() {
   console.log("Usage: fleet-e2e-toy <command> [options]");
@@ -79,7 +80,7 @@ async function main() {
       await handleRead(options);
       break;
     case "create":
-      console.log("create command called with options:", options);
+      await handleCreate(options);
       break;
     case "update":
       console.log("update command called with options:", options);
