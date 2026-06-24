@@ -75,9 +75,9 @@
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 1,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 2,
+    "sprints_sampled": 3,
+    "last_updated": "2026-06-24T00:00:00Z",
+    "cycle_avg": 1.3333333333333333,
     "reviewer_ratio_avg": 0.44004665942641086,
     "bucket_avg_tokens": {},
     "roles": {
