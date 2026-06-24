@@ -80,9 +80,9 @@
       "title": "Global and Command Help Flags",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.7",
-      "commit": null,
+      "commit": "dc945c1a8943db40ceccbb7ab840de3b2f60c3e5",
       "notes": ""
     },
     {
@@ -91,7 +91,7 @@
       "title": "Argument & Empty/Blank String Validation",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh-toy-j5m.8",
       "commit": null,
       "notes": ""
