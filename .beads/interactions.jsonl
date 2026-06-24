@@ -1,0 +1,3 @@
+{"id":"int-5922eb644e812f931875266c74cb036a","kind":"field_change","created_at":"2026-06-24T13:07:49.4036285Z","actor":"pm-e2e","issue_id":"gh-toy-j5m.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-e7c6b6ba6141cc90100d923a5d7383ed","kind":"field_change","created_at":"2026-06-24T13:07:49.7748546Z","actor":"pm-e2e","issue_id":"gh-toy-j5m.2","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
+{"id":"int-fbb809161287b4cfae5f181e2cc02546","kind":"field_change","created_at":"2026-06-24T13:09:53.949677Z","actor":"pm-e2e","issue_id":"gh-toy-j5m.3","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}

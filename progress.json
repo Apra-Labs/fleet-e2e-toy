@@ -36,9 +36,9 @@
       "title": "Implement list and read commands",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.3",
-      "commit": null,
+      "commit": "8ce2d789bd6d5f0f881748edf0c4776e9cbe8558",
       "notes": ""
     },
     {
@@ -47,7 +47,7 @@
       "title": "Implement create command",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh-toy-j5m.4",
       "commit": null,
       "notes": ""
