@@ -58,9 +58,9 @@
       "title": "Implement update command",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "work",
-      "status": "in_progress",
+      "status": "completed",
       "bead": "gh-toy-j5m.5",
-      "commit": null,
+      "commit": "17f57d1ac030a089d4286511f092a94a0c0ab1cd",
       "notes": ""
     },
     {
@@ -69,7 +69,7 @@
       "title": "Implement delete command",
       "model": "Gemini 3.5 Flash (Medium)",
       "type": "verify",
-      "status": "pending",
+      "status": "in_progress",
       "bead": "gh-toy-j5m.6",
       "commit": null,
       "notes": ""
