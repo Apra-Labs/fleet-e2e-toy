@@ -24,3 +24,7 @@ This sprint implements the top 3 P1 issues from the beads backlog:
    - Non-zero exit code.
    - Add unit tests.
    - Reference: `gh-toy-v6z`.
+
+## Design Note
+No design.md is needed for this sprint as the implementation follows the single obvious path of adding subcommands and validation logic to the existing CLI structure.
+
