@@ -1,0 +1,112 @@
+{
+  "sprint": "pmlite-e2e/s8-1782305445502",
+  "track": "main-track",
+  "branch": "pmlite-e2e/s8-1782305445502",
+  "base": "main",
+  "worktree": "C:/Users/akhil/AppData/Local/Temp/pmlite-e2e-s8-TMfRok/repo",
+  "transport": "remote",
+  "epic": "gh-toy-j5m",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1",
+      "phase": 1,
+      "title": "CLI Entrypoint, Dispatcher & Shell Wrappers",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T2",
+      "phase": 1,
+      "title": "API Client for REST NoteAPI",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-j5m.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T3",
+      "phase": 2,
+      "title": "Implement list and read commands",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T4",
+      "phase": 2,
+      "title": "Implement create command",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.4",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T5",
+      "phase": 2,
+      "title": "Implement update command",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.5",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T6",
+      "phase": 2,
+      "title": "Implement delete command",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-j5m.6",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T7",
+      "phase": 3,
+      "title": "Global and Command Help Flags",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.7",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T8",
+      "phase": 3,
+      "title": "Argument & Empty/Blank String Validation",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-j5m.8",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T9",
+      "phase": 3,
+      "title": "CLI Unit & Integration Tests",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "type": "verify",
+      "status": "pending",
+      "bead": "gh-toy-j5m.9",
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
