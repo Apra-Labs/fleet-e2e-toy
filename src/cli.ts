@@ -186,8 +186,8 @@ async function cmdList(args: string[]) {
       }
     }
     process.exit(0);
-  } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   }
 }
@@ -213,8 +213,8 @@ async function cmdRead(args: string[]) {
     }
     console.log(res.body);
     process.exit(0);
-  } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   }
 }
@@ -252,8 +252,8 @@ async function cmdCreate(args: string[]) {
     const res = await request("POST", "/api/notes", body);
     console.log(res.body);
     process.exit(res.status >= 400 ? 1 : 0);
-  } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   }
 }
@@ -291,8 +291,8 @@ async function cmdUpdate(args: string[]) {
     }
     console.log(res.body);
     process.exit(res.status >= 400 ? 1 : 0);
-  } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   }
 }
@@ -318,8 +318,8 @@ async function cmdDelete(args: string[]) {
     }
     console.error(res.body);
     process.exit(1);
-  } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   }
 }
