@@ -110,6 +110,26 @@ describe("PUT /api/notes/:id", () => {
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
   });
+
+  it("updatedAt advances on PUT /api/notes/:id", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const originalCreatedAt = create.body.createdAt;
+    const originalUpdatedAt = create.body.updatedAt;
+
+    // Small delay to ensure distinct timestamp
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "Updated Title" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.createdAt).toBe(originalCreatedAt);
+    expect(new Date(res.body.updatedAt).getTime()).toBeGreaterThan(new Date(originalUpdatedAt).getTime());
+  });
 });
 
 describe("DELETE /api/notes/:id", () => {
