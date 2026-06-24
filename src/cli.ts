@@ -207,8 +207,12 @@ async function cmdRead(args: string[]) {
 
   try {
     const res = await request("GET", `/api/notes/${opts.id}`);
+    if (res.status === 404) {
+      console.error(`Error: Note '${opts.id}' not found`);
+      process.exit(1);
+    }
     console.log(res.body);
-    process.exit(res.status === 404 ? 1 : 0);
+    process.exit(0);
   } catch (err: any) {
     console.error(`Error: ${err.message}`);
     process.exit(1);
@@ -281,6 +285,10 @@ async function cmdUpdate(args: string[]) {
 
   try {
     const res = await request("PUT", `/api/notes/${opts.id}`, JSON.stringify(updateBody));
+    if (res.status === 404) {
+      console.error(`Error: Note '${opts.id}' not found`);
+      process.exit(1);
+    }
     console.log(res.body);
     process.exit(res.status >= 400 ? 1 : 0);
   } catch (err: any) {
@@ -356,7 +364,7 @@ async function main() {
       break;
     default:
       console.error(`Error: Unknown command '${command}'`);
-      printHelp();
+      console.error(`Run 'noteapi --help' for available commands.`);
       process.exit(1);
   }
 }
