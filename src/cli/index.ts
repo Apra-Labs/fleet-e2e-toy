@@ -4,6 +4,9 @@ import { httpClient, CliError } from "./client";
 import { validateRequiredString, validateOptionalString } from "./validation";
 import { makeListCommand } from "./commands/list";
 import { makeReadCommand } from "./commands/read";
+import { makeCreateCommand } from "./commands/create";
+import { makeUpdateCommand } from "./commands/update";
+import { makeDeleteCommand } from "./commands/delete";
 
 // Smoke imports — modules are exercised here to satisfy bundler/type-checker
 void httpClient;
@@ -20,6 +23,9 @@ program
 
 program.addCommand(makeListCommand());
 program.addCommand(makeReadCommand());
+program.addCommand(makeCreateCommand());
+program.addCommand(makeUpdateCommand());
+program.addCommand(makeDeleteCommand());
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   const message = err instanceof Error ? err.message : String(err);
