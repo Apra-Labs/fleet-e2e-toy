@@ -6,9 +6,13 @@ import { handleCreate } from "./commands/create";
 import { handleUpdate } from "./commands/update";
 import { handleDelete } from "./commands/delete";
 import { printUsage, printCommandUsage } from "./help";
+import { validateOptions } from "./validation";
 
 async function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
+
+  // Validate options first (for empty / whitespace strings)
+  validateOptions(options);
 
   // Global help
   if (options.h || options.help || command === "help") {
