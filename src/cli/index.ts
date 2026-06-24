@@ -4,6 +4,7 @@ import { handleList } from "./commands/list";
 import { handleRead } from "./commands/read";
 import { handleCreate } from "./commands/create";
 import { handleUpdate } from "./commands/update";
+import { handleDelete } from "./commands/delete";
 
 function printUsage() {
   console.log("Usage: fleet-e2e-toy <command> [options]");
@@ -87,7 +88,7 @@ async function main() {
       await handleUpdate(options);
       break;
     case "delete":
-      console.log("delete command called with options:", options);
+      await handleDelete(options);
       break;
     default:
       console.error(`Error: Unknown command: ${command}`);
