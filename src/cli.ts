@@ -48,7 +48,7 @@ function printHelp() {
   console.log(`Usage: noteapi <command> [options]
 
 Commands:
-  list      List notes (optional: --tag, --q)
+  list      List notes (optional: --tag, --q, --json)
   read      Read a note by ID (--id required)
   create    Create a note (--title, --content required; --tags optional)
   update    Update a note (--id required; --title, --content, --tags optional)
