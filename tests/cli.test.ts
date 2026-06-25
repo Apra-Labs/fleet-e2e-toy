@@ -142,8 +142,7 @@ describe("CLI happy path (list, create, read, delete)", () => {
       server = http.createServer(app);
       server.listen(0, "127.0.0.1", () => {
         const addr = server.address() as { port: number };
-        // The API client appends /notes, so set NOTEAPI_URL to include /api prefix
-        baseUrl = `http://127.0.0.1:${addr.port}/api`;
+        baseUrl = `http://127.0.0.1:${addr.port}`;
         resolve();
       });
     });
