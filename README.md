@@ -26,9 +26,32 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
 ```
+
+## CLI — fleet-e2e-toy
+
+The repo ships a `fleet-e2e-toy` CLI binary that calls the NoteAPI over HTTP.
+
+```bash
+npm run build                   # compile TypeScript → dist/
+npx fleet-e2e-toy --help        # global help
+npx fleet-e2e-toy --version     # prints "fleet-e2e-toy v1.0.0"
+
+# CRUD subcommands
+npx fleet-e2e-toy list [--tag <tag>] [--q <query>]
+npx fleet-e2e-toy read  --id <id>
+npx fleet-e2e-toy create --title <title> --content <content> [--tag <tag>]...
+npx fleet-e2e-toy update --id <id> [--title <title>] [--content <content>]
+npx fleet-e2e-toy delete --id <id>
+```
+
+Set `NOTEAPI_URL` to point the CLI at a non-default server (default: `http://localhost:3000`).
+
+Exit codes: 0 = success, 1 = general error, 2 = validation error.
+
+See `docs/features/cli.md` for the full command reference, flag table, and error-handling contract.
 
 ## API Endpoints
 
@@ -43,7 +66,7 @@ npm start       # http://localhost:3000
 
 ## Tech Stack
 
-Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
+Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests. CLI uses yargs and built-in Node 20 `fetch`.
 
 ## License
 
