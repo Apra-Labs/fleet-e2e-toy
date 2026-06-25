@@ -96,107 +96,114 @@ describe("CLI input validation", () => {
 });
 
 // ---------------------------------------------------------------------------
-// (4) CRUD subcommands — use mock HTTP server via express
+// (4) CRUD subcommands — use jest.mock to stub request in-process
 // ---------------------------------------------------------------------------
-import express from "express";
-import http from "http";
+jest.mock("../src/cli/http");
 
-function startStub(): Promise<{ server: http.Server; url: string }> {
-  return new Promise((resolve) => {
-    const app = express();
-    app.use(express.json());
+import { request } from "../src/cli/http";
+import { listCommand } from "../src/cli/commands/list";
+import { readCommand } from "../src/cli/commands/read";
+import { createCommand } from "../src/cli/commands/create";
+import { updateCommand } from "../src/cli/commands/update";
+import { deleteCommand } from "../src/cli/commands/delete";
 
-    const notes = [{ id: "1", title: "Test", content: "", tags: [], createdAt: "", updatedAt: "" }];
-
-    app.get("/api/notes", (_req, res) => { res.json(notes); });
-    app.get("/api/notes/:id", (req, res) => {
-      const n = notes.find((x) => x.id === req.params["id"]);
-      if (!n) return res.status(404).json({ error: "Not found" });
-      return res.json(n);
-    });
-    app.post("/api/notes", (req, res) => {
-      const note = { id: "2", ...req.body as object, createdAt: "", updatedAt: "" } as typeof notes[0];
-      notes.push(note);
-      res.status(201).json(note);
-    });
-    app.put("/api/notes/:id", (req, res) => {
-      const n = notes.find((x) => x.id === req.params["id"]);
-      if (!n) return res.status(404).json({ error: "Not found" });
-      Object.assign(n, req.body);
-      return res.json(n);
-    });
-    app.delete("/api/notes/:id", (req, res) => {
-      const idx = notes.findIndex((x) => x.id === req.params["id"]);
-      if (idx === -1) return res.status(404).json({ error: "Not found" });
-      notes.splice(idx, 1);
-      return res.status(204).send();
-    });
-
-    const server = app.listen(0, () => {
-      const addr = server.address();
-      const port = typeof addr === "object" && addr ? addr.port : 3000;
-      resolve({ server, url: `http://localhost:${port}` });
-    });
-  });
-}
+const mockedRequest = request as jest.MockedFunction<typeof request>;
 
 describe("CLI CRUD subcommands", () => {
-  let server: http.Server;
-  let baseUrl: string;
+  let stdoutSpy: jest.SpyInstance;
 
-  beforeAll(async () => {
-    const stub = await startStub();
-    server = stub.server;
-    baseUrl = stub.url;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
   });
 
-  afterAll((done) => {
-    server.close(done);
+  afterEach(() => {
+    stdoutSpy.mockRestore();
   });
 
-  it("list hits GET /api/notes and exits 0", () => {
-    const res = run(["list"], { NOTE_API_URL: baseUrl });
-    expect(res.status).toBe(0);
-    expect(res.stdout).toContain("Test");
+  it("list hits GET /api/notes and exits 0", async () => {
+    const notes = [{ id: "1", title: "Test", content: "", tags: [], createdAt: "", updatedAt: "" }];
+    mockedRequest.mockResolvedValue(notes);
+
+    await listCommand.parseAsync([], { from: "user" });
+
+    expect(mockedRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ method: "GET", path: "/api/notes" })
+    );
+    expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Test"));
   });
 
-  it("read hits GET /api/notes/:id and exits 0", () => {
-    const res = run(["read", "--id", "1"], { NOTE_API_URL: baseUrl });
-    expect(res.status).toBe(0);
-    expect(res.stdout).toContain('"id"');
-    expect(res.stdout).toContain('"1"');
+  it("read hits GET /api/notes/:id and exits 0", async () => {
+    const note = { id: "1", title: "Test", content: "", tags: [], createdAt: "", updatedAt: "" };
+    mockedRequest.mockResolvedValue(note);
+
+    await readCommand.parseAsync(["--id", "1"], { from: "user" });
+
+    expect(mockedRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ method: "GET", path: "/api/notes/1" })
+    );
+    expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining('"id"'));
   });
 
-  it("create hits POST /api/notes and exits 0", () => {
-    const res = run(["create", "--title", "New Note", "--content", "Body"], { NOTE_API_URL: baseUrl });
-    expect(res.status).toBe(0);
-    expect(res.stdout).toContain("New Note");
+  it("create hits POST /api/notes and exits 0", async () => {
+    const created = { id: "2", title: "New Note", content: "Body", tags: [], createdAt: "", updatedAt: "" };
+    mockedRequest.mockResolvedValue(created);
+
+    await createCommand.parseAsync(["--title", "New Note", "--content", "Body"], { from: "user" });
+
+    expect(mockedRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "POST",
+        path: "/api/notes",
+        body: expect.objectContaining({ title: "New Note", content: "Body" }),
+      })
+    );
+    expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("New Note"));
   });
 
-  it("update hits PUT /api/notes/:id and exits 0", () => {
-    const res = run(["update", "--id", "1", "--title", "Updated"], { NOTE_API_URL: baseUrl });
-    expect(res.status).toBe(0);
-    expect(res.stdout).toContain("Updated");
+  it("update hits PUT /api/notes/:id and exits 0", async () => {
+    const updated = { id: "1", title: "Updated", content: "", tags: [], createdAt: "", updatedAt: "" };
+    mockedRequest.mockResolvedValue(updated);
+
+    await updateCommand.parseAsync(["--id", "1", "--title", "Updated"], { from: "user" });
+
+    expect(mockedRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "PUT",
+        path: "/api/notes/1",
+        body: expect.objectContaining({ title: "Updated" }),
+      })
+    );
+    expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Updated"));
   });
 
-  it("delete hits DELETE /api/notes/:id and exits 0", () => {
-    const res = run(["delete", "--id", "1"], { NOTE_API_URL: baseUrl });
-    expect(res.status).toBe(0);
-    expect(res.stdout).toContain("Deleted note 1");
+  it("delete hits DELETE /api/notes/:id and exits 0", async () => {
+    mockedRequest.mockResolvedValue(undefined);
+
+    await deleteCommand.parseAsync(["--id", "1"], { from: "user" });
+
+    expect(mockedRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ method: "DELETE", path: "/api/notes/1" })
+    );
+    expect(stdoutSpy).toHaveBeenCalledWith("Deleted note 1\n");
   });
 
   // ---------------------------------------------------------------------------
-  // (5) HTTP 4xx causes non-zero exit and stderr message
+  // (5) HTTP 4xx causes non-zero exit and error thrown
   // ---------------------------------------------------------------------------
-  it("read with unknown id causes non-zero exit and stderr message", () => {
-    const res = run(["read", "--id", "nonexistent-id"], { NOTE_API_URL: baseUrl });
-    expect(res.status).not.toBe(0);
-    expect(res.stderr).toContain("HTTP 404");
+  it("read with unknown id propagates HTTP 404 error", async () => {
+    mockedRequest.mockRejectedValue(new Error("HTTP 404: Not found"));
+
+    await expect(
+      readCommand.parseAsync(["--id", "nonexistent-id"], { from: "user" })
+    ).rejects.toThrow(/HTTP 404/);
   });
 
-  it("delete with unknown id causes non-zero exit and stderr message", () => {
-    const res = run(["delete", "--id", "ghost-id"], { NOTE_API_URL: baseUrl });
-    expect(res.status).not.toBe(0);
-    expect(res.stderr).toContain("HTTP 404");
+  it("delete with unknown id propagates HTTP 404 error", async () => {
+    mockedRequest.mockRejectedValue(new Error("HTTP 404: Not found"));
+
+    await expect(
+      deleteCommand.parseAsync(["--id", "ghost-id"], { from: "user" })
+    ).rejects.toThrow(/HTTP 404/);
   });
 });
