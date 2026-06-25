@@ -136,3 +136,57 @@ export function parseArgs(argv: string[]): ParsedArgs {
 
   return result;
 }
+
+export async function run(argv: string[], io?: CliIO): Promise<number> {
+  const out = io?.out ?? ((s: string) => process.stdout.write(s));
+  const err = io?.err ?? ((s: string) => process.stderr.write(s));
+
+  let parsed: ParsedArgs;
+  try {
+    parsed = parseArgs(argv);
+  } catch (e) {
+    if (e instanceof CliError) {
+      err(e.message + "\n");
+      return e.code;
+    }
+    throw e;
+  }
+
+  // Handle --help early (before command dispatch)
+  if (parsed.helpRequested) {
+    // TODO: Phase 3 fills in full help text
+    return 0;
+  }
+
+  // Handle --version early (before command dispatch)
+  if (parsed.versionRequested) {
+    // TODO: Phase 3 fills in version output
+    return 0;
+  }
+
+  // Dispatch on command
+  switch (parsed.command) {
+    case "create":
+      throw new Error("not implemented");
+    case "list":
+      throw new Error("not implemented");
+    case "get":
+      throw new Error("not implemented");
+    case "update":
+      throw new Error("not implemented");
+    case "delete":
+      throw new Error("not implemented");
+    default:
+      if (!parsed.command) {
+        // No command — treat as root help stub
+        // TODO: Phase 3 fills in full help text
+        return 0;
+      }
+      err(`Error: Unknown command: ${parsed.command}\n`);
+      return 1;
+  }
+}
+
+if (require.main === module) {
+  run(process.argv.slice(2)).then((code) => process.exit(code));
+}
