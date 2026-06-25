@@ -1,4 +1,7 @@
 // CLI interface for NoteAPI
+import { v4 as uuidv4 } from "uuid";
+import { noteStore } from "./models/note";
+import { validateCreateInput, validateUpdateInput } from "./utils/validation";
 
 export interface CliIO {
   out?: (s: string) => void;
@@ -141,9 +144,6 @@ export async function run(argv: string[], io?: CliIO): Promise<number> {
   const out = io?.out ?? ((s: string) => process.stdout.write(s));
   const err = io?.err ?? ((s: string) => process.stderr.write(s));
 
-  // Suppress unused-vars warning — out is used in Phase 3 (help, version)
-  void out;
-
   let parsed: ParsedArgs;
   try {
     parsed = parseArgs(argv);
@@ -169,16 +169,137 @@ export async function run(argv: string[], io?: CliIO): Promise<number> {
 
   // Dispatch on command
   switch (parsed.command) {
-    case "create":
-      throw new Error("not implemented");
-    case "list":
-      throw new Error("not implemented");
-    case "get":
-      throw new Error("not implemented");
-    case "update":
-      throw new Error("not implemented");
-    case "delete":
-      throw new Error("not implemented");
+    case "create": {
+      const title = parsed.flags["title"] as string | undefined;
+      const content = parsed.flags["content"] as string | undefined;
+      const tagsRaw = parsed.flags["tags"] as string | undefined;
+      const tags = tagsRaw
+        ? tagsRaw.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      // CLI-side guard: --content flag present but empty string
+      if ("content" in parsed.flags && content === "") {
+        err("Error: content: must not be empty\n");
+        return 1;
+      }
+
+      const input = {
+        title: title ?? "",
+        content: content ?? "",
+        tags,
+      };
+
+      const result = validateCreateInput(input);
+      if (!result.valid) {
+        for (const e of result.errors) {
+          err(`Error: ${e.field}: ${e.message}\n`);
+        }
+        return 1;
+      }
+
+      const now = new Date().toISOString();
+      const note = {
+        id: uuidv4(),
+        title: result.data.title,
+        content: result.data.content,
+        tags: result.data.tags,
+        createdAt: now,
+        updatedAt: now,
+      };
+      noteStore.create(note);
+      out(JSON.stringify(note, null, 2) + "\n");
+      return 0;
+    }
+
+    case "list": {
+      let notes = noteStore.getAll();
+      const tag = parsed.flags["tag"] as string | undefined;
+      const search = parsed.flags["search"] as string | undefined;
+
+      if (tag) {
+        notes = notes.filter((n) => n.tags.includes(tag));
+      }
+      if (search) {
+        const q = search.toLowerCase();
+        notes = notes.filter(
+          (n) =>
+            n.title.toLowerCase().includes(q) ||
+            n.content.toLowerCase().includes(q)
+        );
+      }
+
+      out(JSON.stringify(notes, null, 2) + "\n");
+      return 0;
+    }
+
+    case "get": {
+      const id = parsed.positional[0];
+      if (!id) {
+        err("Error: Missing required argument: id\n");
+        return 1;
+      }
+      const note = noteStore.getById(id);
+      if (!note) {
+        err(`Error: Note not found: ${id}\n`);
+        return 1;
+      }
+      out(JSON.stringify(note, null, 2) + "\n");
+      return 0;
+    }
+
+    case "update": {
+      const id = parsed.positional[0];
+      if (!id) {
+        err("Error: Missing required argument: id\n");
+        return 1;
+      }
+
+      const payload: Record<string, unknown> = {};
+      if ("title" in parsed.flags) {
+        payload.title = parsed.flags["title"];
+      }
+      if ("content" in parsed.flags) {
+        payload.content = parsed.flags["content"];
+      }
+      if ("tags" in parsed.flags) {
+        const tagsRaw = parsed.flags["tags"] as string;
+        payload.tags = tagsRaw
+          ? tagsRaw.split(",").map((s) => s.trim()).filter(Boolean)
+          : [];
+      }
+
+      const result = validateUpdateInput(payload);
+      if (!result.valid) {
+        for (const e of result.errors) {
+          err(`Error: ${e.field}: ${e.message}\n`);
+        }
+        return 1;
+      }
+
+      const updated = noteStore.update(id, result.data);
+      if (!updated) {
+        err(`Error: Note not found: ${id}\n`);
+        return 1;
+      }
+      out(JSON.stringify(updated, null, 2) + "\n");
+      return 0;
+    }
+
+    case "delete": {
+      const id = parsed.positional[0];
+      if (!id) {
+        err("Error: Missing required argument: id\n");
+        return 1;
+      }
+      const deleted = noteStore.delete(id);
+      if (!deleted) {
+        err(`Error: Note not found: ${id}\n`);
+        return 1;
+      }
+      out(JSON.stringify({ deleted: true }) + "\n");
+      return 0;
+    }
+
     default:
       if (!parsed.command) {
         // No command — treat as root help stub
