@@ -3,26 +3,26 @@
   "branch": "pmlite-e2e/s10-1782346686022",
   "base": "main",
   "epic": "gh-toy-aye",
-  "lastDispatchedPhase": 0,
+  "lastDispatchedPhase": 1,
   "phases": [
     {
       "phase": 1,
       "name": "Foundations: parser + entry-point skeleton",
-      "status": "pending",
+      "status": "in_progress",
       "tasks": [
         {
           "id": "T1.1",
           "bead": "gh-toy-aye.1",
           "title": "Implement and export parseArgs",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T1.2",
           "bead": "gh-toy-aye.2",
           "title": "Implement run skeleton + entry-point wrapper",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T1.3",
