@@ -45,12 +45,12 @@ export async function listNotes(tag?: string, q?: string): Promise<Note[]> {
   if (tag) params.append("tag", tag);
   if (q) params.append("q", q);
   const query = params.toString();
-  const path = `/notes${query ? `?${query}` : ""}`;
+  const path = `/api/notes${query ? `?${query}` : ""}`;
   return fetchJSON<Note[]>("GET", path);
 }
 
 export async function getNote(id: string): Promise<Note> {
-  return fetchJSON<Note>("GET", `/notes/${id}`);
+  return fetchJSON<Note>("GET", `/api/notes/${id}`);
 }
 
 export async function createNote(
@@ -63,16 +63,16 @@ export async function createNote(
     content,
     tags: tags ?? [],
   };
-  return fetchJSON<Note>("POST", "/notes", input);
+  return fetchJSON<Note>("POST", "/api/notes", input);
 }
 
 export async function updateNote(
   id: string,
   updates: UpdateNoteInput
 ): Promise<Note> {
-  return fetchJSON<Note>("PUT", `/notes/${id}`, updates);
+  return fetchJSON<Note>("PUT", `/api/notes/${id}`, updates);
 }
 
 export async function deleteNote(id: string): Promise<void> {
-  await fetchJSON<void>("DELETE", `/notes/${id}`);
+  await fetchJSON<void>("DELETE", `/api/notes/${id}`);
 }
