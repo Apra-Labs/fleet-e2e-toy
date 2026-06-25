@@ -2,6 +2,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CliValidationError } from './validation';
+import * as pkg from '../../package.json';
 
 function notImplemented(cmd: string): void {
   process.stderr.write(`${cmd}: not implemented yet\n`);
@@ -25,9 +26,12 @@ function handleError(error: unknown): never {
 
 async function main() {
   try {
+    const version = `fleet-e2e-toy v${(pkg as { version: string }).version}`;
     await yargs(hideBin(process.argv))
       .scriptName('fleet-e2e-toy')
       .usage('Usage: $0 <command> [options]')
+      .version('version', 'Print version and exit', version)
+      .alias('version', 'V')
       .command('list', 'List all notes', () => {}, () => notImplemented('list'))
       .command('read <id>', 'Read a note by ID', () => {}, () => notImplemented('read'))
       .command('create', 'Create a new note', () => {}, () => notImplemented('create'))
