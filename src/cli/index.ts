@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { CliValidationError } from './validation';
+import { CliValidationError, validateNonEmpty } from './validation';
+import { listNotes } from './api-client';
 import * as pkg from '../../package.json';
-
-function notImplemented(cmd: string): void {
-  process.stderr.write(`${cmd}: not implemented yet\n`);
-  process.exit(1);
-}
 
 function handleError(error: unknown): never {
   if (error instanceof CliValidationError) {
@@ -32,11 +28,36 @@ async function main() {
       .usage('Usage: $0 <command> [options]')
       .version('version', 'Print version and exit', version)
       .alias('version', 'V')
-      .command('list', 'List all notes', () => {}, () => notImplemented('list'))
-      .command('read <id>', 'Read a note by ID', () => {}, () => notImplemented('read'))
-      .command('create', 'Create a new note', () => {}, () => notImplemented('create'))
-      .command('update <id>', 'Update a note by ID', () => {}, () => notImplemented('update'))
-      .command('delete <id>', 'Delete a note by ID', () => {}, () => notImplemented('delete'))
+      .command(
+        'list',
+        'List all notes',
+        (y) =>
+          y
+            .option('tag', {
+              type: 'string',
+              description: 'Filter by tag',
+            })
+            .option('q', {
+              type: 'string',
+              description: 'Search query',
+            }),
+        async (argv) => {
+          if (argv.tag !== undefined) validateNonEmpty(argv.tag, 'tag');
+          if (argv.q !== undefined) validateNonEmpty(argv.q, 'q');
+          const notes = await listNotes(argv.tag, argv.q);
+          if (notes.length === 0) {
+            process.stdout.write('No notes found.\n');
+          } else {
+            for (const note of notes) {
+              process.stdout.write(`${note.id}\t${note.title}\n`);
+            }
+          }
+        }
+      )
+      .command('read', 'Read a note by ID', () => {}, () => { throw new Error('read: not implemented yet'); })
+      .command('create', 'Create a new note', () => {}, () => { throw new Error('create: not implemented yet'); })
+      .command('update', 'Update a note by ID', () => {}, () => { throw new Error('update: not implemented yet'); })
+      .command('delete', 'Delete a note by ID', () => {}, () => { throw new Error('delete: not implemented yet'); })
       .demandCommand(1, 'You must specify a command.')
       .strict()
       .help()
