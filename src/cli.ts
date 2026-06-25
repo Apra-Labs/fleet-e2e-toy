@@ -1,4 +1,6 @@
 // CLI interface for NoteAPI
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { v4 as uuidv4 } from "uuid";
 import { noteStore } from "./models/note";
 import { validateCreateInput, validateUpdateInput } from "./utils/validation";
@@ -157,13 +159,71 @@ export async function run(argv: string[], io?: CliIO): Promise<number> {
 
   // Handle --help early (before command dispatch)
   if (parsed.helpRequested) {
-    // TODO: Phase 3 fills in full help text
+    if (parsed.command) {
+      // Subcommand help
+      const helpTexts: Record<string, string> = {
+        create: `Usage: note create [options]
+
+Flags:
+  --title <title> (required)
+  --content <content> (required)
+  --tags <a,b,c> (optional)
+`,
+        list: `Usage: note list [options]
+
+Flags:
+  --tag <tag> (optional)
+  --search <query> (optional)
+`,
+        get: `Usage: note get <id>
+
+Arguments:
+  <id> (required positional)
+`,
+        update: `Usage: note update <id> [options]
+
+Arguments:
+  <id> (required positional)
+
+Flags:
+  --title <title> (optional)
+  --content <content> (optional)
+  --tags <a,b,c> (optional)
+`,
+        delete: `Usage: note delete <id>
+
+Arguments:
+  <id> (required positional)
+`,
+      };
+      const helpText = helpTexts[parsed.command];
+      if (helpText) {
+        out(helpText);
+        return 0;
+      }
+    }
+    // Root help (no command OR unknown command)
+    const rootHelp = `Usage: note <command> [options]
+
+Commands:
+  create   Create a new note
+  list     List notes (optionally filter by tag or search)
+  get      Get a single note by ID
+  update   Update fields of an existing note
+  delete   Delete a note by ID
+
+Global flags:
+  -h, --help     Show help for a command
+  -V, --version  Print version and exit
+`;
+    out(rootHelp);
     return 0;
   }
 
   // Handle --version early (before command dispatch)
   if (parsed.versionRequested) {
-    // TODO: Phase 3 fills in version output
+    const pkg = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8")) as { version: string };
+    out(`noteapi/${pkg.version}\n`);
     return 0;
   }
 
@@ -302,8 +362,21 @@ export async function run(argv: string[], io?: CliIO): Promise<number> {
 
     default:
       if (!parsed.command) {
-        // No command — treat as root help stub
-        // TODO: Phase 3 fills in full help text
+        // No command — show root help
+        const rootHelp = `Usage: note <command> [options]
+
+Commands:
+  create   Create a new note
+  list     List notes (optionally filter by tag or search)
+  get      Get a single note by ID
+  update   Update fields of an existing note
+  delete   Delete a note by ID
+
+Global flags:
+  -h, --help     Show help for a command
+  -V, --version  Print version and exit
+`;
+        out(rootHelp);
         return 0;
       }
       err(`Error: Unknown command: ${parsed.command}\n`);
