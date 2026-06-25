@@ -2,7 +2,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CliValidationError, validateNonEmpty } from './validation';
-import { listNotes, getNote, createNote, updateNote } from './api-client';
+import { listNotes, getNote, createNote, updateNote, deleteNote } from './api-client';
 import * as pkg from '../../package.json';
 
 function handleError(error: unknown): never {
@@ -133,7 +133,21 @@ async function main() {
           process.stdout.write(`updated ${note.id}\n`);
         }
       )
-      .command('delete', 'Delete a note by ID', () => {}, () => { throw new Error('delete: not implemented yet'); })
+      .command(
+        'delete',
+        'Delete a note by ID',
+        (y) =>
+          y.option('id', {
+            type: 'string',
+            description: 'Note ID',
+            demandOption: true,
+          }),
+        async (argv) => {
+          validateNonEmpty(argv.id, 'id');
+          await deleteNote(argv.id);
+          process.stdout.write(`deleted ${argv.id}\n`);
+        }
+      )
       .demandCommand(1, 'You must specify a command.')
       .strict()
       .help()
