@@ -29,7 +29,7 @@ function runCli(
   args: string[],
   env?: NodeJS.ProcessEnv
 ): Promise<{ stdout: string; stderr: string; status: number }> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     execFile(
       NODE,
       [CLI, ...args],
@@ -39,7 +39,6 @@ function runCli(
         timeout: 10000,
       },
       (err, stdout, stderr) => {
-        const status = err ? (err as NodeJS.ErrnoException & { code?: number }).code ?? 1 : 0;
         // execFile passes error if exit code != 0; extract status from it
         const exitCode =
           err && "code" in err && typeof (err as { code: unknown }).code === "number"
