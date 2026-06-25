@@ -1,0 +1,11 @@
+# CLI entry directory
+
+Reserved for the fleet-e2e-toy CLI. Architecture decisions for this directory
+are recorded in beads task gh-toy-80w.1 (notes). Scaffolding of
+src/cli/index.ts happens in gh-toy-80w.2.
+
+Summary of decisions (see `bd show gh-toy-80w.1` for full notes):
+- Framework: yargs (already in package-lock.json transitively, v17.7.2)
+- HTTP client: built-in global fetch (Node >= 18)
+- Entry: src/cli/index.ts -> compiles to dist/cli/index.js via existing tsc config
+- Binary: package.json bin = { "fleet-e2e-toy": "dist/cli/index.js" }
