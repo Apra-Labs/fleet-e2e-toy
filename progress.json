@@ -136,7 +136,7 @@
           "bead": "gh-toy-aye.12",
           "title": "Write tests/cli.test.ts",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T4.2",

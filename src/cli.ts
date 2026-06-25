@@ -237,8 +237,14 @@ Global flags:
         ? tagsRaw.split(",").map((s) => s.trim()).filter(Boolean)
         : [];
 
+      // CLI-side guard: --content flag missing entirely
+      if (!("content" in parsed.flags)) {
+        err("Error: content: content is required\n");
+        return 1;
+      }
+
       // CLI-side guard: --content flag present but empty string
-      if ("content" in parsed.flags && content === "") {
+      if (content === "") {
         err("Error: content: must not be empty\n");
         return 1;
       }
