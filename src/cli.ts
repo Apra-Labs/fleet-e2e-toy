@@ -141,6 +141,9 @@ export async function run(argv: string[], io?: CliIO): Promise<number> {
   const out = io?.out ?? ((s: string) => process.stdout.write(s));
   const err = io?.err ?? ((s: string) => process.stderr.write(s));
 
+  // Suppress unused-vars warning — out is used in Phase 3 (help, version)
+  void out;
+
   let parsed: ParsedArgs;
   try {
     parsed = parseArgs(argv);
