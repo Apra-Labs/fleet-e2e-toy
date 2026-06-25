@@ -1,20 +1,45 @@
-APPROVED
+CHANGES NEEDED
 
-All 13 tasks meet their acceptance criteria. Build, lint, and full test suite pass.
+Sprint output is structurally complete: 13 tasks closed, `npm run build`, `npm run lint`, and `npm test` (32 tests across 3 suites) all pass; no `any` types in `src/cli/`; `--version`, `--help`/`-h`, validation, and all five CRUD subcommands are present. However, the CLI is broken against the documented default configuration, and that bug only escaped detection because the tests work around it.
 
-- gh-toy-80w.1: Architecture decision recorded in notes — yargs (already present), built-in fetch (Node 20), src/cli/index.ts with bin entry fleet-e2e-toy. Criterion met.
-- gh-toy-80w.2: src/cli/index.ts exists with shebang, yargs-based dispatch; package.json has bin entry; `npm run build` emits dist/cli/index.js with no errors; no-args invocation prints usage and exits 1. Criterion met.
-- gh-toy-80w.3: src/cli/api-client.ts exports all five typed helpers (listNotes, getNote, createNote, updateNote, deleteNote); uses built-in fetch; base URL from NOTEAPI_URL env; non-2xx throws Error with "API error <status>: <message>" format; reuses Note/CreateNoteInput/UpdateNoteInput from src/models/note.ts. Criterion met.
-- gh-toy-80w.4: src/cli/validation.ts exports CliValidationError and validateNonEmpty; error handler in index.ts catches CliValidationError, prints "error: <message>" to stderr, exits 2; no stack traces. Validation cases are covered in tests/cli.test.ts (d-section). Criterion met.
-- gh-toy-80w.5: `fleet-e2e-toy list` calls GET /api/notes; --tag and --q passed as query params; empty strings rejected via validateNonEmpty; prints id+title per line or "No notes found."; exits 0 on success. Criterion met.
-- gh-toy-80w.6: `fleet-e2e-toy read --id <id>` calls GET /api/notes/:id; prints id/title/tags/createdAt/content; missing/empty --id rejected; 404 surfaces as "API error 404: ..." (not a stack trace). Criterion met.
-- gh-toy-80w.7: `fleet-e2e-toy create --title <t> --content <c>` calls POST /api/notes; --title and --content required and validated non-empty; prints "created <id>: <title>" on success. Criterion met.
-- gh-toy-80w.8: `fleet-e2e-toy update --id <id>` calls PUT /api/notes/:id; --id required; at least one of --title/--content required (validated with clear error); each provided field validated non-empty; prints "updated <id>" on success. Criterion met.
-- gh-toy-80w.9: `fleet-e2e-toy delete --id <id>` calls DELETE /api/notes/:id; prints "deleted <id>" on 204; 404 surfaces as error on stderr with non-zero exit. Criterion met.
-- gh-toy-80w.10: Global --help/-h print usage + subcommands + NOTEAPI_URL hint, exit 0. Per-subcommand --help lists all flags with required/optional markers, exits 0. No args exits 1 with usage on stderr. Unknown subcommand prints "error: unknown command <x>" + usage, exits 1. No stack traces. Criterion met.
-- gh-toy-80w.11: --version and -V both print exactly "fleet-e2e-toy v1.0.0" to stdout and exit 0. Version string sourced from package.json at runtime. Criterion met.
-- gh-toy-80w.12: tests/cli.test.ts covers all five required scenarios: (a) --version/-V; (b) --help/-h; (c) missing --id on read/update/delete; (d) empty/whitespace --title on create; (e) happy-path list+create+read+delete against the real Express app on an ephemeral port. All 32 tests pass under npm test. Criterion met.
-- gh-toy-80w.13: npm run lint exits 0, npm run build exits 0 producing dist/cli/index.js, npm test exits 0 with 32 tests passing across 3 suites. No any types in new src/cli/ code. Criterion met.
+## Blocker: CLI default base URL targets the wrong path
 
-reopenIds: []
+`requirements.md` (gh-toy-mi2) is explicit that the CLI calls `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id`, etc. The Express app confirms this — `src/app.ts:7` mounts the router at `/api/notes`.
+
+`src/cli/api-client.ts` (lines 43-78) sends requests to `${baseURL}/notes...` instead of `${baseURL}/api/notes...`. The default `NOTEAPI_URL` is `http://localhost:3000` (line 3), and the global help epilog advertises that default (`src/cli/index.ts:167`: `'Env: NOTEAPI_URL (default http://localhost:3000)'`).
+
+Empirically verified by running the built CLI against a live server on port 3099:
+
+```
+$ NOTEAPI_URL=http://localhost:3099 node dist/cli/index.js list
+error: API error 404: <!DOCTYPE html>...<pre>Cannot GET /notes</pre>...
+$ NOTEAPI_URL=http://localhost:3099/api node dist/cli/index.js list
+No notes found.
+```
+
+So out of the box, every CRUD command 404s. The acceptance criteria for gh-toy-mi2 ("Each command calls the API ... Non-zero exit on API error") are technically satisfied — but the CLI is non-functional against the documented API, which is not releasable.
+
+The CLI test suite hides this by setting `baseUrl = http://127.0.0.1:${port}/api` in `tests/cli.test.ts:146` with an explicit comment: `// The API client appends /notes, so set NOTEAPI_URL to include /api prefix`. That comment is the smoking gun — the test author knew about the path mismatch and worked around it instead of fixing the client.
+
+## Required fix
+
+Pick one of:
+- (preferred) Change the five paths in `src/cli/api-client.ts` from `/notes...` to `/api/notes...`. Then drop the `/api` suffix from `baseUrl` in `tests/cli.test.ts:146` and from the comment on line 145.
+- Or change the default `NOTEAPI_URL` to `http://localhost:3000/api`, update the help epilog to match, and document that users must include `/api` in any override. This is messier because it bakes the API mount prefix into the user-visible config; the first option is cleaner.
+
+After the fix, re-run the happy-path test without the `/api` workaround to confirm.
+
+## Minor (not blocking)
+
+- `src/cli/api-client.ts:53,73,77` interpolate `id` into the URL path without `encodeURIComponent`. UUIDs are safe in practice, but a defensive encode would prevent surprises if IDs ever change shape.
+- The help epilog hint should match whatever the corrected default is.
+
+## Verified working
+
+- gh-toy-4ef (`--version`/`-V` printing `fleet-e2e-toy v1.0.0`, exits 0): correct.
+- gh-toy-7rp help (`--help`/`-h` global and per-subcommand, exit 0; no stack traces; clean `error: ...` messages on unknown command, missing `--id`, empty/whitespace values, exit codes 1/2): correct.
+- gh-toy-mi2 surface (all five subcommands wired with the right required/optional flags, proper validation, human-readable output): correct in shape; broken in default wiring per the blocker above.
+- Build/lint/tests green; no `any` in `src/cli/`; `bin` entry registered; shebang present.
+
+reopenIds: [gh-toy-80w.3, gh-toy-80w.12]
 newTasks: []
