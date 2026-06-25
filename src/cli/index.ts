@@ -150,7 +150,21 @@ async function main() {
       )
       .demandCommand(1, 'You must specify a command.')
       .strict()
-      .help()
+      .fail((msg, err, yargsInstance) => {
+        if (err) throw err;
+        // Detect unknown command vs other failures
+        const unknownMatch = msg && msg.match(/Unknown argument: (.+)/);
+        if (unknownMatch) {
+          process.stderr.write(`error: unknown command ${unknownMatch[1]}\n\n`);
+        } else {
+          process.stderr.write(`${msg}\n\n`);
+        }
+        process.stderr.write(yargsInstance.help() + '\n');
+        process.exit(1);
+      })
+      .help('help')
+      .alias('help', 'h')
+      .epilog('Env: NOTEAPI_URL (default http://localhost:3000)')
       .parse();
   } catch (error) {
     handleError(error);
