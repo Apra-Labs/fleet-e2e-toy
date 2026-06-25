@@ -1,4 +1,4 @@
-# Phase 1 Review Feedback
+# Phase 1 + 2 Review Feedback
 
 **Verdict: APPROVED**
 
@@ -6,60 +6,73 @@
 
 - `npm run build`: PASS (no TypeScript errors)
 - `npm run lint`: PASS (no ESLint errors)
-- `npm test`: PASS (21 tests, 0 failures — all pre-existing notes and validation tests green)
+- `npm test`: PASS (21 tests, 0 failures — all pre-existing notes and validation tests green; no cli.test.ts yet, Phase 4 pending)
 
-## Acceptance Criteria Checklist
+## Phase 1 Findings Addressed
 
-1. **parseArgs exported, handles --flag value, --flag=value, -h, -V, --help, --version**: PASS
-   - `src/cli.ts` line 34: `export function parseArgs(argv: string[]): ParsedArgs`
-   - Both `--flag value` and `--flag=value` syntax handled (lines 56-127)
-   - `-h` and `--help` set `helpRequested=true` (lines 48-50, 99-102)
-   - `-V` and `--version` set `versionRequested=true` (lines 51-54, 103-106)
-   - Unknown flags throw `CliError` with `Error: Unknown flag: --<name>` (lines 65, 119)
-   - Missing flag values throw `CliError` with `Error: Missing value for flag: --<name>` (lines 80, 123)
+The Phase 1 review flagged no blocking issues and returned APPROVED. Phase 2 builds correctly on top of it:
 
-2. **ParsedArgs, CliIO, CliError interfaces/classes exported**: PASS
-   - `export interface CliIO` (line 3)
-   - `export interface ParsedArgs` (line 8)
-   - `export class CliError extends Error` with `code = 1` (line 16)
+- The `void out` lint suppression noted in Phase 1 is now gone — `out` is actively used in Phase 2 command handlers, so no workaround is needed.
+- All Phase 1 structural contracts (exported `run`, `parseArgs`, `CliIO`, `CliError`, entry-point wrapper) remain intact and are correctly extended by Phase 2.
 
-3. **run exported, accepts argv + optional CliIO, returns Promise<number>**: PASS
-   - `src/cli.ts` line 140: `export async function run(argv: string[], io?: CliIO): Promise<number>`
-   - Default IO writers fall back to `process.stdout.write` / `process.stderr.write`
+## Phase 2 Acceptance Criteria Checklist
 
-4. **run wraps parseArgs in try/catch, CliError -> stderr + error.code**: PASS
-   - Lines 148-156: try/catch catches `CliError`, writes `e.message + "\n"` to stderr, returns `e.code`
-   - Verified at runtime: unknown flag produces `"Error: Unknown flag: --bogus\n"` on stderr, returns 1
+### T2.1 — `create` command (src/cli.ts lines 172–212)
 
-5. **run does NOT call process.exit**: PASS
-   - No `process.exit` call inside `run` function body
+- Reads `--title`, `--content`, `--tags` from `parsed.flags`: PASS
+- Tag parsing: `tagsRaw.split(",").map(s => s.trim()).filter(Boolean)` per D4: PASS
+- CLI-side guard for `--content` present but empty string (per PLAN self-critique note): PASS (lines 181–184)
+- Passes `{ title, content, tags }` to `validateCreateInput`: PASS
+- On validation failure: each error printed as `Error: <field>: <message>\n` to stderr, returns 1: PASS
+- On success: builds Note with `uuidv4()` id, `createdAt = updatedAt = new Date().toISOString()`, calls `noteStore.create`, prints indented JSON to stdout, returns 0: PASS
 
-6. **Entry-point wrapper (require.main === module) at bottom**: PASS
-   - `src/cli.ts` lines 193-195: `if (require.main === module) { run(process.argv.slice(2)).then((code) => process.exit(code)); }`
+### T2.2 — `list` command (src/cli.ts lines 214–232)
 
-7. **package.json has "cli": "ts-node src/cli.ts" in scripts**: PASS
-   - `package.json` line 8: `"cli": "ts-node src/cli.ts"`
+- Starts with `noteStore.getAll()`: PASS
+- `--tag` filter: exact match via `n.tags.includes(tag)`: PASS
+- `--search` filter: case-insensitive substring on title and content (implemented locally, not via Express handler): PASS
+- Prints indented JSON array to stdout, returns 0: PASS
 
-8. **All three suite steps pass**: PASS (confirmed above)
+### T2.3 — `get`, `update`, `delete` commands (src/cli.ts lines 234–311)
 
-## Dispatcher Skeleton (T1.2)
+**get:**
+- Missing positional id → `Error: Missing required argument: id\n` to stderr, exit 1: PASS
+- `noteStore.getById(id)` returns undefined → `Error: Note not found: <id>\n` to stderr, exit 1: PASS
+- Found → indented JSON to stdout, exit 0: PASS
 
-All five commands (`create`, `list`, `get`, `update`, `delete`) have stub cases throwing `Error("not implemented")`. `helpRequested` and `versionRequested` early-return 0 as stubs. `Unknown command` returns exit code 1 with correct stderr message.
+**update:**
+- Missing positional id → error to stderr, exit 1: PASS
+- Partial-update payload built using `"key" in parsed.flags` (only flags explicitly provided are included): PASS — this correctly preserves partial-update semantics
+- `validateUpdateInput(payload)` called; on failure errors to stderr, exit 1: PASS
+- `noteStore.update(id, data)` returns undefined → not-found error to stderr, exit 1: PASS
+- On success → updated note JSON to stdout, exit 0: PASS
+
+**delete:**
+- Missing positional id → error to stderr, exit 1: PASS
+- `noteStore.delete(id)` returns false → not-found error to stderr, exit 1: PASS
+- On success → `{"deleted":true}\n` to stdout, exit 0: PASS (compact form, no indent — matches D8)
+
+### Cross-cutting Concerns
+
+- All errors go to `err()` (stderr path), never to `out()` (stdout): PASS
+- Exit code 1 on all error paths, 0 on success: PASS
+- No `any` types in `src/cli.ts`: PASS (`grep "any"` returns no matches; `Record<string, unknown>` used correctly for update payload)
+- No new npm dependencies: PASS (`package.json` diff adds only the `cli` script line)
+- `run()` does not call `process.exit`: PASS
 
 ## File Hygiene
 
-All modified files are justifiable against sprint tasks:
-- `src/cli.ts`: New CLI implementation (T1.1, T1.2)
+All modified/added files are justifiable against sprint tasks:
+- `src/cli.ts`: Phase 1 + 2 CLI implementation
 - `package.json`: Added `cli` script (T1.3)
-- `PLAN.md`, `requirements.md`, `progress.json`, `feedback.md`: Sprint planning/tracking artifacts
-- `.beads/`: Beads issue tracker state (expected)
-- `AGENTS.md`, `CLAUDE.md`: Agent workflow files (modified as part of sprint bootstrap)
+- `PLAN.md`, `requirements.md`, `progress.json`: Sprint planning/tracking artifacts
+- `feedback.md`: Review output (this file)
 
-One flag (no blocking issue): `.claude/settings.json` has `bd prime` hooks removed from `PreCompact` and `PreToolUse`. This is unrelated to Phase 1 sprint tasks. It does not affect build, lint, or test results, but the change was not called for by any T1.x task. Note for awareness only.
+## Awareness Notes (non-blocking)
 
-## Notes
+- D7 specifies that "Unknown command" should print root help on stdout in addition to the stderr error. Current code (line 309) only emits the stderr error. This is expected incomplete work — the help text is a Phase 3 deliverable. Not a Phase 2 defect.
+- `noteStore.update` does not bump `updatedAt`. This is a known existing issue, explicitly noted as out-of-scope in PLAN.md (D3). Not flagged.
 
-- `void out` on line 145 is an unconventional but functional lint suppression for the `out` variable that is declared but not yet used (Phase 3 will use it). This passes lint cleanly and is clearly commented.
-- No `any` types used. All interfaces are properly typed per requirements.
-- No new npm dependencies added.
-- No subprocess spawning in the implementation; `run` is importable for direct testing as required.
+## Phase 2 Summary
+
+All five CRUD commands are correctly wired to `noteStore`, validate inputs per the plan, route errors to stderr, and exit with the correct codes. The partial-update semantics for `update` are correctly implemented. No regressions in pre-existing tests. Phase 3 (help + version) and Phase 4 (test suite) remain pending as expected.
