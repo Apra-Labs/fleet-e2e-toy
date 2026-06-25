@@ -1,4 +1,7 @@
 APPROVED
 
 Notes:
-  gh_toy-e7o.2: The CLI executable ./tool is present in the repository root. Running it with --version or -v (globally and alongside other flags) prints fleet-e2e-toy v1.0.0 and exits with code 0. Unit and integration tests have been implemented and verified to pass successfully.
+  gh_toy-e7o.3: The CLI supports --help and -h flags globally and per subcommand, printing usage to stdout and exiting with status 0. Argument validation rejects empty or whitespace-only inputs with a clear error message, exits with a non-zero code, and displays no stack traces. Unit and integration tests verify these validations.
+
+reopenIds: []
+newTasks: []
