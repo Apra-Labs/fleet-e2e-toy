@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "cli": "ts-node src/cli.ts",
     "start": "ts-node src/index.ts",
     "start:test": "cross-env PORT=3001 ts-node src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts",
