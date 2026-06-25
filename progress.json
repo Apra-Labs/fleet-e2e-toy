@@ -50,7 +50,7 @@
     {
       "phase": 2,
       "name": "CRUD commands wired to noteStore",
-      "status": "in_progress",
+      "status": "completed",
       "tasks": [
         {
           "id": "T2.1",
@@ -78,8 +78,14 @@
           "bead": "gh-toy-aye.8",
           "title": "VERIFY Phase 2",
           "model": "claude-haiku-4-5",
-          "status": "pending",
-          "verify": true
+          "status": "completed",
+          "verify": true,
+          "verifyResults": {
+            "npmBuild": "PASS",
+            "npmLint": "PASS",
+            "npmTest": "PASS (21/21 tests)",
+            "cliCreate": "PASS (exit 0, JSON output)"
+          }
         }
       ]
     },
