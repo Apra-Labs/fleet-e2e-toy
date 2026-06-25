@@ -1,37 +1,39 @@
-APPROVED
+CHANGES NEEDED
 
-## Notes
+## Findings
 
-### Coverage
-All requirements are mapped to tasks:
-- R1 (CLI entrypoint, bin field) → gh-toy-b4q.2
-- R2 (--version flag, gh-toy-4ef) → gh-toy-b4q.2
-- R3 (help system, gh-toy-7rp) → gh-toy-b4q.2 (global help) + gh-toy-b4q.4 (per-subcommand help via commander)
-- R4 (input validation, gh-toy-7rp) → gh-toy-b4q.3 (helpers) + gh-toy-b4q.4 (applied in subcommands)
-- R5 (CRUD subcommands, gh-toy-mi2) → gh-toy-b4q.4
-- Tests → gh-toy-b4q.5
+### gh-toy-b4q.5 — CRUD test suite fails: spawned CLI cannot reach the express stub
 
-No requirement gaps detected.
+Acceptance criterion (4) requires: CRUD subcommands hit the right HTTP endpoint and exit 0
+on success, tested via a mocked fetch or supertest-driven express stub. npm test must pass.
 
-### Dependency Direction
-Linear chain b4q.1 → b4q.2 → b4q.3 → b4q.4 → b4q.5 is correct. Each layer builds on prior outputs cleanly.
+The current implementation starts an in-process Express stub in `beforeAll`, then calls
+`spawnSync("node", [CLI, ...args])` for each CRUD test. On this environment, the spawned
+subprocess cannot reliably connect to the stub server running in the Jest parent process:
+all 7 CRUD tests fail with exit code 1 and either "fetch failed" (connection never completes)
+or a network timeout of ~306 seconds per test.
 
-### Task Size Assessment
-- gh-toy-b4q.1: S — single package.json edit + npm install verification. cheap-tier appropriate.
-- gh-toy-b4q.2: M — src/cli/index.ts, package.json bin field, commander.exitOverride config, shebang handling. standard-tier appropriate.
-- gh-toy-b4q.3: M — two focused modules (http.ts, validation.ts), pure TS, no external deps. standard-tier appropriate.
-- gh-toy-b4q.4: M — five subcommands with edge cases (tags split on comma, update requires at least one field, error mapping). Hard parts encapsulated in b4q.3. standard-tier appropriate.
-- gh-toy-b4q.5: M — single comprehensive test file covering version, help, validation, and CRUD with mocked fetch. standard-tier appropriate.
+Verified: the CLI itself is correct — when run against a live server (`PORT=19001 npm start`)
+it exits 0 and prints valid JSON. The fault is the test design, not the CLI logic.
 
-### Acceptance Criteria Quality
-All tasks have specific, testable acceptance criteria. No vague criteria detected.
+The fix is to change the CRUD test section to inject fetch behavior without spawning a child
+process. Two acceptable approaches:
+1. Import the CLI action handlers directly (not the full `program.parseAsync` entry point) and
+   call them in-process, stubbing the `request` function from `src/cli/http.ts` with
+   `jest.mock('../src/cli/http')`.
+2. Keep the `spawnSync` approach but add a `timeout` to `spawnSync` and use
+   `http.createServer` bound explicitly to `127.0.0.1` with a fixed port, verifying the
+   server is reachable from a spawned process before running the tests.
 
-### Design Nudge (non-blocking)
-gh-toy-b4q.5 requires mocking fetch for CRUD tests. For clean testability, the doer implementing gh-toy-b4q.2 and gh-toy-b4q.4 should expose subcommand action handlers as importable async functions rather than inlining all logic in `program.action(...)`. This allows unit tests to call handlers directly without spawning the binary. The doer may alternatively use a spawned process approach — both are valid, but the former is simpler to mock.
+Tasks gh-toy-b4q.2, gh-toy-b4q.3, and gh-toy-b4q.4 all meet their acceptance criteria
+(build passes, lint passes, --version/-V prints exactly "fleet-e2e-toy v1.0.0", --help/-h
+exit 0, input validation rejects empty/whitespace, CRUD subcommands call the correct HTTP
+methods and paths, update requires at least one field, delete prints confirmation). The
+failing tests are exclusively in the CRUD describe block introduced by gh-toy-b4q.5.
 
-### No Changes Required
-No bd fix commands needed. Plan is approved as-is.
+Test results summary:
+- 32 tests pass (version, help, input validation, and all existing API/validation tests)
+- 7 tests fail (the CLI CRUD subcommand assertions in tests/cli.test.ts)
 
-## taskAssignments
-
-[{"id":"gh-toy-b4q.1","bucket":"S","model":"cheap"},{"id":"gh-toy-b4q.2","bucket":"M","model":"standard"},{"id":"gh-toy-b4q.3","bucket":"M","model":"standard"},{"id":"gh-toy-b4q.4","bucket":"M","model":"standard"},{"id":"gh-toy-b4q.5","bucket":"M","model":"standard"}]
+reopenIds: ["gh-toy-b4q.5"]
+newTasks: []
