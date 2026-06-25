@@ -1,74 +1,65 @@
-# Plan Review Feedback
+# Phase 1 Review Feedback
 
 **Verdict: APPROVED**
 
-## Summary
+## Build / Lint / Test
 
-The plan in `PLAN.md` is well-structured and executable as-is. It covers all three sprint source issues with locked architectural decisions (D1-D10) that eliminate implementation ambiguity before any code is written.
+- `npm run build`: PASS (no TypeScript errors)
+- `npm run lint`: PASS (no ESLint errors)
+- `npm test`: PASS (21 tests, 0 failures — all pre-existing notes and validation tests green)
 
-## Coverage Check
+## Acceptance Criteria Checklist
 
-- **gh-toy-qv2** (CLI CRUD commands): Covered by T2.1 (create), T2.2 (list), T2.3 (get/update/delete).
-- **gh-toy-53n** (Help system and input validation): Covered by T3.2 (help wiring), D6 (validation reuse), T2.1/T2.3 (per-command validation).
-- **gh-toy-ow0** (--version flag): Covered by T3.1.
-- All three source issues have direct task coverage. No sprint goal is left unaddressed.
+1. **parseArgs exported, handles --flag value, --flag=value, -h, -V, --help, --version**: PASS
+   - `src/cli.ts` line 34: `export function parseArgs(argv: string[]): ParsedArgs`
+   - Both `--flag value` and `--flag=value` syntax handled (lines 56-127)
+   - `-h` and `--help` set `helpRequested=true` (lines 48-50, 99-102)
+   - `-V` and `--version` set `versionRequested=true` (lines 51-54, 103-106)
+   - Unknown flags throw `CliError` with `Error: Unknown flag: --<name>` (lines 65, 119)
+   - Missing flag values throw `CliError` with `Error: Missing value for flag: --<name>` (lines 80, 123)
 
-## Test Tasks
+2. **ParsedArgs, CliIO, CliError interfaces/classes exported**: PASS
+   - `export interface CliIO` (line 3)
+   - `export interface ParsedArgs` (line 8)
+   - `export class CliError extends Error` with `code = 1` (line 16)
 
-- T1.4, T2.4, T3.3, T4.2 are verify/gate tasks downstream of their respective implementation phases.
-- T4.1 specifies 19 enumerated test cases covering every command (CRUD), `--help`, `--version`, all error paths (missing required args, not-found, unknown command, unknown flag).
-- Tests are downstream of implementation (Phase 4 follows Phases 1-3). Dependency ordering is correct.
-- Tests use the injected `io` callbacks, not subprocess spawning or `console.log` spying — testability requirement is met.
+3. **run exported, accepts argv + optional CliIO, returns Promise<number>**: PASS
+   - `src/cli.ts` line 140: `export async function run(argv: string[], io?: CliIO): Promise<number>`
+   - Default IO writers fall back to `process.stdout.write` / `process.stderr.write`
 
-## Acceptance Criteria
+4. **run wraps parseArgs in try/catch, CliError -> stderr + error.code**: PASS
+   - Lines 148-156: try/catch catches `CliError`, writes `e.message + "\n"` to stderr, returns `e.code`
+   - Verified at runtime: unknown flag produces `"Error: Unknown flag: --bogus\n"` on stderr, returns 1
 
-Every task has concrete, measurable done conditions:
-- Implementation tasks specify exact function signatures, output formats (D8), error message formats (D7), and help text shape (D9).
-- Verification tasks specify exact commands to run and passing criteria.
-- T4.1 lists 19 individually numbered `it()` specs.
+5. **run does NOT call process.exit**: PASS
+   - No `process.exit` call inside `run` function body
 
-## Task Sizes
+6. **Entry-point wrapper (require.main === module) at bottom**: PASS
+   - `src/cli.ts` lines 193-195: `if (require.main === module) { run(process.argv.slice(2)).then((code) => process.exit(code)); }`
 
-All tasks are within the 3-file limit:
-- T1.1, T1.2, T2.1, T2.2, T2.3, T3.1, T3.2: single file (`src/cli.ts`) — bucket M (non-trivial logic)
-- T1.3: single file (`package.json`) — bucket S
-- T1.4, T2.4, T3.3, T4.2: verification only (run commands, no file changes) — bucket S
-- T4.1: single new file (`tests/cli.test.ts`) — bucket M
+7. **package.json has "cli": "ts-node src/cli.ts" in scripts**: PASS
+   - `package.json` line 8: `"cli": "ts-node src/cli.ts"`
 
-## Dependency Wiring
+8. **All three suite steps pass**: PASS (confirmed above)
 
-Phases are ordered correctly: Foundations (Phase 1) -> CRUD (Phase 2) -> Help/Version (Phase 3) -> Tests (Phase 4). Each phase has a verify task before advancing. No circular or backwards dependencies.
+## Dispatcher Skeleton (T1.2)
 
-## Scope
+All five commands (`create`, `list`, `get`, `update`, `delete`) have stub cases throwing `Error("not implemented")`. `helpRequested` and `versionRequested` early-return 0 as stubs. `Unknown command` returns exit code 1 with correct stderr message.
 
-All tasks address only the three source issues. No unrelated changes. No scope creep detected. D3 explicitly calls out an existing `updatedAt` bug as out of scope.
+## File Hygiene
 
-## No Duplicate Work
+All modified files are justifiable against sprint tasks:
+- `src/cli.ts`: New CLI implementation (T1.1, T1.2)
+- `package.json`: Added `cli` script (T1.3)
+- `PLAN.md`, `requirements.md`, `progress.json`, `feedback.md`: Sprint planning/tracking artifacts
+- `.beads/`: Beads issue tracker state (expected)
+- `AGENTS.md`, `CLAUDE.md`: Agent workflow files (modified as part of sprint bootstrap)
 
-Each task addresses a distinct concern. No two tasks do the same thing.
+One flag (no blocking issue): `.claude/settings.json` has `bd prime` hooks removed from `PreCompact` and `PreToolUse`. This is unrelated to Phase 1 sprint tasks. It does not affect build, lint, or test results, but the change was not called for by any T1.x task. Note for awareness only.
 
-## Feasibility
+## Notes
 
-All tasks build on what exists: existing `noteStore`, `validateCreateInput`/`validateUpdateInput`, `uuidv4` (already a dependency), Jest + `ts-jest` (already configured). No new npm packages are required.
-
-## Model Assignments
-
-All 12 T-prefixed tasks have inline model metadata in PLAN.md.
-
-## Task Assignments
-
-| ID   | Description                             | Bucket | Model                |
-|------|-----------------------------------------|--------|----------------------|
-| T1.1 | Implement and export `parseArgs`        | M      | claude-sonnet-4-6    |
-| T1.2 | Implement `run` skeleton + entry-point  | M      | claude-sonnet-4-6    |
-| T1.3 | Add `cli` script to package.json        | S      | claude-haiku-4-5     |
-| T1.4 | VERIFY Phase 1                          | S      | claude-haiku-4-5     |
-| T2.1 | Implement `create`                      | M      | claude-sonnet-4-6    |
-| T2.2 | Implement `list`                        | M      | claude-sonnet-4-6    |
-| T2.3 | Implement `get`, `update`, `delete`     | M      | claude-sonnet-4-6    |
-| T2.4 | VERIFY Phase 2                          | S      | claude-haiku-4-5     |
-| T3.1 | Wire `--version` / `-V`                 | S      | claude-haiku-4-5     |
-| T3.2 | Wire root and subcommand `--help`       | S      | claude-haiku-4-5     |
-| T3.3 | VERIFY Phase 3                          | S      | claude-haiku-4-5     |
-| T4.1 | Write `tests/cli.test.ts`               | M      | claude-sonnet-4-6    |
-| T4.2 | VERIFY Phase 4 (final)                  | S      | claude-haiku-4-5     |
+- `void out` on line 145 is an unconventional but functional lint suppression for the `out` variable that is declared but not yet used (Phase 3 will use it). This passes lint cleanly and is clearly commented.
+- No `any` types used. All interfaces are properly typed per requirements.
+- No new npm dependencies added.
+- No subprocess spawning in the implementation; `run` is importable for direct testing as required.
