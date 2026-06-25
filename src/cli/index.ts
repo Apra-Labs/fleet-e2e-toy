@@ -1,6 +1,9 @@
 import { VERSION } from "./version";
 import { runList } from "./commands/list";
 import { runRead } from "./commands/read";
+import { runCreate } from "./commands/create";
+import { runUpdate } from "./commands/update";
+import { runDelete } from "./commands/delete";
 
 export interface CliResult {
   stdout: string;
@@ -20,7 +23,8 @@ export function runCli(argv: string[]): CliResult {
 
   const subcommand = argv[0];
 
-  if (subcommand === "list" || subcommand === "read") {
+  const asyncSubcommands = ["list", "read", "create", "update", "delete"];
+  if (subcommand !== undefined && asyncSubcommands.includes(subcommand)) {
     // These require async — callers that need async should use runCliAsync.
     // For the synchronous interface, signal that async is needed.
     return {
@@ -54,6 +58,15 @@ export async function runCliAsync(argv: string[]): Promise<CliResult> {
 
     case "read":
       return runRead(rest);
+
+    case "create":
+      return runCreate(rest);
+
+    case "update":
+      return runUpdate(rest);
+
+    case "delete":
+      return runDelete(rest);
 
     default:
       return {
