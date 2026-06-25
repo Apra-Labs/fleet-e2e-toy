@@ -50,28 +50,28 @@
     {
       "phase": 2,
       "name": "CRUD commands wired to noteStore",
-      "status": "pending",
+      "status": "in_progress",
       "tasks": [
         {
           "id": "T2.1",
           "bead": "gh-toy-aye.5",
           "title": "Implement create command",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T2.2",
           "bead": "gh-toy-aye.6",
           "title": "Implement list command",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T2.3",
           "bead": "gh-toy-aye.7",
           "title": "Implement get, update, delete commands",
           "model": "claude-sonnet-4-6",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "T2.4",
