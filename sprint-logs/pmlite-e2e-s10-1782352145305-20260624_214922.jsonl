@@ -1,1 +1,10 @@
 {"ts":"2026-06-24T21:49:22Z","type":"meta","branch":"pmlite-e2e/s10-1782352145305","startedAt":"20260624_214922","roots":["gh-toy-mi2","gh-toy-7rp","gh-toy-4ef"],"goal":"P1","transcriptDir":"/Users/akhil/.claude/projects/-private-var-folders-b1-x3gsm3fn4pj4n7kjxb0wg5d80000gn-T-pmlite-e2e-s10-VMNabx-repo"}
+{"ts":"2026-06-24T22:05:30-0400","cycle":"setup","phase":"Plan","label":"setup","model":"cheap","context":"","outTokens":3444,"costUsd":0.0172}
+{"ts":"2026-06-24T22:05:30-0400","cycle":"setup","phase":"Plan","label":"sprint-meta","model":"cheap","context":"","outTokens":945,"costUsd":0.0047}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Plan","label":"cycle-state","model":"cheap","context":"","outTokens":845,"costUsd":0.0042}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Plan","label":"planner-c1-r0","model":"premium","context":"planning sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":22880,"costUsd":0.572}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Plan","label":"plan-reviewer-c1-r0","model":"standard","context":"reviewing plan for sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":2904,"costUsd":0.0436}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Plan","label":"write-quote-c1","model":"cheap","context":"","outTokens":690,"costUsd":0.0034}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":1127,"costUsd":0.0056}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Develop","label":"doer-c1-i0-standard","model":"standard","context":"tasks gh-toy-c6u","outTokens":4440,"costUsd":0.0666}
+{"ts":"2026-06-24T22:05:30-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i1","model":"standard","context":"reviewing tasks gh-toy-c6u","outTokens":2991,"costUsd":0.0449}
