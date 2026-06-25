@@ -2,7 +2,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CliValidationError, validateNonEmpty } from './validation';
-import { listNotes, getNote, createNote } from './api-client';
+import { listNotes, getNote, createNote, updateNote } from './api-client';
 import * as pkg from '../../package.json';
 
 function handleError(error: unknown): never {
@@ -101,7 +101,38 @@ async function main() {
           process.stdout.write(`created ${note.id}: ${note.title}\n`);
         }
       )
-      .command('update', 'Update a note by ID', () => {}, () => { throw new Error('update: not implemented yet'); })
+      .command(
+        'update',
+        'Update a note by ID',
+        (y) =>
+          y
+            .option('id', {
+              type: 'string',
+              description: 'Note ID',
+              demandOption: true,
+            })
+            .option('title', {
+              type: 'string',
+              description: 'New title',
+            })
+            .option('content', {
+              type: 'string',
+              description: 'New content',
+            }),
+        async (argv) => {
+          validateNonEmpty(argv.id, 'id');
+          if (argv.title === undefined && argv.content === undefined) {
+            throw new CliValidationError('at least one of --title or --content must be provided');
+          }
+          if (argv.title !== undefined) validateNonEmpty(argv.title, 'title');
+          if (argv.content !== undefined) validateNonEmpty(argv.content, 'content');
+          const updates: { title?: string; content?: string } = {};
+          if (argv.title !== undefined) updates.title = argv.title;
+          if (argv.content !== undefined) updates.content = argv.content;
+          const note = await updateNote(argv.id, updates);
+          process.stdout.write(`updated ${note.id}\n`);
+        }
+      )
       .command('delete', 'Delete a note by ID', () => {}, () => { throw new Error('delete: not implemented yet'); })
       .demandCommand(1, 'You must specify a command.')
       .strict()
