@@ -1,32 +1,16 @@
 APPROVED
 
-## Notes
+All acceptance criteria for gh-toy-c2p.1 are met:
 
-All ten review criteria pass.
+1. commander v15.0.0 (satisfies v12+ requirement) added as prod dependency in package.json.
+2. src/cli.ts defines 'fleet-e2e-toy' as program name and version '1.0.0'; --version and -v both print exactly 'fleet-e2e-toy v1.0.0' and exit 0.
+3. Shebang '#!/usr/bin/env node' is present in src/cli.ts and preserved in dist/cli.js via a postbuild node script in package.json.
+4. package.json 'bin' field maps 'fleet-e2e-toy' to dist/cli.js.
+5. npm run build completes with no TypeScript errors and produces dist/cli.js.
+6. node dist/cli.js --version prints 'fleet-e2e-toy v1.0.0' and exits 0 with no server running.
+7. node dist/cli.js --help prints commander-generated usage and exits 0.
+8. No console.log in error paths; no raw error objects returned.
+All 21 existing tests pass. Build and lint are clean.
 
-**Coverage**: All three sprint goal features are addressed by tasks in the DAG:
-- gh-toy-4ef is covered by gh-toy-c2p.1 (impl) and gh-toy-c2p.6 (test)
-- gh-toy-mi2 is covered by gh-toy-c2p.2, gh-toy-c2p.3, gh-toy-c2p.4 (impl) and gh-toy-c2p.7 (test)
-- gh-toy-7rp is covered by gh-toy-c2p.1, gh-toy-c2p.5 (impl) and gh-toy-c2p.8 (test)
-
-**Test tasks**: Each feature has a dedicated [test] task (gh-toy-c2p.6, .7, .8) downstream of its implementation tasks.
-
-**Acceptance criteria**: Every task (.1 through .8) has a concrete numbered AC list specifying exact file paths, flag names, expected outputs, and exit codes.
-
-**Task size**: All tasks touch 1-2 files. No task exceeds 3 file changes.
-
-**Dependency wiring**: Test tasks are downstream of implementation tasks. Features (gh-toy-4ef, gh-toy-mi2, gh-toy-7rp) appear in graph layers 2/5/6, correctly after their impl and test task dependencies.
-
-**`bd ready` check**: The three sprint goal features (gh-toy-4ef, gh-toy-mi2, gh-toy-7rp) do NOT appear in `bd ready` -- they are correctly blocked. The sprint container gh-toy-c2p appears in ready as expected (it is the umbrella root, not a deliverable sprint goal). Criterion 9 passes.
-
-**No scope creep**: P2 out-of-scope items (gh-toy-24g, gh-toy-69s, gh-toy-aqd) are explicitly excluded and not in the sprint tree.
-
-**No duplicate work**: gh-toy-13t (pre-existing standalone task) overlaps conceptually with gh-toy-c2p.5 but is outside the sprint plan tree and was not created by the planner, so it does not constitute planner-introduced duplication.
-
-**Feasibility**: Each task builds on prior completed work in a logical chain: bootstrap -> http client -> read commands -> write commands -> validation -> tests.
-
-**Model metadata**: All tasks have model metadata set in their NOTES section.
-
-## taskAssignments
-
-[{"id":"gh-toy-c2p.1","bucket":"M","model":"standard"},{"id":"gh-toy-c2p.2","bucket":"S","model":"standard"},{"id":"gh-toy-c2p.3","bucket":"S","model":"cheap"},{"id":"gh-toy-c2p.4","bucket":"S","model":"cheap"},{"id":"gh-toy-c2p.5","bucket":"S","model":"standard"},{"id":"gh-toy-c2p.6","bucket":"S","model":"cheap"},{"id":"gh-toy-c2p.7","bucket":"M","model":"standard"},{"id":"gh-toy-c2p.8","bucket":"M","model":"standard"}]
+reopenIds: []
+newTasks: []
