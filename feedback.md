@@ -1,4 +1,4 @@
-# Phase 1 + 2 Review Feedback
+# Phase 1-3 Review Feedback
 
 **Verdict: APPROVED**
 
@@ -6,73 +6,73 @@
 
 - `npm run build`: PASS (no TypeScript errors)
 - `npm run lint`: PASS (no ESLint errors)
-- `npm test`: PASS (21 tests, 0 failures — all pre-existing notes and validation tests green; no cli.test.ts yet, Phase 4 pending)
+- `npm test`: PASS (21 tests, 0 failures — all pre-existing notes and validation tests green; cli.test.ts is Phase 4, not yet present)
+- Working tree: clean (git status --porcelain empty)
 
-## Phase 1 Findings Addressed
+## Prior Feedback History
 
-The Phase 1 review flagged no blocking issues and returned APPROVED. Phase 2 builds correctly on top of it:
+- `b0435af` — plan review feedback (plan-level, no code yet)
+- `a357575` — Phase 1 review: APPROVED (parser + entry-point skeleton)
+- `3e3b56e` — Phase 1+2 review: APPROVED (CRUD commands); noted D7 unknown-command missing root-help as non-blocking, deferred to Phase 3
 
-- The `void out` lint suppression noted in Phase 1 is now gone — `out` is actively used in Phase 2 command handlers, so no workaround is needed.
-- All Phase 1 structural contracts (exported `run`, `parseArgs`, `CliIO`, `CliError`, entry-point wrapper) remain intact and are correctly extended by Phase 2.
+## Phase 3 Acceptance Criteria Checklist
 
-## Phase 2 Acceptance Criteria Checklist
+### Check 1 — `--version` / `-V` reads package.json at runtime (D2 pattern)
 
-### T2.1 — `create` command (src/cli.ts lines 172–212)
+`src/cli.ts` line 2: `import { readFileSync } from "node:fs";`
+`src/cli.ts` line 3: `import { join } from "node:path";`
+`src/cli.ts` line 225: `JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8")) as { version: string }`
 
-- Reads `--title`, `--content`, `--tags` from `parsed.flags`: PASS
-- Tag parsing: `tagsRaw.split(",").map(s => s.trim()).filter(Boolean)` per D4: PASS
-- CLI-side guard for `--content` present but empty string (per PLAN self-critique note): PASS (lines 181–184)
-- Passes `{ title, content, tags }` to `validateCreateInput`: PASS
-- On validation failure: each error printed as `Error: <field>: <message>\n` to stderr, returns 1: PASS
-- On success: builds Note with `uuidv4()` id, `createdAt = updatedAt = new Date().toISOString()`, calls `noteStore.create`, prints indented JSON to stdout, returns 0: PASS
+Both `--version` and `-V` short form trigger `parsed.versionRequested` (lines 57-60 and 108-111), which is handled at line 223-228, before command dispatch.
 
-### T2.2 — `list` command (src/cli.ts lines 214–232)
+Output: `noteapi/1.0.0\n` — PASS
+Exit code: 0 — PASS
 
-- Starts with `noteStore.getAll()`: PASS
-- `--tag` filter: exact match via `n.tags.includes(tag)`: PASS
-- `--search` filter: case-insensitive substring on title and content (implemented locally, not via Express handler): PASS
-- Prints indented JSON array to stdout, returns 0: PASS
+### Check 2 — Root `--help` prints Usage text with all 5 commands and Global flags section
 
-### T2.3 — `get`, `update`, `delete` commands (src/cli.ts lines 234–311)
+`src/cli.ts` lines 206-221: root help text matches D9 exactly, listing all 5 commands (create, list, get, update, delete) with one-line descriptions, plus the Global flags section with `-h, --help` and `-V, --version`.
 
-**get:**
-- Missing positional id → `Error: Missing required argument: id\n` to stderr, exit 1: PASS
-- `noteStore.getById(id)` returns undefined → `Error: Note not found: <id>\n` to stderr, exit 1: PASS
-- Found → indented JSON to stdout, exit 0: PASS
+Also duplicated at lines 366-379 for the no-command default case — consistent.
 
-**update:**
-- Missing positional id → error to stderr, exit 1: PASS
-- Partial-update payload built using `"key" in parsed.flags` (only flags explicitly provided are included): PASS — this correctly preserves partial-update semantics
-- `validateUpdateInput(payload)` called; on failure errors to stderr, exit 1: PASS
-- `noteStore.update(id, data)` returns undefined → not-found error to stderr, exit 1: PASS
-- On success → updated note JSON to stdout, exit 0: PASS
+Output verified by smoke test: PASS
+Exit code: 0 — PASS
 
-**delete:**
-- Missing positional id → error to stderr, exit 1: PASS
-- `noteStore.delete(id)` returns false → not-found error to stderr, exit 1: PASS
-- On success → `{"deleted":true}\n` to stdout, exit 0: PASS (compact form, no indent — matches D8)
+### Check 3 — Subcommand `--help` shows per-command flags with required/optional markers for all 5 commands
 
-### Cross-cutting Concerns
+`src/cli.ts` lines 163-202: `helpTexts` map covers all 5 subcommands:
+- `create` (lines 165-171): `--title (required)`, `--content (required)`, `--tags (optional)` — PASS
+- `list` (lines 172-177): `--tag (optional)`, `--search (optional)` — PASS
+- `get` (lines 178-182): `<id> (required positional)` — PASS
+- `update` (lines 183-194): `<id> (required positional)`, `--title/--content/--tags (optional)` — PASS
+- `delete` (lines 195-200): `<id> (required positional)` — PASS
 
-- All errors go to `err()` (stderr path), never to `out()` (stdout): PASS
-- Exit code 1 on all error paths, 0 on success: PASS
-- No `any` types in `src/cli.ts`: PASS (`grep "any"` returns no matches; `Record<string, unknown>` used correctly for update payload)
-- No new npm dependencies: PASS (`package.json` diff adds only the `cli` script line)
-- `run()` does not call `process.exit`: PASS
+All exit code 0 — PASS
+
+### Check 4 — No `process.exit` inside `run` function
+
+`process.exit` appears exactly once in `src/cli.ts` at line 388, inside the `require.main === module` entry-point wrapper only. The `run` function itself (lines 145-385) contains no `process.exit` calls — PASS
+
+### Check 5 — `npm run build`, `npm run lint`, `npm test` all pass
+
+All three pass cleanly as reported above — PASS
 
 ## File Hygiene
 
 All modified/added files are justifiable against sprint tasks:
-- `src/cli.ts`: Phase 1 + 2 CLI implementation
-- `package.json`: Added `cli` script (T1.3)
+- `src/cli.ts`: Phase 1-3 CLI implementation (parser, CRUD commands, help system, --version)
+- `package.json`: Added `cli` script (T1.3), no other changes
 - `PLAN.md`, `requirements.md`, `progress.json`: Sprint planning/tracking artifacts
 - `feedback.md`: Review output (this file)
 
+No temp files, unrelated scripts, or tool config slipped in.
+
 ## Awareness Notes (non-blocking)
 
-- D7 specifies that "Unknown command" should print root help on stdout in addition to the stderr error. Current code (line 309) only emits the stderr error. This is expected incomplete work — the help text is a Phase 3 deliverable. Not a Phase 2 defect.
-- `noteStore.update` does not bump `updatedAt`. This is a known existing issue, explicitly noted as out-of-scope in PLAN.md (D3). Not flagged.
+**D7 unknown-command root-help omission (carry-forward from Phase 2 review):**
+D7 specifies that an unknown command should print root help on stdout in addition to the stderr error. Current code (`src/cli.ts` line 382-383) only emits `Error: Unknown command: <name>\n` to stderr. T3.2's explicit scope was "no command OR --help/-h with no command" — the unknown-command path was not in scope for Phase 3. This remains a gap against D7 and should be addressed in Phase 4 or a follow-up task. Not blocking for Phases 1-3.
 
-## Phase 2 Summary
+**`noteStore.update` does not bump `updatedAt`:** Known existing issue, explicitly out-of-scope per PLAN.md D3.
 
-All five CRUD commands are correctly wired to `noteStore`, validate inputs per the plan, route errors to stderr, and exit with the correct codes. The partial-update semantics for `update` are correctly implemented. No regressions in pre-existing tests. Phase 3 (help + version) and Phase 4 (test suite) remain pending as expected.
+## Phase 3 Summary
+
+All five Phase 3 acceptance criteria are met. The `--version`/`-V` flag correctly reads `package.json` at runtime using the D2 pattern. Root `--help` prints the exact D9 text with all 5 commands and global flags. All 5 subcommand `--help` outputs include required/optional markers. No `process.exit` inside `run`. Build, lint, and 21 pre-existing tests all pass with no regressions.
