@@ -26,9 +26,27 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
 ```
+
+## CLI
+
+A `note` CLI is available after building:
+
+```bash
+npm run build
+node dist/cli/index.js --help
+
+# Examples
+node dist/cli/index.js list
+node dist/cli/index.js create --title "My note" --content "Hello" --tags "work,important"
+node dist/cli/index.js read --id <id>
+node dist/cli/index.js update --id <id> --title "Updated title"
+node dist/cli/index.js delete --id <id>
+```
+
+The base URL defaults to `http://localhost:3000` and can be overridden with `--base-url <url>` or the `NOTE_API_URL` environment variable. See `docs/cli.md` for full reference.
 
 ## API Endpoints
 
