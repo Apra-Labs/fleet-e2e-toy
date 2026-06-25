@@ -1,45 +1,24 @@
-CHANGES NEEDED
+APPROVED
 
-Sprint output is structurally complete: 13 tasks closed, `npm run build`, `npm run lint`, and `npm test` (32 tests across 3 suites) all pass; no `any` types in `src/cli/`; `--version`, `--help`/`-h`, validation, and all five CRUD subcommands are present. However, the CLI is broken against the documented default configuration, and that bug only escaped detection because the tests work around it.
+The previous CHANGES NEEDED blocker is fully resolved. Both surgical fixes are in place and verified end-to-end.
 
-## Blocker: CLI default base URL targets the wrong path
+## Blocker resolution
 
-`requirements.md` (gh-toy-mi2) is explicit that the CLI calls `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id`, etc. The Express app confirms this — `src/app.ts:7` mounts the router at `/api/notes`.
+- `src/cli/api-client.ts` now uses `/api/notes` on all five paths (lines 48, 53, 66, 73, 77) — matches the Express mount in `src/app.ts`. Default `NOTEAPI_URL` of `http://localhost:3000` will now route correctly out of the box.
+- `tests/cli.test.ts:145` sets `baseUrl = http://127.0.0.1:${addr.port}` with no `/api` suffix and no workaround comment. The happy-path test (create + list + read + delete) exercises every CRUD route against the real Express app on an ephemeral port — if the path mismatch had survived, all four assertions in `create, list, read, then delete a note` would 404.
 
-`src/cli/api-client.ts` (lines 43-78) sends requests to `${baseURL}/notes...` instead of `${baseURL}/api/notes...`. The default `NOTEAPI_URL` is `http://localhost:3000` (line 3), and the global help epilog advertises that default (`src/cli/index.ts:167`: `'Env: NOTEAPI_URL (default http://localhost:3000)'`).
+## Verification
 
-Empirically verified by running the built CLI against a live server on port 3099:
+- `npm run build` exits 0 (tsc clean).
+- `npm run lint` exits 0.
+- `npm test` exits 0: 32 tests passing across 3 suites (notes.test.ts, validation.test.ts, cli.test.ts).
+- `grep 'api/notes\|/notes' src/cli/api-client.ts` shows exactly 5 matches, all `/api/notes...`. No bare `/notes` paths remain.
+- `grep 'baseUrl\|NOTEAPI_URL' tests/cli.test.ts` confirms `baseUrl` has no `/api` suffix on line 145 and is passed as `NOTEAPI_URL` to every `runCli` invocation.
+- `git log -- feedback.md` shows the prior CHANGES NEEDED at 38d6b51, followed by fixes cccb342 (api-client paths) and 2dcc7d5 (test baseUrl cleanup). Sequence is correct.
 
-```
-$ NOTEAPI_URL=http://localhost:3099 node dist/cli/index.js list
-error: API error 404: <!DOCTYPE html>...<pre>Cannot GET /notes</pre>...
-$ NOTEAPI_URL=http://localhost:3099/api node dist/cli/index.js list
-No notes found.
-```
+## Sprint verdict
 
-So out of the box, every CRUD command 404s. The acceptance criteria for gh-toy-mi2 ("Each command calls the API ... Non-zero exit on API error") are technically satisfied — but the CLI is non-functional against the documented API, which is not releasable.
+All 13 tasks under gh-toy-80w meet acceptance criteria. The CLI is now functional against the documented default configuration (`http://localhost:3000`) with no hidden test-only workaround. The previously noted minor (lack of `encodeURIComponent` on `id` interpolation in api-client.ts lines 53/73/77) is non-blocking — UUIDs are URL-safe and there is no requirement to harden against future ID-shape changes in this sprint.
 
-The CLI test suite hides this by setting `baseUrl = http://127.0.0.1:${port}/api` in `tests/cli.test.ts:146` with an explicit comment: `// The API client appends /notes, so set NOTEAPI_URL to include /api prefix`. That comment is the smoking gun — the test author knew about the path mismatch and worked around it instead of fixing the client.
-
-## Required fix
-
-Pick one of:
-- (preferred) Change the five paths in `src/cli/api-client.ts` from `/notes...` to `/api/notes...`. Then drop the `/api` suffix from `baseUrl` in `tests/cli.test.ts:146` and from the comment on line 145.
-- Or change the default `NOTEAPI_URL` to `http://localhost:3000/api`, update the help epilog to match, and document that users must include `/api` in any override. This is messier because it bakes the API mount prefix into the user-visible config; the first option is cleaner.
-
-After the fix, re-run the happy-path test without the `/api` workaround to confirm.
-
-## Minor (not blocking)
-
-- `src/cli/api-client.ts:53,73,77` interpolate `id` into the URL path without `encodeURIComponent`. UUIDs are safe in practice, but a defensive encode would prevent surprises if IDs ever change shape.
-- The help epilog hint should match whatever the corrected default is.
-
-## Verified working
-
-- gh-toy-4ef (`--version`/`-V` printing `fleet-e2e-toy v1.0.0`, exits 0): correct.
-- gh-toy-7rp help (`--help`/`-h` global and per-subcommand, exit 0; no stack traces; clean `error: ...` messages on unknown command, missing `--id`, empty/whitespace values, exit codes 1/2): correct.
-- gh-toy-mi2 surface (all five subcommands wired with the right required/optional flags, proper validation, human-readable output): correct in shape; broken in default wiring per the blocker above.
-- Build/lint/tests green; no `any` in `src/cli/`; `bin` entry registered; shebang present.
-
-reopenIds: [gh-toy-80w.3, gh-toy-80w.12]
+reopenIds: []
 newTasks: []
