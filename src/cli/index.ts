@@ -2,7 +2,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CliValidationError, validateNonEmpty } from './validation';
-import { listNotes } from './api-client';
+import { listNotes, getNote } from './api-client';
 import * as pkg from '../../package.json';
 
 function handleError(error: unknown): never {
@@ -54,7 +54,25 @@ async function main() {
           }
         }
       )
-      .command('read', 'Read a note by ID', () => {}, () => { throw new Error('read: not implemented yet'); })
+      .command(
+        'read',
+        'Read a note by ID',
+        (y) =>
+          y.option('id', {
+            type: 'string',
+            description: 'Note ID',
+            demandOption: true,
+          }),
+        async (argv) => {
+          validateNonEmpty(argv.id, 'id');
+          const note = await getNote(argv.id);
+          process.stdout.write(`id:        ${note.id}\n`);
+          process.stdout.write(`title:     ${note.title}\n`);
+          process.stdout.write(`tags:      ${note.tags.join(', ') || '(none)'}\n`);
+          process.stdout.write(`createdAt: ${note.createdAt}\n`);
+          process.stdout.write(`content:\n${note.content}\n`);
+        }
+      )
       .command('create', 'Create a new note', () => {}, () => { throw new Error('create: not implemented yet'); })
       .command('update', 'Update a note by ID', () => {}, () => { throw new Error('update: not implemented yet'); })
       .command('delete', 'Delete a note by ID', () => {}, () => { throw new Error('delete: not implemented yet'); })
