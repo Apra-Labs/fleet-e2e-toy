@@ -47,10 +47,10 @@
       "title": "VERIFY: CLI Version Flag",
       "model": "standard",
       "type": "verify",
-      "status": "pending",
+      "status": "completed",
       "bead": null,
       "commit": null,
-      "notes": ""
+      "notes": "Verified that compilation succeeds without TypeScript errors, all 25 Jest unit tests pass, and manual execution of ./tool -v / --version prints 'fleet-e2e-toy v1.0.0' and exits with code 0."
     }
   ],
   "dispatches": []
