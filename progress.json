@@ -14,10 +14,10 @@
       "title": "Initialize CLI Entry Point and Create Tool Script",
       "model": "cheap",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfz.1",
       "commit": null,
-      "notes": ""
+      "notes": "Created src/cli.ts and the executable tool script, successfully compiled and run."
     },
     {
       "id": "T1.2",
