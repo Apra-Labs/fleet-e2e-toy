@@ -36,10 +36,10 @@
       "title": "Add CLI Version Flag Unit Tests",
       "model": "standard",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfz.3",
       "commit": null,
-      "notes": ""
+      "notes": "Created tests/cli.test.ts to verify the CLI's argument parsing and runner exit codes."
     },
     {
       "id": "T1.V",
