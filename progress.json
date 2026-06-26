@@ -1,0 +1,57 @@
+{
+  "sprint": "e2e-s8.2-28207769589",
+  "track": "sprint",
+  "branch": "e2e-s8.2-28207769589/sprint",
+  "base": "main",
+  "worktree": "/home/akhil/git/apra-fleet-e2e-doer/fleet-e2e-toy-wt/sprint",
+  "transport": "remote",
+  "epic": "gh-toy-nfz",
+  "lastDispatchedPhase": null,
+  "tasks": [
+    {
+      "id": "T1.1",
+      "phase": 1,
+      "title": "Initialize CLI Entry Point and Create Tool Script",
+      "model": "cheap",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfz.1",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.2",
+      "phase": 1,
+      "title": "Implement Version Flag Logic in CLI",
+      "model": "standard",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfz.2",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.3",
+      "phase": 1,
+      "title": "Add CLI Version Flag Unit Tests",
+      "model": "standard",
+      "type": "work",
+      "status": "pending",
+      "bead": "gh-toy-nfz.3",
+      "commit": null,
+      "notes": ""
+    },
+    {
+      "id": "T1.V",
+      "phase": 1,
+      "title": "VERIFY: CLI Version Flag",
+      "model": "standard",
+      "type": "verify",
+      "status": "pending",
+      "bead": null,
+      "commit": null,
+      "notes": ""
+    }
+  ],
+  "dispatches": []
+}
