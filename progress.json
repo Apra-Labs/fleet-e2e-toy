@@ -25,10 +25,10 @@
       "title": "Implement Version Flag Logic in CLI",
       "model": "standard",
       "type": "work",
-      "status": "pending",
+      "status": "completed",
       "bead": "gh-toy-nfz.2",
       "commit": null,
-      "notes": ""
+      "notes": "Added logic in src/cli.ts to detect --version and -v, print the version string, and return 0."
     },
     {
       "id": "T1.3",
