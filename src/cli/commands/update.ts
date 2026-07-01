@@ -1,29 +1,19 @@
-import { updateNote, CliError, ExitCode } from "../client";
+import { updateNote } from "../client";
+import { validateRequired } from "../validation";
 import { UpdateNoteInput } from "../../models/note";
 import type { CommandHandler } from "../index";
 
 export const updateCommand: CommandHandler = async (flags) => {
-  const id = flags["id"];
-  if (typeof id !== "string" || id.trim().length === 0) {
-    throw new CliError("--id is required", ExitCode.USAGE);
-  }
+  const id = validateRequired("--id", flags["id"]);
 
   const updates: UpdateNoteInput = {};
 
   if (flags["title"] !== undefined) {
-    const title = flags["title"];
-    if (typeof title !== "string" || title.trim().length === 0) {
-      throw new CliError("--title must be a non-empty string", ExitCode.VALIDATION);
-    }
-    updates.title = title.trim();
+    updates.title = validateRequired("--title", flags["title"]);
   }
 
   if (flags["content"] !== undefined) {
-    const content = flags["content"];
-    if (typeof content !== "string") {
-      throw new CliError("--content must be a string", ExitCode.VALIDATION);
-    }
-    updates.content = content;
+    updates.content = validateRequired("--content", flags["content"]);
   }
 
   if (flags["tag"] !== undefined) {

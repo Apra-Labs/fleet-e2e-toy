@@ -1,11 +1,9 @@
-import { getNote, CliError, ExitCode } from "../client";
+import { getNote } from "../client";
+import { validateRequired } from "../validation";
 import type { CommandHandler } from "../index";
 
 export const readCommand: CommandHandler = async (flags) => {
-  const id = flags["id"];
-  if (typeof id !== "string" || id.trim().length === 0) {
-    throw new CliError("--id is required", ExitCode.USAGE);
-  }
+  const id = validateRequired("--id", flags["id"]);
 
   const note = await getNote(id);
   process.stdout.write(

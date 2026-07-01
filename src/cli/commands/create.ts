@@ -1,16 +1,10 @@
-import { createNote, CliError, ExitCode } from "../client";
+import { createNote } from "../client";
+import { validateRequired } from "../validation";
 import type { CommandHandler } from "../index";
 
 export const createCommand: CommandHandler = async (flags) => {
-  const title = flags["title"];
-  const content = flags["content"];
-
-  if (typeof title !== "string" || title.trim().length === 0) {
-    throw new CliError("--title is required and must be a non-empty string", ExitCode.VALIDATION);
-  }
-  if (typeof content !== "string") {
-    throw new CliError("--content is required", ExitCode.VALIDATION);
-  }
+  const title = validateRequired("--title", flags["title"]);
+  const content = validateRequired("--content", flags["content"]);
 
   // --tag may be given once or as comma-separated values
   const tagRaw = flags["tag"];
@@ -19,6 +13,6 @@ export const createCommand: CommandHandler = async (flags) => {
     tags = tagRaw.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
   }
 
-  const note = await createNote({ title: title.trim(), content, tags });
+  const note = await createNote({ title, content, tags });
   process.stdout.write(`${note.id}\n`);
 };
