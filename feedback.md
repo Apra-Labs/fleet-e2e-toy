@@ -1,8 +1,8 @@
 APPROVED
 
-gh-toy-sal.2: All five CRUD subcommands are implemented against the API client. list calls GET /api/notes with optional --tag and --q query params. read calls GET /api/notes/:id with required --id flag. create calls POST /api/notes with required --title and --content and optional --tags split on comma. update calls PUT /api/notes/:id with required --id and at least one of --title/--content/--tags; throws CliError if no update fields given. delete calls DELETE /api/notes/:id and prints a confirmation message. API errors (non-2xx) are caught and surfaced as human-readable stderr messages via CliError with non-zero exit and no stack traces. tsc build and lint both pass.
+gh-toy-sal.3: Help system is fully implemented. --help/-h with no subcommand prints a usage summary listing all subcommands (list, read, create, update, delete) and global flags (--url, -h/--help, -v/--version), then exits 0. --help/-h after any subcommand prints that subcommand's usage with its specific flags, then exits 0. Running the CLI with no arguments prints the same usage summary (exits 1 as a usage error). Help text accurately reflects the required and optional flags of each subcommand. No stack traces in any help output path. tsc build and lint pass.
 
-gh-toy-sal.5: --version/-v is parsed as a global flag before the subcommand check in main(). When set, it writes "noteapi-cli v1.0.0" to stdout (version read from package.json) and returns exit code 0. The flag works with no subcommand present. No stack traces can occur on this path. tsc build and lint both pass.
+gh-toy-sal.4: Input validation is fully implemented and fires before any API call. Missing required flags (read/update/delete without --id, create without --title or --content) produce a clear error on stderr naming the offending flag and exit code 1. Empty or whitespace-only values for --title, --content, or --id are rejected with a clear error message and exit code 1 without making any HTTP request. Error messages name the offending flag. No stack traces. tsc build and lint pass.
 
 reopenIds: []
 newTasks: []
