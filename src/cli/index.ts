@@ -2,6 +2,9 @@ import { parseArgs } from "./args";
 import { CliError, ExitCode } from "./client";
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
+import { createCommand } from "./commands/create";
+import { updateCommand } from "./commands/update";
+import { deleteCommand } from "./commands/delete";
 
 const USAGE = `Usage: noteapi <command> [options]
 
@@ -27,6 +30,9 @@ export type CommandHandler = (
 const commands: Record<string, CommandHandler> = {
   list: listCommand,
   read: readCommand,
+  create: createCommand,
+  update: updateCommand,
+  delete: deleteCommand,
 };
 
 export async function run(argv: string[]): Promise<number> {
