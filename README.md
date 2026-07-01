@@ -26,9 +26,29 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
 ```
+
+## CLI Client
+
+A command-line client (`src/cli.ts`) ships with the project:
+
+```bash
+# Run directly
+npx ts-node src/cli.ts list
+npx ts-node src/cli.ts create --title "My note" --content "Hello"
+npx ts-node src/cli.ts read --id <id>
+npx ts-node src/cli.ts update --id <id> --title "New title"
+npx ts-node src/cli.ts delete --id <id>
+
+# Override the server URL
+npx ts-node src/cli.ts --url http://localhost:3001 list
+# Or use the environment variable
+NOTEAPI_URL=http://localhost:3001 npx ts-node src/cli.ts list
+```
+
+See [`docs/features/cli.md`](docs/features/cli.md) for full flag reference and examples.
 
 ## API Endpoints
 
