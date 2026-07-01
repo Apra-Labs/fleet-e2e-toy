@@ -1,0 +1,2 @@
+{"id":"int-8bc46624","kind":"field_change","created_at":"2026-07-01T22:29:19.821519012Z","actor":"fleet-reviewer","issue_id":"fleet-e2e-toy-1778393401792-1-841f342d","extra":{"field":"priority","new_value":"1","old_value":"2"}}
+{"id":"int-f90ab9c5","kind":"field_change","created_at":"2026-07-01T22:33:09.562347964Z","actor":"fleet-reviewer","issue_id":"fleet-e2e-toy-1778393401792-1-841f342d","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
