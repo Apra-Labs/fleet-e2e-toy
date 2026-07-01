@@ -1,6 +1,8 @@
 APPROVED
 
-gh-toy-sal.1: All acceptance criteria met. src/cli.ts exists as a runnable TS entry point. The argument parser correctly separates global flags (--url, --help/-h, --version/-v) from the subcommand and its per-subcommand flags. The subcommand dispatcher routes to list/read/create/update/delete with stub handlers, and throws CliError for unknown subcommands (printing to stderr and exiting non-zero). The API client resolves the base URL from --url flag, then NOTEAPI_URL env var, then http://localhost:3000 default, and performs requests via native fetch. Centralized error handling in fail() prints human-readable messages to stderr with no stack traces and returns exit code 1. tsc build passes, lint passes, and all 21 existing tests pass with no regressions.
+gh-toy-sal.2: All five CRUD subcommands are implemented against the API client. list calls GET /api/notes with optional --tag and --q query params. read calls GET /api/notes/:id with required --id flag. create calls POST /api/notes with required --title and --content and optional --tags split on comma. update calls PUT /api/notes/:id with required --id and at least one of --title/--content/--tags; throws CliError if no update fields given. delete calls DELETE /api/notes/:id and prints a confirmation message. API errors (non-2xx) are caught and surfaced as human-readable stderr messages via CliError with non-zero exit and no stack traces. tsc build and lint both pass.
+
+gh-toy-sal.5: --version/-v is parsed as a global flag before the subcommand check in main(). When set, it writes "noteapi-cli v1.0.0" to stdout (version read from package.json) and returns exit code 0. The flag works with no subcommand present. No stack traces can occur on this path. tsc build and lint both pass.
 
 reopenIds: []
 newTasks: []
