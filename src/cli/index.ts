@@ -6,6 +6,7 @@ import { createCommand } from "./commands/create";
 import { updateCommand } from "./commands/update";
 import { deleteCommand } from "./commands/delete";
 import { printGlobalHelp, printCommandHelp, GLOBAL_HELP } from "./help";
+import { printVersion } from "./version";
 
 /**
  * A subcommand handler receives the parsed flags and positional arguments
@@ -29,6 +30,13 @@ export async function run(argv: string[]): Promise<number> {
   const { command, flags, positional } = parseArgs(argv);
 
   const helpRequested = flags["help"] === true || flags["h"] === true;
+  const versionRequested = flags["version"] === true || flags["v"] === true;
+
+  // Global --version / -v (short-circuits everything)
+  if (versionRequested) {
+    printVersion();
+    return 0;
+  }
 
   // Global --help / -h with no command
   if (!command) {
