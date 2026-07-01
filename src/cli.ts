@@ -291,9 +291,9 @@ function requireFlag(flags: Record<string, string>, name: string, subcommand: st
  * Validate that an already-present flag value is non-blank.
  * Use when the flag is optional but must not be blank if provided.
  */
-function requireNonBlank(flags: Record<string, string>, name: string, subcommand: string): void {
+function requireNonBlank(flags: Record<string, string>, name: string, _subcommand: string): void {
   if (flags[name].trim() === "") {
-    throw new CliError(`--${name} must not be empty or whitespace-only (in ${subcommand})`);
+    throw new CliError(`--${name} must not be empty or whitespace-only`);
   }
 }
 
