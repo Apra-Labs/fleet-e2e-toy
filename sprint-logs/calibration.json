@@ -72,26 +72,36 @@
     "outlier_pct": 200,
     "calibration_failure_pct": 500
   },
+  "doer_token_ceiling": {
+    "_doc": "Maximum output tokens for a single doer streak, keyed by tier name. Streaks that exceed this token budget are split and re-queued.",
+    "cheap": 40000,
+    "standard": 80000,
+    "premium": 150000
+  },
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 1,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 2,
-    "reviewer_ratio_avg": 0.44004665942641086,
-    "bucket_avg_tokens": {},
+    "sprints_sampled": 2,
+    "last_updated": "2026-07-01",
+    "cycle_avg": 1.5,
+    "reviewer_ratio_avg": 0.3838270569836463,
+    "bucket_avg_tokens": {
+      "L": 5448.25,
+      "M": 4200.3,
+      "S": 3931.5
+    },
     "roles": {
       "cycle-state": {
-        "avg_output_tokens": 0,
-        "sample_n": 1
+        "avg_output_tokens": 742,
+        "sample_n": 2
       },
       "planner": {
-        "avg_output_tokens": 0,
-        "sample_n": 2
+        "avg_output_tokens": 9551.5,
+        "sample_n": 3
       },
       "plan-reviewer": {
-        "avg_output_tokens": 0,
-        "sample_n": 2
+        "avg_output_tokens": 1437.5,
+        "sample_n": 3
       },
       "feedback-commit-plan-reviewer": {
         "avg_output_tokens": 0,
@@ -102,16 +112,16 @@
         "sample_n": 1
       },
       "ready-streaks": {
-        "avg_output_tokens": 2084.4285714285716,
-        "sample_n": 7
+        "avg_output_tokens": 1931.9642857142858,
+        "sample_n": 11
       },
       "doer": {
-        "avg_output_tokens": 6215.25,
-        "sample_n": 8
+        "avg_output_tokens": 7083.725,
+        "sample_n": 13
       },
       "reviewer": {
-        "avg_output_tokens": 3646.6666666666665,
-        "sample_n": 6
+        "avg_output_tokens": 3994.333333333333,
+        "sample_n": 9
       },
       "feedback-commit-reviewer": {
         "avg_output_tokens": 1833,
@@ -126,19 +136,63 @@
         "sample_n": 1
       },
       "deployer": {
-        "avg_output_tokens": 1258,
-        "sample_n": 1
+        "avg_output_tokens": 1365,
+        "sample_n": 2
       },
       "integ-runner": {
-        "avg_output_tokens": 3977,
-        "sample_n": 1
+        "avg_output_tokens": 2807,
+        "sample_n": 2
       },
       "teardown": {
-        "avg_output_tokens": 419,
-        "sample_n": 1
+        "avg_output_tokens": 568.5,
+        "sample_n": 2
       },
       "check-blockers": {
         "avg_output_tokens": 1419,
+        "sample_n": 1
+      },
+      "setup-shell": {
+        "avg_output_tokens": 826,
+        "sample_n": 1
+      },
+      "setup": {
+        "avg_output_tokens": 3074,
+        "sample_n": 1
+      },
+      "sprint-meta": {
+        "avg_output_tokens": 948,
+        "sample_n": 1
+      },
+      "cycle-meta": {
+        "avg_output_tokens": 1297,
+        "sample_n": 1
+      },
+      "plan-commit": {
+        "avg_output_tokens": 3009,
+        "sample_n": 1
+      },
+      "log-append-iter": {
+        "avg_output_tokens": 1452.6666666666667,
+        "sample_n": 3
+      },
+      "push-sha": {
+        "avg_output_tokens": 539,
+        "sample_n": 1
+      },
+      "log-append-test": {
+        "avg_output_tokens": 1893,
+        "sample_n": 1
+      },
+      "exit-check": {
+        "avg_output_tokens": 2280,
+        "sample_n": 1
+      },
+      "log-append-end": {
+        "avg_output_tokens": 1096,
+        "sample_n": 1
+      },
+      "final-reviewer": {
+        "avg_output_tokens": 9202,
         "sample_n": 1
       }
     }
