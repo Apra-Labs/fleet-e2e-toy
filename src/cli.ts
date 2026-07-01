@@ -198,12 +198,117 @@ function parseSubcommandArgs(args: string[]): Record<string, string> {
   return result;
 }
 
+/** Per-subcommand help text. */
+function subcommandUsage(subcommand: Subcommand): string {
+  switch (subcommand) {
+    case "list":
+      return [
+        "Usage: noteapi list [flags]",
+        "",
+        "List notes, optionally filtered by tag or search query.",
+        "",
+        "Flags:",
+        "  --tag <tag>    Filter notes by tag",
+        "  --q <query>    Full-text search query",
+        "  -h, --help     Show this help",
+        "",
+      ].join("\n");
+
+    case "read":
+      return [
+        "Usage: noteapi read --id <id>",
+        "",
+        "Read a single note by ID.",
+        "",
+        "Flags:",
+        "  --id <id>      Note ID (required)",
+        "  -h, --help     Show this help",
+        "",
+      ].join("\n");
+
+    case "create":
+      return [
+        "Usage: noteapi create --title <title> --content <content> [--tags <tags>]",
+        "",
+        "Create a new note.",
+        "",
+        "Flags:",
+        "  --title <title>      Note title (required)",
+        "  --content <content>  Note content (required)",
+        "  --tags <tags>        Comma-separated list of tags",
+        "  -h, --help           Show this help",
+        "",
+      ].join("\n");
+
+    case "update":
+      return [
+        "Usage: noteapi update --id <id> [--title <title>] [--content <content>] [--tags <tags>]",
+        "",
+        "Update an existing note. At least one of --title, --content, or --tags is required.",
+        "",
+        "Flags:",
+        "  --id <id>            Note ID (required)",
+        "  --title <title>      New title",
+        "  --content <content>  New content",
+        "  --tags <tags>        Comma-separated list of tags (replaces existing tags)",
+        "  -h, --help           Show this help",
+        "",
+      ].join("\n");
+
+    case "delete":
+      return [
+        "Usage: noteapi delete --id <id>",
+        "",
+        "Delete a note by ID.",
+        "",
+        "Flags:",
+        "  --id <id>      Note ID (required)",
+        "  -h, --help     Show this help",
+        "",
+      ].join("\n");
+  }
+}
+
+/** Return true if the args list contains a help flag. */
+function hasHelpFlag(args: string[]): boolean {
+  return args.includes("--help") || args.includes("-h");
+}
+
+/**
+ * Validate that a required flag is present and non-blank.
+ * Throws CliError if missing or whitespace-only.
+ */
+function requireFlag(flags: Record<string, string>, name: string, subcommand: string): void {
+  if (flags[name] === undefined) {
+    throw new CliError(`--${name} is required for ${subcommand}`);
+  }
+  if (flags[name].trim() === "") {
+    throw new CliError(`--${name} must not be empty or whitespace-only`);
+  }
+}
+
+/**
+ * Validate that an already-present flag value is non-blank.
+ * Use when the flag is optional but must not be blank if provided.
+ */
+function requireNonBlank(flags: Record<string, string>, name: string, subcommand: string): void {
+  if (flags[name].trim() === "") {
+    throw new CliError(`--${name} must not be empty or whitespace-only (in ${subcommand})`);
+  }
+}
+
 /**
  * Dispatch to the appropriate subcommand handler.
  */
 export async function dispatch(subcommand: string, ctx: CommandContext): Promise<void> {
   if (!isKnownSubcommand(subcommand)) {
     throw new CliError(`Unknown command: ${subcommand}`);
+  }
+
+  // Per-subcommand help: `cli <subcommand> --help`
+  if (hasHelpFlag(ctx.args)) {
+    process.stdout.write(subcommandUsage(subcommand));
+    return;
   }
 
   const flags = parseSubcommandArgs(ctx.args);
@@ -218,15 +323,15 @@ export async function dispatch(subcommand: string, ctx: CommandContext): Promise
     }
 
     case "read": {
-      if (!flags["id"]) throw new CliError("--id is required for read");
+      requireFlag(flags, "id", "read");
       const result = await apiRequest(ctx.baseUrl, `/api/notes/${flags["id"]}`);
       process.stdout.write(JSON.stringify(result, null, 2) + "\n");
       break;
     }
 
     case "create": {
-      if (!flags["title"]) throw new CliError("--title is required for create");
-      if (!flags["content"]) throw new CliError("--content is required for create");
+      requireFlag(flags, "title", "create");
+      requireFlag(flags, "content", "create");
       const body: Record<string, unknown> = {
         title: flags["title"],
         content: flags["content"],
@@ -240,10 +345,16 @@ export async function dispatch(subcommand: string, ctx: CommandContext): Promise
     }
 
     case "update": {
-      if (!flags["id"]) throw new CliError("--id is required for update");
+      requireFlag(flags, "id", "update");
       const body: Record<string, unknown> = {};
-      if (flags["title"]) body["title"] = flags["title"];
-      if (flags["content"]) body["content"] = flags["content"];
+      if (flags["title"] !== undefined) {
+        requireNonBlank(flags, "title", "update");
+        body["title"] = flags["title"];
+      }
+      if (flags["content"] !== undefined) {
+        requireNonBlank(flags, "content", "update");
+        body["content"] = flags["content"];
+      }
       if (flags["tags"]) {
         body["tags"] = flags["tags"].split(",").map((t) => t.trim()).filter((t) => t.length > 0);
       }
@@ -259,7 +370,7 @@ export async function dispatch(subcommand: string, ctx: CommandContext): Promise
     }
 
     case "delete": {
-      if (!flags["id"]) throw new CliError("--id is required for delete");
+      requireFlag(flags, "id", "delete");
       await apiRequest(ctx.baseUrl, `/api/notes/${flags["id"]}`, { method: "DELETE" });
       process.stdout.write(`Deleted note ${flags["id"]}\n`);
       break;
@@ -310,19 +421,21 @@ function fail(err: unknown): number {
 
 function usage(): string {
   return [
-    "Usage: noteapi [--url <url>] <command> [args]",
+    "Usage: noteapi [global-flags] <command> [command-flags]",
     "",
     "Commands:",
-    "  list      List notes",
-    "  read      Read a single note",
-    "  create    Create a note",
-    "  update    Update a note",
-    "  delete    Delete a note",
+    "  list      List notes (optionally filter by --tag or --q)",
+    "  read      Read a single note (requires --id)",
+    "  create    Create a note (requires --title and --content)",
+    "  update    Update a note (requires --id; at least one of --title, --content, --tags)",
+    "  delete    Delete a note (requires --id)",
     "",
     "Global flags:",
     "  --url <url>    NoteAPI base URL (default: NOTEAPI_URL env or http://localhost:3000)",
     "  -h, --help     Show this help",
     "  -v, --version  Show version",
+    "",
+    "Run `noteapi <command> --help` for command-specific usage.",
     "",
   ].join("\n");
 }
