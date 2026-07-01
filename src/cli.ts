@@ -11,8 +11,10 @@
  * Later tasks flesh out the subcommand handlers, help text, and --version.
  */
 
+import packageJson from "../package.json";
+
 const DEFAULT_BASE_URL = "http://localhost:3000";
-const VERSION = "1.0.0";
+const VERSION: string = packageJson.version;
 
 const KNOWN_SUBCOMMANDS = ["list", "read", "create", "update", "delete"] as const;
 type Subcommand = (typeof KNOWN_SUBCOMMANDS)[number];
@@ -164,18 +166,105 @@ export interface CommandContext {
 }
 
 /**
- * Dispatch to the appropriate subcommand handler. Handlers are stubs at this
- * stage; later tasks implement the real behavior.
+ * Parse a flat args array into a key→value map.
+ * Supports --key value and --key=value forms.
+ */
+function parseSubcommandArgs(args: string[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  let i = 0;
+  while (i < args.length) {
+    const arg = args[i];
+    if (arg.startsWith("--")) {
+      const eqIdx = arg.indexOf("=");
+      if (eqIdx !== -1) {
+        const key = arg.slice(2, eqIdx);
+        result[key] = arg.slice(eqIdx + 1);
+        i++;
+      } else {
+        const key = arg.slice(2);
+        const value = args[i + 1];
+        if (value === undefined || value.startsWith("--")) {
+          // Treat as boolean flag — not used here, but skip gracefully
+          i++;
+        } else {
+          result[key] = value;
+          i += 2;
+        }
+      }
+    } else {
+      i++;
+    }
+  }
+  return result;
+}
+
+/**
+ * Dispatch to the appropriate subcommand handler.
  */
 export async function dispatch(subcommand: string, ctx: CommandContext): Promise<void> {
   if (!isKnownSubcommand(subcommand)) {
     throw new CliError(`Unknown command: ${subcommand}`);
   }
 
-  // Stub handlers — filled in by the CRUD task (gh-toy-sal.2), which will use
-  // ctx (base URL + args) to perform real requests.
-  void ctx;
-  process.stdout.write(`'${subcommand}' is not implemented yet\n`);
+  const flags = parseSubcommandArgs(ctx.args);
+
+  switch (subcommand) {
+    case "list": {
+      const result = await apiRequest(ctx.baseUrl, "/api/notes", {
+        query: { tag: flags["tag"], q: flags["q"] },
+      });
+      process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+      break;
+    }
+
+    case "read": {
+      if (!flags["id"]) throw new CliError("--id is required for read");
+      const result = await apiRequest(ctx.baseUrl, `/api/notes/${flags["id"]}`);
+      process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+      break;
+    }
+
+    case "create": {
+      if (!flags["title"]) throw new CliError("--title is required for create");
+      if (!flags["content"]) throw new CliError("--content is required for create");
+      const body: Record<string, unknown> = {
+        title: flags["title"],
+        content: flags["content"],
+      };
+      if (flags["tags"]) {
+        body["tags"] = flags["tags"].split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      }
+      const result = await apiRequest(ctx.baseUrl, "/api/notes", { method: "POST", body });
+      process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+      break;
+    }
+
+    case "update": {
+      if (!flags["id"]) throw new CliError("--id is required for update");
+      const body: Record<string, unknown> = {};
+      if (flags["title"]) body["title"] = flags["title"];
+      if (flags["content"]) body["content"] = flags["content"];
+      if (flags["tags"]) {
+        body["tags"] = flags["tags"].split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      }
+      if (Object.keys(body).length === 0) {
+        throw new CliError("At least one of --title, --content, --tags is required for update");
+      }
+      const result = await apiRequest(ctx.baseUrl, `/api/notes/${flags["id"]}`, {
+        method: "PUT",
+        body,
+      });
+      process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+      break;
+    }
+
+    case "delete": {
+      if (!flags["id"]) throw new CliError("--id is required for delete");
+      await apiRequest(ctx.baseUrl, `/api/notes/${flags["id"]}`, { method: "DELETE" });
+      process.stdout.write(`Deleted note ${flags["id"]}\n`);
+      break;
+    }
+  }
 }
 
 function isKnownSubcommand(value: string): value is Subcommand {
@@ -192,7 +281,7 @@ export async function main(argv: string[]): Promise<number> {
   }
 
   if (parsed.version) {
-    process.stdout.write(`${VERSION}\n`);
+    process.stdout.write(`noteapi-cli v${VERSION}\n`);
     return 0;
   }
 
