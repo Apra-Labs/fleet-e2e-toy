@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 59 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,24 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+A command-line client (`src/cli/`) wraps the REST API for scripting use:
+
+```bash
+npm run cli -- list [--tag <tag>] [--q <search>]
+npm run cli -- read --id <id>
+npm run cli -- create --title <title> --content <content> [--tag <tags>]
+npm run cli -- update --id <id> [--title <title>] [--content <content>] [--tag <tags>]
+npm run cli -- delete --id <id>
+npm run cli -- --help
+npm run cli -- --version
+```
+
+All errors are emitted to stderr as `{"error":"<message>"}` with meaningful exit codes (2=usage, 4=not found, 5=validation, 6=network, 7=server). Override the API base URL with `API_URL` (default: `http://localhost:3000`).
+
+See [`docs/cli-commands.md`](docs/cli-commands.md) for the full command reference and [`docs/cli-architecture.md`](docs/cli-architecture.md) for design decisions.
 
 ## Tech Stack
 
