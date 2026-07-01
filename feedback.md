@@ -1,14 +1,16 @@
 APPROVED
 
-gh-toy-sal.6: CLI unit tests are fully implemented in tests/cli.test.ts with global fetch mocked — no running server required. All acceptance criteria are met:
+Final harvest review of the NoteAPI CLI sprint. All three source issues are fully delivered in src/cli.ts with unit coverage in tests/cli.test.ts.
 
-- Base-URL resolution: tests cover --url flag taking priority over NOTEAPI_URL env var, env var used when no flag, default http://localhost:3000 when neither set, and trailing slash stripping.
-- CRUD subcommands: each of list/read/create/update/delete has tests verifying the correct HTTP method, path, query parameters, and request body sent via fetch mock. Output printing is also verified.
-- Help: global --help/-h exits 0 and prints usage; per-subcommand --help/-h prints subcommand-specific usage without making any fetch call.
-- --version / -v: exits 0 and prints version matching noteapi-cli vX.Y.Z format.
-- Input validation: missing required flags (--id for read/update/delete; --title/--content for create) produce CliError without calling fetch; whitespace-only values are also rejected. Exit code 1 in all cases.
-- API-error handling: network failures (ECONNREFUSED) and non-2xx responses produce stderr "Error:" messages and exit code 1 from main().
-- 85 tests pass, build is clean, lint passes.
+- gh-toy-mi2 (CRUD): list/read/create/update/delete subcommands all implemented against the documented endpoints — correct HTTP verbs, paths, tag/query filters, request-body construction, and stdout output. Delete prints a confirmation. Non-2xx responses and network failures are surfaced as CliError with human-readable stderr messages and a non-zero exit (no stack traces).
+- gh-toy-7rp (help + validation): global --help/-h prints usage and exits 0; per-subcommand --help/-h prints subcommand usage and exits 0; required flags are validated before any API call, and empty/whitespace-only values are rejected with a clear message and exit code 1. Optional-but-provided flags (update title/content) are also blank-checked. Unknown global flags and unknown subcommands exit 1.
+- gh-toy-4ef (--version): --version/-v prints "noteapi-cli v<version>" from package.json (v1.0.0) and exits 0.
+
+Quality gates: `npm run build` clean, `npm run lint` clean, `npm test` 85/85 passing across 3 suites. No regressions — the sprint only adds src/cli.ts and tests/cli.test.ts; the existing server and its tests are untouched. Base URL resolution honors --url flag, NOTEAPI_URL env, and the localhost default; trailing slashes are stripped.
+
+Minor non-blocking observations (out of scope, no action required): note IDs are interpolated into the request path without encodeURIComponent — acceptable for a local CLI with simple IDs and not a security concern. JSON output mode, config persistence, and SIGINT handling were explicitly deferred to separate issues.
+
+Releasable for what was scoped.
 
 reopenIds: []
 newTasks: []
