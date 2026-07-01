@@ -1,8 +1,14 @@
 APPROVED
 
-gh-toy-sal.3: Help system is fully implemented. --help/-h with no subcommand prints a usage summary listing all subcommands (list, read, create, update, delete) and global flags (--url, -h/--help, -v/--version), then exits 0. --help/-h after any subcommand prints that subcommand's usage with its specific flags, then exits 0. Running the CLI with no arguments prints the same usage summary (exits 1 as a usage error). Help text accurately reflects the required and optional flags of each subcommand. No stack traces in any help output path. tsc build and lint pass.
+gh-toy-sal.6: CLI unit tests are fully implemented in tests/cli.test.ts with global fetch mocked — no running server required. All acceptance criteria are met:
 
-gh-toy-sal.4: Input validation is fully implemented and fires before any API call. Missing required flags (read/update/delete without --id, create without --title or --content) produce a clear error on stderr naming the offending flag and exit code 1. Empty or whitespace-only values for --title, --content, or --id are rejected with a clear error message and exit code 1 without making any HTTP request. Error messages name the offending flag. No stack traces. tsc build and lint pass.
+- Base-URL resolution: tests cover --url flag taking priority over NOTEAPI_URL env var, env var used when no flag, default http://localhost:3000 when neither set, and trailing slash stripping.
+- CRUD subcommands: each of list/read/create/update/delete has tests verifying the correct HTTP method, path, query parameters, and request body sent via fetch mock. Output printing is also verified.
+- Help: global --help/-h exits 0 and prints usage; per-subcommand --help/-h prints subcommand-specific usage without making any fetch call.
+- --version / -v: exits 0 and prints version matching noteapi-cli vX.Y.Z format.
+- Input validation: missing required flags (--id for read/update/delete; --title/--content for create) produce CliError without calling fetch; whitespace-only values are also rejected. Exit code 1 in all cases.
+- API-error handling: network failures (ECONNREFUSED) and non-2xx responses produce stderr "Error:" messages and exit code 1 from main().
+- 85 tests pass, build is clean, lint passes.
 
 reopenIds: []
 newTasks: []
