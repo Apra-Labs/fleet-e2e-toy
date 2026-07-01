@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
+    "cli": "ts-node src/cli/index.ts",
     "start:test": "cross-env PORT=3001 ts-node src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts",
     "test": "jest --verbose",
