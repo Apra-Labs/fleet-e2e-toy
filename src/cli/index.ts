@@ -5,17 +5,7 @@ import { readCommand } from "./commands/read";
 import { createCommand } from "./commands/create";
 import { updateCommand } from "./commands/update";
 import { deleteCommand } from "./commands/delete";
-
-const USAGE = `Usage: noteapi <command> [options]
-
-Commands:
-  list      List notes (optional: --tag <tag>, --q <search>)
-  read      Read a note by id (required: --id <id>)
-  create    Create a note (required: --title, --content; optional: --tag)
-  update    Update a note (required: --id; optional: --title, --content, --tag)
-  delete    Delete a note (required: --id)
-
-Run 'noteapi <command> --help' for command-specific options.`;
+import { printGlobalHelp, printCommandHelp, GLOBAL_HELP } from "./help";
 
 /**
  * A subcommand handler receives the parsed flags and positional arguments
@@ -38,16 +28,28 @@ const commands: Record<string, CommandHandler> = {
 export async function run(argv: string[]): Promise<number> {
   const { command, flags, positional } = parseArgs(argv);
 
+  const helpRequested = flags["help"] === true || flags["h"] === true;
+
+  // Global --help / -h with no command
   if (!command) {
+    if (helpRequested) {
+      printGlobalHelp();
+      return 0;
+    }
     process.stderr.write("Error: no command provided\n\n");
-    process.stderr.write(`${USAGE}\n`);
+    process.stderr.write(`${GLOBAL_HELP}\n`);
     return ExitCode.USAGE;
+  }
+
+  // Per-command --help / -h
+  if (helpRequested) {
+    printCommandHelp(command);
+    return 0;
   }
 
   const handler = commands[command];
   if (!handler) {
-    process.stderr.write(`Error: unknown command '${command}'\n\n`);
-    process.stderr.write(`${USAGE}\n`);
+    process.stderr.write(`Error: unknown command '${command}'\n\nRun 'noteapi --help' to see available commands.\n`);
     return ExitCode.USAGE;
   }
 
