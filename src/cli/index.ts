@@ -1,12 +1,18 @@
 import { parseArgs } from "./args";
 import { CliError, ExitCode } from "./client";
+import { listCommand } from "./commands/list";
+import { readCommand } from "./commands/read";
 
-const USAGE = `Usage: cli <command> [options]
+const USAGE = `Usage: noteapi <command> [options]
 
 Commands:
-  (subcommands are added in follow-up work)
+  list      List notes (optional: --tag <tag>, --q <search>)
+  read      Read a note by id (required: --id <id>)
+  create    Create a note (required: --title, --content; optional: --tag)
+  update    Update a note (required: --id; optional: --title, --content, --tag)
+  delete    Delete a note (required: --id)
 
-Run with a valid command to interact with the NoteAPI.`;
+Run 'noteapi <command> --help' for command-specific options.`;
 
 /**
  * A subcommand handler receives the parsed flags and positional arguments
@@ -18,7 +24,10 @@ export type CommandHandler = (
 ) => Promise<void> | void;
 
 // Subcommand handlers are registered here by follow-up tasks.
-const commands: Record<string, CommandHandler> = {};
+const commands: Record<string, CommandHandler> = {
+  list: listCommand,
+  read: readCommand,
+};
 
 export async function run(argv: string[]): Promise<number> {
   const { command, flags, positional } = parseArgs(argv);
