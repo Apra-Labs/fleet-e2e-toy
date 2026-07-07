@@ -9,6 +9,8 @@
 
 import { isCommandName, printCommandUsage, printTopLevelUsage } from "./help";
 import { VERSION } from "./version";
+import { listCommand } from "./commands/list";
+import { readCommand } from "./commands/read";
 
 export interface CliFlags {
   [key: string]: string | boolean;
@@ -25,6 +27,9 @@ const commands: Record<string, CommandHandler> = {};
 export function registerCommand(name: string, handler: CommandHandler): void {
   commands[name] = handler;
 }
+
+registerCommand("list", listCommand);
+registerCommand("read", readCommand);
 
 /**
  * Parses CLI arguments (excluding node and script path) into a subcommand
