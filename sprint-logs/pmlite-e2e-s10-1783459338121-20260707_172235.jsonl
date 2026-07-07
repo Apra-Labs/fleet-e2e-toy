@@ -1,1 +1,17 @@
 {"ts":"2026-07-07T17:22:35Z","type":"meta","branch":"pmlite-e2e/s10-1783459338121","startedAt":"20260707_172235","roots":["gh-toy-mi2","gh-toy-7rp","gh-toy-4ef"],"goal":"P1","transcriptDir":"/Users/akhil/.claude/projects/-private-var-folders-b1-x3gsm3fn4pj4n7kjxb0wg5d80000gn-T-pmlite-e2e-s10-PCm0mz-repo"}
+{"ts":"2026-07-07T17:22:35Z","type":"cycle-start","cycle":1,"branch":"pmlite-e2e/s10-1783459338121"}
+{"ts":"2026-07-07T17:52:37-0400","cycle":"setup","phase":"Plan","label":"setup-shell","model":"cheap","context":"","outTokens":1857,"costUsd":0.0093}
+{"ts":"2026-07-07T17:52:37-0400","cycle":"setup","phase":"Plan","label":"setup","model":"cheap","context":"","outTokens":2806,"costUsd":0.014}
+{"ts":"2026-07-07T17:52:37-0400","cycle":"setup","phase":"Plan","label":"state-read","model":"cheap","context":"","outTokens":344,"costUsd":0.0017}
+{"ts":"2026-07-07T17:52:37-0400","cycle":"setup","phase":"Plan","label":"state-init","model":"cheap","context":"","outTokens":23437,"costUsd":0.1172}
+{"ts":"2026-07-07T17:52:37-0400","cycle":"setup","phase":"Plan","label":"sprint-meta","model":"cheap","context":"","outTokens":775,"costUsd":0.0039}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"cycle-meta-c1","model":"cheap","context":"","outTokens":486,"costUsd":0.0024}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"cycle-state","model":"cheap","context":"","outTokens":1334,"costUsd":0.0067}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"state-c1-plan","model":"cheap","context":"","outTokens":14416,"costUsd":0.0721}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"planner-c1-r0","model":"premium","context":"planning sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":25451,"costUsd":0.6363}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"plan-reviewer-c1-r0","model":"standard","context":"reviewing plan for sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":7221,"costUsd":0.1083}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Plan","label":"plan-commit-c1","model":"cheap","context":"","outTokens":2544,"costUsd":0.0127}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"state-c1-dev","model":"cheap","context":"","outTokens":11346,"costUsd":0.0567}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":1211,"costUsd":0.0061}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"doer-c1-i0: gh-toy-mi2.1","model":"standard","context":"tasks gh-toy-mi2.1","outTokens":6475,"costUsd":0.0971}
+{"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i1: gh-toy-mi2.1","model":"standard","context":"reviewing tasks gh-toy-mi2.1","outTokens":5736,"costUsd":0.086}

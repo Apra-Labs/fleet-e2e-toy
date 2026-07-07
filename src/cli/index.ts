@@ -8,6 +8,7 @@
  */
 
 import { isCommandName, printCommandUsage, printTopLevelUsage } from "./help";
+import { VERSION } from "./version";
 
 export interface CliFlags {
   [key: string]: string | boolean;
@@ -41,6 +42,11 @@ export function parseArgs(argv: string[]): { command: string | undefined; flags:
 
     if (arg === "-h") {
       flags.h = true;
+      continue;
+    }
+
+    if (arg === "-v") {
+      flags.v = true;
       continue;
     }
 
@@ -92,6 +98,12 @@ function isHelpFlag(flags: CliFlags): boolean {
 
 export async function run(argv: string[]): Promise<void> {
   const { command, flags } = parseArgs(argv);
+
+  if (command === "--version" || command === "-v") {
+    process.stdout.write(`fleet-e2e-toy v${VERSION}\n`);
+    process.exitCode = 0;
+    return;
+  }
 
   if (command === "--help" || command === "-h") {
     printTopLevelUsage();
