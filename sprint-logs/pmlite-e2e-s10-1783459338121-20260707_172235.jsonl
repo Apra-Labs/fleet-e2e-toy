@@ -24,3 +24,19 @@
 {"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2485,"costUsd":0.0124}
 {"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"doer-c1-i2: gh-toy-4ef.2 gh-toy-mi2.3 gh-toy-mi2.4","model":"standard","context":"tasks gh-toy-4ef.2, gh-toy-mi2.3, gh-toy-mi2.4","outTokens":15843,"costUsd":0.2376}
 {"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i3: gh-toy-4ef.2 gh-toy-mi2.3 gh-toy-mi2.4","model":"standard","context":"reviewing tasks gh-toy-4ef.2, gh-toy-mi2.3, gh-toy-mi2.4","outTokens":7718,"costUsd":0.1158}
+{"ts":"2026-07-07T18:13:21-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i3","model":"cheap","context":"4 new entries","outTokens":1534,"costUsd":0.0077}
+{"ts":"2026-07-07T18:13:21-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2308,"costUsd":0.0115}
+{"ts":"2026-07-07T18:13:21-0400","cycle":1,"phase":"Develop","label":"doer-c1-i3: gh-toy-mi2.5 gh-toy-13t","model":"standard","context":"tasks gh-toy-mi2.5, gh-toy-13t","outTokens":15796,"costUsd":0.2369}
+{"ts":"2026-07-07T18:13:21-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i4: gh-toy-mi2.5 gh-toy-13t","model":"standard","context":"reviewing tasks gh-toy-mi2.5, gh-toy-13t","outTokens":5329,"costUsd":0.0799}
+{"ts":"2026-07-07T18:17:33-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i4","model":"cheap","context":"4 new entries","outTokens":1233,"costUsd":0.0062}
+{"ts":"2026-07-07T18:17:33-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":1917,"costUsd":0.0096}
+{"ts":"2026-07-07T18:17:33-0400","cycle":1,"phase":"Develop","label":"doer-c1-i4: gh-toy-7rp.2","model":"standard","context":"tasks gh-toy-7rp.2","outTokens":6203,"costUsd":0.093}
+{"ts":"2026-07-07T18:17:33-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i5: gh-toy-7rp.2","model":"standard","context":"reviewing tasks gh-toy-7rp.2","outTokens":4972,"costUsd":0.0746}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i5","model":"cheap","context":"4 new entries","outTokens":1714,"costUsd":0.0086}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2113,"costUsd":0.0106}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Develop","label":"push-sha-c1","model":"cheap","context":"","outTokens":453,"costUsd":0.0023}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Test","label":"deployer-c1","model":"standard","context":"","outTokens":2870,"costUsd":0.0431}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Test","label":"integ-runner-c1","model":"standard","context":"","outTokens":3968,"costUsd":0.0595}
+{"ts":"2026-07-07T18:21:49-0400","cycle":1,"phase":"Test","label":"teardown-c1","model":"standard","context":"","outTokens":959,"costUsd":0.0144}
+{"ts":"2026-07-07T18:22:24-0400","cycle":1,"phase":"Test","label":"log-append-test-c1","model":"cheap","context":"6 new entries","outTokens":1648,"costUsd":0.0082}
+{"ts":"2026-07-07T18:22:24-0400","cycle":1,"phase":"Develop","label":"exit-check","model":"cheap","context":"","outTokens":2120,"costUsd":0.0106}
