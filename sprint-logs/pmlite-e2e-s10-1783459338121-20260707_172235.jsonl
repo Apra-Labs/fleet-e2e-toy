@@ -15,3 +15,12 @@
 {"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":1211,"costUsd":0.0061}
 {"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"doer-c1-i0: gh-toy-mi2.1","model":"standard","context":"tasks gh-toy-mi2.1","outTokens":6475,"costUsd":0.0971}
 {"ts":"2026-07-07T17:52:37-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i1: gh-toy-mi2.1","model":"standard","context":"reviewing tasks gh-toy-mi2.1","outTokens":5736,"costUsd":0.086}
+{"ts":"2026-07-07T17:59:30-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i1","model":"cheap","context":"15 new entries","outTokens":2235,"costUsd":0.0112}
+{"ts":"2026-07-07T17:59:30-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2717,"costUsd":0.0136}
+{"ts":"2026-07-07T17:59:30-0400","cycle":1,"phase":"Develop","label":"doer-c1-i1: gh-toy-mi2.2 gh-toy-7rp.1","model":"standard","context":"tasks gh-toy-mi2.2, gh-toy-7rp.1","outTokens":13813,"costUsd":0.2072}
+{"ts":"2026-07-07T17:59:30-0400","cycle":1,"phase":"Develop","label":"doer-c1-i1: gh-toy-4ef.1","model":"cheap","context":"tasks gh-toy-4ef.1","outTokens":4245,"costUsd":0.0212}
+{"ts":"2026-07-07T17:59:30-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i2: gh-toy-mi2.2 gh-toy-7rp.1 gh-toy-4ef.1","model":"standard","context":"reviewing tasks gh-toy-mi2.2, gh-toy-7rp.1, gh-toy-4ef.1","outTokens":5673,"costUsd":0.0851}
+{"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i2","model":"cheap","context":"5 new entries","outTokens":2008,"costUsd":0.01}
+{"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2485,"costUsd":0.0124}
+{"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"doer-c1-i2: gh-toy-4ef.2 gh-toy-mi2.3 gh-toy-mi2.4","model":"standard","context":"tasks gh-toy-4ef.2, gh-toy-mi2.3, gh-toy-mi2.4","outTokens":15843,"costUsd":0.2376}
+{"ts":"2026-07-07T18:07:13-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i3: gh-toy-4ef.2 gh-toy-mi2.3 gh-toy-mi2.4","model":"standard","context":"reviewing tasks gh-toy-4ef.2, gh-toy-mi2.3, gh-toy-mi2.4","outTokens":7718,"costUsd":0.1158}
