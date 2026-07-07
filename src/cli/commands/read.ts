@@ -6,15 +6,18 @@
 
 import { CliFlags } from "../index";
 import { getNote } from "../apiClient";
+import { requireNonBlank } from "../validation";
 
 export async function readCommand(flags: CliFlags): Promise<void> {
-  const id = typeof flags.id === "string" ? flags.id : undefined;
+  const idFlag = typeof flags.id === "string" ? flags.id : undefined;
 
-  if (!id) {
+  if (!idFlag) {
     process.stderr.write("Error: --id is required\n");
     process.exitCode = 1;
     return;
   }
+
+  const id = requireNonBlank("id", idFlag);
 
   const note = await getNote(id);
   process.stdout.write(`${JSON.stringify(note, null, 2)}\n`);

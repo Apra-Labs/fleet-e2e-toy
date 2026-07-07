@@ -6,6 +6,7 @@
 
 import { CliFlags } from "../index";
 import { createNote } from "../apiClient";
+import { requireNonBlank } from "../validation";
 
 function parseTags(raw: string | boolean | undefined): string[] {
   if (typeof raw !== "string" || raw.trim().length === 0) {
@@ -18,20 +19,23 @@ function parseTags(raw: string | boolean | undefined): string[] {
 }
 
 export async function createCommand(flags: CliFlags): Promise<void> {
-  const title = typeof flags.title === "string" ? flags.title : undefined;
-  const content = typeof flags.content === "string" ? flags.content : undefined;
+  const titleFlag = typeof flags.title === "string" ? flags.title : undefined;
+  const contentFlag = typeof flags.content === "string" ? flags.content : undefined;
 
-  if (!title) {
+  if (!titleFlag) {
     process.stderr.write("Error: --title is required\n");
     process.exitCode = 1;
     return;
   }
 
-  if (!content) {
+  if (!contentFlag) {
     process.stderr.write("Error: --content is required\n");
     process.exitCode = 1;
     return;
   }
+
+  const title = requireNonBlank("title", titleFlag);
+  const content = requireNonBlank("content", contentFlag);
 
   const tags = parseTags(flags.tags);
 
