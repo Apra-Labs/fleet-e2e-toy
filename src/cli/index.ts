@@ -11,6 +11,9 @@ import { isCommandName, printCommandUsage, printTopLevelUsage } from "./help";
 import { VERSION } from "./version";
 import { listCommand } from "./commands/list";
 import { readCommand } from "./commands/read";
+import { createCommand } from "./commands/create";
+import { updateCommand } from "./commands/update";
+import { deleteCommand } from "./commands/delete";
 
 export interface CliFlags {
   [key: string]: string | boolean;
@@ -30,6 +33,9 @@ export function registerCommand(name: string, handler: CommandHandler): void {
 
 registerCommand("list", listCommand);
 registerCommand("read", readCommand);
+registerCommand("create", createCommand);
+registerCommand("update", updateCommand);
+registerCommand("delete", deleteCommand);
 
 /**
  * Parses CLI arguments (excluding node and script path) into a subcommand
