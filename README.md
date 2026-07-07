@@ -41,6 +41,26 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## CLI
+
+A command-line client, `fleet-e2e-toy`, is included under `src/cli/` for
+driving a running NoteAPI instance from the terminal.
+
+```bash
+npm start                 # start the API (separate terminal)
+npm run cli -- list       # list notes
+npm run cli -- create --title "Hello" --content "World" --tags demo
+npm run cli -- read --id <id>
+npm run cli -- update --id <id> --title "New title"
+npm run cli -- delete --id <id>
+npm run cli -- --help     # top-level usage
+npm run cli -- --version  # print CLI version
+```
+
+The CLI talks to the API over HTTP (`NOTEAPI_URL` env var, default
+`http://localhost:3000`); it does not touch the in-memory store directly.
+See `docs/cli.md` for the full design, API contract, and known invariants.
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
