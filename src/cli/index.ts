@@ -7,6 +7,8 @@
  * both exit non-zero with a clean error (no stack traces).
  */
 
+import { isCommandName, printCommandUsage, printTopLevelUsage } from "./help";
+
 export interface CliFlags {
   [key: string]: string | boolean;
 }
@@ -27,7 +29,8 @@ export function registerCommand(name: string, handler: CommandHandler): void {
  * Parses CLI arguments (excluding node and script path) into a subcommand
  * name and a flags object. Supports both `--key value` and `--key=value`
  * forms. Flags without a following value (or followed by another flag)
- * are treated as booleans set to `true`.
+ * are treated as booleans set to `true`. The short flag `-h` is also
+ * recognized as a boolean `h` flag (used for help).
  */
 export function parseArgs(argv: string[]): { command: string | undefined; flags: CliFlags } {
   const [command, ...rest] = argv;
@@ -35,6 +38,12 @@ export function parseArgs(argv: string[]): { command: string | undefined; flags:
 
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
+
+    if (arg === "-h") {
+      flags.h = true;
+      continue;
+    }
+
     if (!arg.startsWith("--")) {
       continue;
     }
@@ -77,11 +86,32 @@ function printUsage(): void {
   );
 }
 
+function isHelpFlag(flags: CliFlags): boolean {
+  return flags.help === true || flags.h === true;
+}
+
 export async function run(argv: string[]): Promise<void> {
   const { command, flags } = parseArgs(argv);
 
+  if (command === "--help" || command === "-h") {
+    printTopLevelUsage();
+    process.exitCode = 0;
+    return;
+  }
+
   if (!command) {
     printUsage();
+    process.exitCode = 1;
+    return;
+  }
+
+  if (isHelpFlag(flags)) {
+    if (isCommandName(command)) {
+      printCommandUsage(command);
+      process.exitCode = 0;
+      return;
+    }
+    process.stderr.write(`Error: unknown command '${command}'\n`);
     process.exitCode = 1;
     return;
   }
