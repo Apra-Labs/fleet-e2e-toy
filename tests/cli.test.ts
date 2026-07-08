@@ -119,4 +119,87 @@ describe("CLI Integration Tests", () => {
       expect(e.stderr).toContain("Error: --id is required for delete.");
     }
   });
+
+  it("should list notes", async () => {
+    noteStore.create({ 
+        id: uuidv4(), 
+        title: "List Note 1", 
+        content: "Content 1", 
+        tags: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+    noteStore.create({ 
+        id: uuidv4(), 
+        title: "List Note 2", 
+        content: "Content 2", 
+        tags: ["test-tag"],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+    
+    const { stdout } = await runCli(`list`);
+    const notes = JSON.parse(stdout);
+    expect(notes).toHaveLength(2);
+    expect(notes[0].title).toBe("List Note 1");
+  });
+
+  it("should filter notes by tag when listing", async () => {
+    noteStore.create({ 
+        id: uuidv4(), 
+        title: "List Note 1", 
+        content: "Content 1", 
+        tags: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+    noteStore.create({ 
+        id: uuidv4(), 
+        title: "List Note 2", 
+        content: "Content 2", 
+        tags: ["test-tag"],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+    
+    const { stdout } = await runCli(`list --tag test-tag`);
+    const notes = JSON.parse(stdout);
+    expect(notes).toHaveLength(1);
+    expect(notes[0].title).toBe("List Note 2");
+  });
+
+  it("should read a note", async () => {
+    const id = uuidv4();
+    noteStore.create({ 
+        id, 
+        title: "Read Note", 
+        content: "Read Content", 
+        tags: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+    
+    const { stdout } = await runCli(`read --id ${id}`);
+    const note = JSON.parse(stdout);
+    expect(note.id).toBe(id);
+    expect(note.title).toBe("Read Note");
+  });
+
+  it("should fail to read without id", async () => {
+    try {
+      await runCli(`read`);
+      fail("Should have failed");
+    } catch (e: any) {
+      expect(e.stderr).toContain("Error: --id is required for read.");
+    }
+  });
+
+  it("should fail to read non-existent note", async () => {
+    try {
+      await runCli(`read --id non-existent-id`);
+      fail("Should have failed");
+    } catch (e: any) {
+      expect(e.stderr).toContain("API Error: 404");
+    }
+  });
 });
