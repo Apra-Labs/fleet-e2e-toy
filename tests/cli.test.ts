@@ -35,10 +35,10 @@ describe("CLI --version", () => {
     expect(stdoutSpy).toHaveBeenCalledWith("fleet-e2e-toy v1.0.0\n");
   });
 
-  it("errors when no command is provided", async () => {
+  it("prints global usage and exits 0 when no command is provided", async () => {
     const code = await main([]);
-    expect(code).toBe(1);
-    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining("Error:"));
+    expect(code).toBe(0);
+    expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Usage"));
   });
 
   it("errors on unknown command", async () => {
