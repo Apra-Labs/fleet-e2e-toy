@@ -1,1 +1,0 @@
-Task gh-toy-mi2.15 is missing its parent relationship to the epic gh-toy-mi2. Fix with: `bd update gh-toy-mi2.15 --parent gh-toy-mi2`. Other tasks are wired correctly and all open tasks (13, 14, 15, 16) have metadata successfully assigned (bucket: M, model: standard).

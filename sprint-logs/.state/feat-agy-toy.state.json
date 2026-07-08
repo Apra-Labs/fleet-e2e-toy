@@ -1,8 +1,7 @@
 {
   "type": "checkpoint",
-  "cycle": 1,
-  "phase": "Develop",
-  "planApproved": true,
+  "cycle": 2,
+  "phase": "Test",
   "branch": "feat/agy-toy",
   "goal": "P1",
   "rootIds": [
