@@ -41,6 +41,30 @@ describe("CLI --version", () => {
     expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Usage"));
   });
 
+  it("prints global usage and exits 0 for --help", async () => {
+    const code = await main(["--help"]);
+    expect(code).toBe(0);
+    const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+    expect(allCalls).toContain("Usage");
+    expect(allCalls).toContain("list");
+    expect(allCalls).toContain("read");
+    expect(allCalls).toContain("create");
+    expect(allCalls).toContain("update");
+    expect(allCalls).toContain("delete");
+  });
+
+  it("prints global usage and exits 0 for -h", async () => {
+    const code = await main(["-h"]);
+    expect(code).toBe(0);
+    const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+    expect(allCalls).toContain("Usage");
+    expect(allCalls).toContain("list");
+    expect(allCalls).toContain("read");
+    expect(allCalls).toContain("create");
+    expect(allCalls).toContain("update");
+    expect(allCalls).toContain("delete");
+  });
+
   it("errors on unknown command", async () => {
     const code = await main(["bogus"]);
     expect(code).toBe(1);
@@ -172,6 +196,121 @@ describe("CLI CRUD subcommands", () => {
       expect(stderrSpy).toHaveBeenCalledWith(
         expect.stringContaining("Error: Could not connect to API at")
       );
+    });
+  });
+});
+
+describe("CLI per-subcommand help", () => {
+  let stdoutSpy: jest.SpyInstance;
+  let stderrSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation(() => true);
+  });
+
+  afterEach(() => {
+    stdoutSpy.mockRestore();
+    stderrSpy.mockRestore();
+  });
+
+  describe("list --help", () => {
+    it("prints list usage and exits 0", async () => {
+      const code = await main(["list", "--help"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("list");
+    });
+
+    it("prints list usage and exits 0 for -h", async () => {
+      const code = await main(["list", "-h"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("list");
+    });
+  });
+
+  describe("read --help", () => {
+    it("prints read usage with required flags and exits 0", async () => {
+      const code = await main(["read", "--help"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
+    });
+
+    it("prints read usage with required flags and exits 0 for -h", async () => {
+      const code = await main(["read", "-h"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
+    });
+  });
+
+  describe("create --help", () => {
+    it("prints create usage with required flags and exits 0", async () => {
+      const code = await main(["create", "--help"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--title");
+      expect(allCalls).toContain("--content");
+      expect(allCalls).toContain("Required");
+    });
+
+    it("prints create usage with required flags and exits 0 for -h", async () => {
+      const code = await main(["create", "-h"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--title");
+      expect(allCalls).toContain("--content");
+      expect(allCalls).toContain("Required");
+    });
+  });
+
+  describe("update --help", () => {
+    it("prints update usage with required flags and exits 0", async () => {
+      const code = await main(["update", "--help"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
+    });
+
+    it("prints update usage with required flags and exits 0 for -h", async () => {
+      const code = await main(["update", "-h"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
+    });
+  });
+
+  describe("delete --help", () => {
+    it("prints delete usage with required flags and exits 0", async () => {
+      const code = await main(["delete", "--help"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
+    });
+
+    it("prints delete usage with required flags and exits 0 for -h", async () => {
+      const code = await main(["delete", "-h"]);
+      expect(code).toBe(0);
+      const allCalls = stdoutSpy.mock.calls.map((c) => String(c[0])).join("");
+      expect(allCalls).toContain("Usage");
+      expect(allCalls).toContain("--id");
+      expect(allCalls).toContain("Required");
     });
   });
 });
