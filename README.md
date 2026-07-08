@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 73 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,26 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI Client (`fleet-e2e-toy`)
+
+A command-line client for the API is available under `src/cli.ts`:
+
+```bash
+npm run build
+node dist/cli.js --help
+node dist/cli.js list
+node dist/cli.js create --title "My note" --content "Hello" --tags work,ideas
+node dist/cli.js read --id <id>
+node dist/cli.js update --id <id> --title "New title"
+node dist/cli.js delete --id <id>
+node dist/cli.js --version
+```
+
+Point it at a non-default server with `NOTEAPI_URL=http://host:port`. Full
+design notes, argument-parsing rules, validation rules, and the
+success/error output contract are documented in
+[`docs/cli.md`](docs/cli.md).
 
 ## Tech Stack
 
