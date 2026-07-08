@@ -1,1 +1,1 @@
-gh-toy-mi2 implements a --tag filter for the list command, so it must depend on the tag filtering endpoint. Run: bd dep add gh-toy-mi2 gh-toy-s5k
+The Epic gh-toy-mi2 depends on gh-toy-s5k, which blocks all child tasks including gh-toy-mi2.15 and gh-toy-mi2.16 that do not need it. The dependency should be moved to the specific task that implements the tag filter. Run `bd dep rm gh-toy-mi2 gh-toy-s5k` and `bd dep add gh-toy-mi2.13 gh-toy-s5k` to fix this dependency direction problem.
