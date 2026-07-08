@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 71 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,27 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI Client
+
+`src/cli.ts` (built to `dist/cli.js`) is a command-line client for the API above, named
+`fleet-e2e-toy`. It talks to the API over HTTP (default `http://localhost:3000`,
+overridable via `NOTEAPI_URL`).
+
+```bash
+npm run build
+node dist/cli.js --version
+node dist/cli.js list
+node dist/cli.js create --title="My note" --content="Hello"
+node dist/cli.js read --id=<id>
+node dist/cli.js update --id=<id> --title="New title"
+node dist/cli.js delete --id=<id>
+node dist/cli.js --help          # global usage
+node dist/cli.js list --help     # per-subcommand usage
+```
+
+Errors (validation, API 4xx/5xx, or network failures) print `Error: <message>` to stderr
+and exit with code 1. See `docs/cli.md` for the full design and error-handling contract.
 
 ## Tech Stack
 
