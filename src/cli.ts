@@ -90,14 +90,40 @@ async function main() {
     } else {
         console.log(`Deleted note ${id}`);
     }
-  } else if (command) {
-    // If not matching create/update/delete, maybe list or read which another task implements
-    // Just pass if it's not one of ours, or if it is completely unknown, we can ignore for now
-    // Actually we shouldn't exit if it's list/read. 
-    if (!['list', 'read'].includes(command)) {
-        console.error(`Unknown command: ${command}`);
-        process.exit(1);
+  } else if (command === 'list') {
+    const url = new URL(API_URL);
+    if (parsedArgs.tag) url.searchParams.append('tag', parsedArgs.tag);
+    if (parsedArgs.q) url.searchParams.append('q', parsedArgs.q);
+    
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      console.error(`API Error: ${response.status} ${response.statusText}`);
+      const text = await response.text();
+      console.error(text);
+      process.exit(1);
     }
+    const data = await response.json();
+    console.log(JSON.stringify(data, null, 2));
+    
+  } else if (command === 'read') {
+    const id = parsedArgs.id;
+    if (!id) {
+      console.error('Error: --id is required for read.');
+      process.exit(1);
+    }
+    const response = await fetch(`${API_URL}/${id}`);
+    if (!response.ok) {
+      console.error(`API Error: ${response.status} ${response.statusText}`);
+      const text = await response.text();
+      console.error(text);
+      process.exit(1);
+    }
+    const data = await response.json();
+    console.log(JSON.stringify(data, null, 2));
+    
+  } else if (command) {
+    console.error(`Unknown command: ${command}`);
+    process.exit(1);
   }
 }
 
