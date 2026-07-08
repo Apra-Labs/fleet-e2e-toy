@@ -175,3 +175,114 @@ describe("CLI CRUD subcommands", () => {
     });
   });
 });
+
+describe("CLI input validation", () => {
+  let stdoutSpy: jest.SpyInstance;
+  let stderrSpy: jest.SpyInstance;
+  let fetchSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    stdoutSpy = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    stderrSpy = jest.spyOn(process.stderr, "write").mockImplementation(() => true);
+    fetchSpy = jest.spyOn(global, "fetch");
+  });
+
+  afterEach(() => {
+    stdoutSpy.mockRestore();
+    stderrSpy.mockRestore();
+    fetchSpy.mockRestore();
+  });
+
+  function expectValidationFailure(code: number): void {
+    expect(code).toBe(1);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining("Error:"));
+    const stdoutCalls = stdoutSpy.mock.calls.map((c) => String(c[0]));
+    expect(stdoutCalls.some((s) => s.includes("Error:"))).toBe(false);
+  }
+
+  describe("read", () => {
+    it("rejects missing --id", async () => {
+      const code = await main(["read"]);
+      expectValidationFailure(code);
+    });
+
+    it.each(["", " ", "\t", "\n"])("rejects --id=%p (empty/whitespace)", async (value) => {
+      const code = await main(["read", `--id=${value}`]);
+      expectValidationFailure(code);
+    });
+  });
+
+  describe("delete", () => {
+    it("rejects missing --id", async () => {
+      const code = await main(["delete"]);
+      expectValidationFailure(code);
+    });
+
+    it.each(["", " ", "\t"])("rejects --id=%p (empty/whitespace)", async (value) => {
+      const code = await main(["delete", `--id=${value}`]);
+      expectValidationFailure(code);
+    });
+  });
+
+  describe("create", () => {
+    it("rejects missing --title", async () => {
+      const code = await main(["create", "--content=hello"]);
+      expectValidationFailure(code);
+    });
+
+    it("rejects missing --content", async () => {
+      const code = await main(["create", "--title=hello"]);
+      expectValidationFailure(code);
+    });
+
+    it("rejects missing both --title and --content", async () => {
+      const code = await main(["create"]);
+      expectValidationFailure(code);
+    });
+
+    it.each(["", " ", "\t", "\n"])("rejects --title=%p (empty/whitespace)", async (value) => {
+      const code = await main(["create", `--title=${value}`, "--content=hello"]);
+      expectValidationFailure(code);
+    });
+
+    it.each(["", " ", "\t", "\n"])("rejects --content=%p (empty/whitespace)", async (value) => {
+      const code = await main(["create", "--title=hello", `--content=${value}`]);
+      expectValidationFailure(code);
+    });
+  });
+
+  describe("update", () => {
+    it("rejects missing --id", async () => {
+      const code = await main(["update", "--title=hello"]);
+      expectValidationFailure(code);
+    });
+
+    it.each(["", " ", "\t"])("rejects --id=%p (empty/whitespace)", async (value) => {
+      const code = await main(["update", `--id=${value}`, "--title=hello"]);
+      expectValidationFailure(code);
+    });
+
+    it("rejects update with no --title/--content/--tags", async () => {
+      const code = await main(["update", "--id=abc"]);
+      expectValidationFailure(code);
+    });
+
+    it("rejects blank --title when provided", async () => {
+      const code = await main(["update", "--id=abc", "--title= "]);
+      expectValidationFailure(code);
+    });
+
+    it("rejects blank --content when provided", async () => {
+      const code = await main(["update", "--id=abc", "--content=\t"]);
+      expectValidationFailure(code);
+    });
+
+    it("accepts update with only --tags provided", async () => {
+      fetchSpy.mockResolvedValue(mockFetchResponse(200, { id: "abc" }));
+      const code = await main(["update", "--id=abc", "--tags=x,y"]);
+      expect(code).toBe(0);
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+  });
+});
