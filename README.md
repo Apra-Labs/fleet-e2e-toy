@@ -30,6 +30,17 @@ npm test        # 21 tests, all passing
 npm start       # http://localhost:3000
 ```
 
+## CLI Commands
+
+The project includes a CLI to interact with the API:
+```bash
+npx ts-node src/cli.ts create --title "My Note" --content "Hello World"
+npx ts-node src/cli.ts list [--tag tag_name] [--q search_query]
+npx ts-node src/cli.ts read --id <note_id>
+npx ts-node src/cli.ts update --id <note_id> [--title "New Title"] [--content "New Content"]
+npx ts-node src/cli.ts delete --id <note_id>
+```
+
 ## API Endpoints
 
 | Method | Path | Description |
