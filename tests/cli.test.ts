@@ -212,3 +212,149 @@ describe("CLI CRUD subcommands", () => {
     });
   });
 });
+
+describe("CLI help system", () => {
+  const subcommands = ["list", "read", "create", "update", "delete"];
+
+  it("'--help' prints global usage containing 'Usage' and each subcommand name, exits 0", async () => {
+    const result = await main(["--help"]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Usage");
+    for (const cmd of subcommands) {
+      expect(result.stdout).toContain(cmd);
+    }
+    expect(result.stderr).toBe("");
+    expect(result.stdout).not.toMatch(/at .*\(.*:\d+:\d+\)/);
+  });
+
+  it("'-h' behaves identically to '--help'", async () => {
+    const result = await main(["-h"]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Usage");
+    for (const cmd of subcommands) {
+      expect(result.stdout).toContain(cmd);
+    }
+    expect(result.stderr).toBe("");
+  });
+
+  it("running with no args prints global usage and exits 0", async () => {
+    const result = await main([]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Usage");
+    expect(result.stderr).toBe("");
+  });
+
+  it.each([
+    ["create", ["--title", "--content"]],
+    ["update", ["--id"]],
+    ["read", ["--id"]],
+    ["delete", ["--id"]],
+    ["list", []],
+  ])("'%s --help' mentions its required flags and exits 0", async (cmd, requiredFlags) => {
+    const result = await main([cmd, "--help"]);
+    expect(result.exitCode).toBe(0);
+    for (const flag of requiredFlags) {
+      expect(result.stdout).toContain(flag);
+    }
+    expect(result.stderr).toBe("");
+    expect(result.stdout).not.toMatch(/at .*\(.*:\d+:\d+\)/);
+  });
+
+  it("'create -h' behaves identically to 'create --help'", async () => {
+    const result = await main(["create", "-h"]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("--title");
+    expect(result.stdout).toContain("--content");
+  });
+});
+
+describe("CLI input validation", () => {
+  const originalFetch = global.fetch;
+  let fetchMock: jest.Mock;
+
+  beforeEach(() => {
+    fetchMock = jest.fn();
+    global.fetch = fetchMock as unknown as typeof fetch;
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  function assertRejected(result: { stdout: string; stderr: string; exitCode: number }): void {
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Error:");
+    expect(result.stdout).not.toContain("Error:");
+    expect(result.stderr).not.toMatch(/at .*\(.*:\d+:\d+\)/);
+    expect(result.stdout).not.toMatch(/at .*\(.*:\d+:\d+\)/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  }
+
+  describe("blank/empty --id", () => {
+    it.each(["", " ", "\t", "\n"])("rejects read --id=%j", async (value) => {
+      const result = await main(["read", `--id=${value}`]);
+      assertRejected(result);
+    });
+
+    it.each(["", " ", "\t", "\n"])("rejects update --id=%j", async (value) => {
+      const result = await main(["update", `--id=${value}`, "--title=X"]);
+      assertRejected(result);
+    });
+
+    it.each(["", " ", "\t", "\n"])("rejects delete --id=%j", async (value) => {
+      const result = await main(["delete", `--id=${value}`]);
+      assertRejected(result);
+    });
+  });
+
+  describe("blank/empty --title", () => {
+    it.each(["", " ", "\t", "\n"])("rejects create --title=%j", async (value) => {
+      const result = await main(["create", `--title=${value}`, "--content=Body"]);
+      assertRejected(result);
+    });
+  });
+
+  describe("blank/empty --content", () => {
+    it.each(["", " ", "\t", "\n"])("rejects create --content=%j", async (value) => {
+      const result = await main(["create", "--title=Title", `--content=${value}`]);
+      assertRejected(result);
+    });
+  });
+
+  describe("required-flag checks", () => {
+    it("rejects create missing --title", async () => {
+      const result = await main(["create", "--content=Body"]);
+      assertRejected(result);
+    });
+
+    it("rejects create missing --content", async () => {
+      const result = await main(["create", "--title=Title"]);
+      assertRejected(result);
+    });
+
+    it("rejects create missing both --title and --content", async () => {
+      const result = await main(["create"]);
+      assertRejected(result);
+    });
+
+    it("rejects read missing --id", async () => {
+      const result = await main(["read"]);
+      assertRejected(result);
+    });
+
+    it("rejects update missing --id", async () => {
+      const result = await main(["update", "--title=X"]);
+      assertRejected(result);
+    });
+
+    it("rejects delete missing --id", async () => {
+      const result = await main(["delete"]);
+      assertRejected(result);
+    });
+
+    it("rejects update with none of --title/--content/--tags", async () => {
+      const result = await main(["update", "--id=abc"]);
+      assertRejected(result);
+    });
+  });
+});
