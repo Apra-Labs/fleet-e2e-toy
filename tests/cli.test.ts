@@ -24,6 +24,18 @@ describe('CLI framework', () => {
     expect(logSpy.mock.calls[0][0]).toContain('Usage: fleet-e2e-toy <command>');
   });
 
+  it('prints version and exits with code 0 on --version', () => {
+    runCLI(['--version']);
+    expect(exitSpy).toHaveBeenCalledWith(0);
+    expect(logSpy).toHaveBeenCalledWith('fleet-e2e-toy v1.0.0');
+  });
+
+  it('prints version and exits with code 0 on -v', () => {
+    runCLI(['-v']);
+    expect(exitSpy).toHaveBeenCalledWith(0);
+    expect(logSpy).toHaveBeenCalledWith('fleet-e2e-toy v1.0.0');
+  });
+
   it('prints global help and exits with code 0 on no args', () => {
     runCLI([]);
     expect(exitSpy).toHaveBeenCalledWith(0);

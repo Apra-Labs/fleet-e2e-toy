@@ -24,6 +24,12 @@ export function runCLI(args: string[]) {
       return;
     }
 
+    if (firstArg === '--version' || firstArg === '-v') {
+      console.log('fleet-e2e-toy v1.0.0');
+      process.exit(0);
+      return;
+    }
+
     // It's a subcommand
     if (args.includes('--help') || args.includes('-h')) {
       printSubcommandHelp(firstArg);
