@@ -194,6 +194,10 @@ function printError(err: unknown): void {
   process.stderr.write(JSON.stringify({ error: message }, null, 2) + "\n");
 }
 
+function printVersion(): void {
+  process.stdout.write("fleet-e2e-toy v1.0.0\n");
+}
+
 /**
  * Throws a clean validation error (no stack trace surfaced) if `flags[name]`
  * is missing, empty, or whitespace-only. Returns the trimmed-checked value
@@ -224,6 +228,14 @@ export function splitTags(csv: string | undefined): string[] {
  */
 export async function run(argv: string[]): Promise<void> {
   const { subcommand, flags } = parseArgs(argv);
+
+  // Check for version flag first, before help/subcommand dispatch
+  const versionRequested = flags.version !== undefined || flags.v !== undefined;
+  if (versionRequested) {
+    printVersion();
+    process.exitCode = 0;
+    return;
+  }
 
   const helpRequested = flags.help !== undefined || flags.h !== undefined;
 
@@ -272,6 +284,11 @@ registerSubcommand("list", async (flags: Flags) => {
   return apiRequest(qs ? `/api/notes?${qs}` : "/api/notes");
 });
 
+registerSubcommand("read", async (flags: Flags) => {
+  const id = requireNonEmpty(flags, "id");
+  return apiRequest(`/api/notes/${encodeURIComponent(id)}`);
+});
+
 registerSubcommand("create", async (flags: Flags) => {
   const title = requireNonEmpty(flags, "title");
   const content = requireNonEmpty(flags, "content");
@@ -295,6 +312,15 @@ registerSubcommand("update", async (flags: Flags) => {
     method: "PUT",
     body,
   });
+});
+
+registerSubcommand("delete", async (flags: Flags) => {
+  const id = requireNonEmpty(flags, "id");
+  await apiRequest(`/api/notes/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  // apiRequest returns undefined for 204; return confirmation object
+  return { deleted: id };
 });
 
 /* istanbul ignore next -- exercised via the built CLI, not unit-imported */
