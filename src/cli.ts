@@ -105,29 +105,115 @@ export function registerSubcommand(name: string, handler: SubcommandHandler): vo
   handlers[name] = handler;
 }
 
+function usageText(): string {
+  return [
+    "Usage: fleet-e2e-toy <subcommand> [flags]",
+    "",
+    "Subcommands:",
+    "  list     [--tag <tag>] [--q <query>]",
+    "  read     --id <id>",
+    "  create   --title <title> --content <content> [--tags <csv>]",
+    "  update   --id <id> [--title <title>] [--content <content>] [--tags <csv>]",
+    "  delete   --id <id>",
+    "",
+    "Flags:",
+    "  --help, -h       show usage",
+    "  --version, -v    show version",
+    "",
+  ].join("\n");
+}
+
+const subcommandUsage: Record<string, string> = {
+  list: [
+    "Usage: fleet-e2e-toy list [--tag <tag>] [--q <query>]",
+    "",
+    "List notes, optionally filtered by tag and/or a full-text search query.",
+    "",
+    "Flags:",
+    "  --tag <tag>      only return notes with this exact tag",
+    "  --q <query>      only return notes whose title/content match this query",
+    "",
+  ].join("\n"),
+  read: [
+    "Usage: fleet-e2e-toy read --id <id>",
+    "",
+    "Fetch a single note by id.",
+    "",
+    "Flags:",
+    "  --id <id>        (required) the note id to fetch",
+    "",
+  ].join("\n"),
+  create: [
+    "Usage: fleet-e2e-toy create --title <title> --content <content> [--tags <csv>]",
+    "",
+    "Create a new note.",
+    "",
+    "Flags:",
+    "  --title <title>      (required) the note title",
+    "  --content <content>  (required) the note content",
+    "  --tags <csv>         comma-separated list of tags (default: [])",
+    "",
+  ].join("\n"),
+  update: [
+    "Usage: fleet-e2e-toy update --id <id> [--title <title>] [--content <content>] [--tags <csv>]",
+    "",
+    "Update an existing note. Only the provided fields are changed.",
+    "",
+    "Flags:",
+    "  --id <id>            (required) the note id to update",
+    "  --title <title>      new title",
+    "  --content <content>  new content",
+    "  --tags <csv>         comma-separated list of tags",
+    "",
+  ].join("\n"),
+  delete: [
+    "Usage: fleet-e2e-toy delete --id <id>",
+    "",
+    "Delete a note by id.",
+    "",
+    "Flags:",
+    "  --id <id>        (required) the note id to delete",
+    "",
+  ].join("\n"),
+};
+
 function printUsage(): void {
-  process.stderr.write(
-    [
-      "Usage: fleet-e2e-toy <subcommand> [flags]",
-      "",
-      "Subcommands:",
-      "  list     [--tag <tag>] [--q <query>]",
-      "  read     --id <id>",
-      "  create   --title <title> --content <content> [--tags <csv>]",
-      "  update   --id <id> [--title <title>] [--content <content>] [--tags <csv>]",
-      "  delete   --id <id>",
-      "",
-      "Flags:",
-      "  --help, -h       show usage",
-      "  --version, -v    show version",
-      "",
-    ].join("\n")
-  );
+  process.stderr.write(usageText());
+}
+
+function printHelp(): void {
+  process.stdout.write(usageText());
+}
+
+function printSubcommandHelp(subcommand: string): void {
+  process.stdout.write(subcommandUsage[subcommand] ?? usageText());
 }
 
 function printError(err: unknown): void {
   const message = err instanceof Error ? err.message : String(err);
   process.stderr.write(JSON.stringify({ error: message }, null, 2) + "\n");
+}
+
+/**
+ * Throws a clean validation error (no stack trace surfaced) if `flags[name]`
+ * is missing, empty, or whitespace-only. Returns the trimmed-checked value
+ * (original, untrimmed string) otherwise.
+ */
+export function requireNonEmpty(flags: Flags, name: string): string {
+  const value = flags[name];
+  if (value === undefined || value.trim() === "") {
+    throw new Error(`Error: ${name} is required and must not be empty`);
+  }
+  return value;
+}
+
+/** Splits a comma-separated tags string into a trimmed, non-empty string array. */
+export function splitTags(csv: string | undefined): string[] {
+  if (!csv || !csv.trim()) return [];
+  return csv
+    .split(",")
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
 }
 
 /**
@@ -139,9 +225,22 @@ function printError(err: unknown): void {
 export async function run(argv: string[]): Promise<void> {
   const { subcommand, flags } = parseArgs(argv);
 
+  const helpRequested = flags.help !== undefined || flags.h !== undefined;
+
   if (subcommand === undefined) {
+    if (helpRequested) {
+      printHelp();
+      process.exitCode = 0;
+      return;
+    }
     printUsage();
     process.exitCode = 1;
+    return;
+  }
+
+  if (helpRequested) {
+    printSubcommandHelp(subcommand);
+    process.exitCode = 0;
     return;
   }
 
@@ -162,6 +261,41 @@ export async function run(argv: string[]): Promise<void> {
     process.exitCode = 1;
   }
 }
+
+// -- Subcommand handlers -----------------------------------------------------
+
+registerSubcommand("list", async (flags: Flags) => {
+  const params = new URLSearchParams();
+  if (flags.tag) params.set("tag", flags.tag);
+  if (flags.q) params.set("q", flags.q);
+  const qs = params.toString();
+  return apiRequest(qs ? `/api/notes?${qs}` : "/api/notes");
+});
+
+registerSubcommand("create", async (flags: Flags) => {
+  const title = requireNonEmpty(flags, "title");
+  const content = requireNonEmpty(flags, "content");
+  const tags = splitTags(flags.tags);
+
+  return apiRequest("/api/notes", {
+    method: "POST",
+    body: { title, content, tags },
+  });
+});
+
+registerSubcommand("update", async (flags: Flags) => {
+  const id = requireNonEmpty(flags, "id");
+
+  const body: Record<string, unknown> = {};
+  if (flags.title !== undefined) body.title = flags.title;
+  if (flags.content !== undefined) body.content = flags.content;
+  if (flags.tags !== undefined) body.tags = splitTags(flags.tags);
+
+  return apiRequest(`/api/notes/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body,
+  });
+});
 
 /* istanbul ignore next -- exercised via the built CLI, not unit-imported */
 if (require.main === module) {
