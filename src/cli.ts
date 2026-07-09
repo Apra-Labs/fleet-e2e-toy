@@ -1,6 +1,21 @@
 import * as process from 'process';
 
-export function runCLI(args: string[]) {
+const API_BASE = 'http://localhost:3000/api';
+
+function parseFlags(args: string[]): Record<string, string> {
+  const flags: Record<string, string> = {};
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith('--')) {
+      const key = args[i].substring(2);
+      const val = args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : 'true';
+      flags[key] = val;
+      if (val !== 'true') i++; // skip the value
+    }
+  }
+  return flags;
+}
+
+export async function runCLI(args: string[]) {
   try {
     for (const arg of args) {
       if (arg.trim() === '') {
@@ -37,10 +52,62 @@ export function runCLI(args: string[]) {
       return;
     }
 
-    console.error(`Error: Unknown command '${firstArg}'`);
-    process.exit(1);
-    return;
+    const flags = parseFlags(args.slice(1));
 
+    switch (firstArg) {
+      case 'list': {
+        const query = new URLSearchParams();
+        if (flags.tag) query.append('tag', flags.tag);
+        if (flags.q) query.append('q', flags.q);
+        const qs = query.toString();
+        const res = await fetch(`${API_BASE}/notes${qs ? '?' + qs : ''}`);
+        if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+        console.log(await res.text());
+        break;
+      }
+      case 'read': {
+        if (!flags.id) throw new Error('--id is required');
+        const res = await fetch(`${API_BASE}/notes/${flags.id}`);
+        if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+        console.log(await res.text());
+        break;
+      }
+      case 'create': {
+        if (!flags.title || !flags.content) throw new Error('--title and --content are required');
+        const res = await fetch(`${API_BASE}/notes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: flags.title, content: flags.content })
+        });
+        if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+        console.log(await res.text());
+        break;
+      }
+      case 'update': {
+        if (!flags.id) throw new Error('--id is required');
+        const body: Record<string, string> = {};
+        if (flags.title) body.title = flags.title;
+        if (flags.content) body.content = flags.content;
+        const res = await fetch(`${API_BASE}/notes/${flags.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+        console.log(await res.text());
+        break;
+      }
+      case 'delete': {
+        if (!flags.id) throw new Error('--id is required');
+        const res = await fetch(`${API_BASE}/notes/${flags.id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+        console.log(await res.text());
+        break;
+      }
+      default:
+        console.error(`Error: Unknown command '${firstArg}'`);
+        process.exit(1);
+    }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error(`Error: ${errorMsg || 'An unexpected error occurred'}`);
@@ -71,5 +138,5 @@ Options:
 }
 
 if (require.main === module) {
-  runCLI(process.argv.slice(2));
+  runCLI(process.argv.slice(2)).catch(() => {});
 }
