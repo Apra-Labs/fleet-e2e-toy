@@ -35,8 +35,9 @@ export function runCLI(args: string[]) {
     process.exit(1);
     return;
 
-  } catch (err: any) {
-    console.error(`Error: ${err.message || 'An unexpected error occurred'}`);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: ${errorMsg || 'An unexpected error occurred'}`);
     process.exit(1);
   }
 }
