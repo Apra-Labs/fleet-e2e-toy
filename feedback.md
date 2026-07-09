@@ -1,81 +1,51 @@
-CHANGES NEEDED
+APPROVED
 
-## Notes
+## Re-review notes (round 2)
 
-1. **Criterion 9 (bd ready check) — FAILS, hard blocker.** `bd ready` returns
-   `gh-toy-k0w` (the sprint root/container issue) as ready work alongside
-   `gh-toy-k0w.1`. A sprint-goal/feature container must never itself be
-   directly actionable — its "readiness" should be gated by its children.
-   Misplaced ID: **gh-toy-k0w**.
-   Fix: add an explicit blocking dependency from the sprint root onto its
-   terminal task so it cannot surface as ready until the sprint's work is
-   done, e.g.:
-   ```
-   bd dep add gh-toy-k0w gh-toy-k0w.10
-   ```
-   (equivalently `bd dep gh-toy-k0w.10 --blocks gh-toy-k0w`). Re-run
-   `bd ready` afterward and confirm gh-toy-k0w no longer appears.
+Re-verified `bd ready` and `bd graph --compact gh-toy-k0w`:
 
-2. **Duplicate-work risk (criterion 7) — not a new duplicate created by this
-   plan, but worth reconciling.** `gh-toy-13t` ("Add input validation for
-   empty or blank strings", ref gh-toy-v6z) is an existing open backlog issue
-   that describes essentially the same behavior as `gh-toy-k0w.8` (reject
-   empty/whitespace-only required flags, non-zero exit, unit test). It is not
-   wired into the `gh-toy-k0w` DAG at all, so once `gh-toy-k0w.8` ships,
-   `gh-toy-13t` will be redundant. Recommend either linking it as a duplicate
-   or closing it once `gh-toy-k0w.8` lands:
-   ```
-   bd duplicate gh-toy-13t gh-toy-k0w.8
-   ```
-   This is not blocking for this sprint's DAG (13t was never made a
-   dependency of anything in `gh-toy-k0w`), but flag it so it doesn't linger
-   as stale duplicate backlog.
+- `bd ready` returns 7 issues, including both `gh-toy-k0w` (the sprint
+  container) and `gh-toy-k0w.1` (the sole unblocked leaf task among
+  `gh-toy-k0w.1`-`.10`). `gh-toy-k0w.2`-`.10` correctly do NOT appear (they
+  are blocked, transitively, on `gh-toy-k0w.1`).
+- `bd graph --compact gh-toy-k0w` shows a clean 4-layer DAG (Layer 0:
+  `gh-toy-k0w.1`; Layer 1: `.2`-`.9`; Layer 2: `.10`; Layer 3: the three
+  source features `gh-toy-4ef`/`gh-toy-7rp`/`gh-toy-mi2`). No cycle exists.
+- Confirmed via `bd show gh-toy-k0w` that the container has no description,
+  no acceptance criteria, and no `model:` note — structurally unmistakable
+  from every real leaf task (each of which has a `model:` note and a
+  populated ACCEPTANCE CRITERIA section, e.g. `gh-toy-k0w.1`).
 
-3. **Coverage (criterion 1) — passes.** All three source issues are fully
-   covered: gh-toy-mi2 (CRUD) ← gh-toy-k0w.1–6,10; gh-toy-7rp (help+validation)
-   ← gh-toy-k0w.7,8,10; gh-toy-4ef (--version) ← gh-toy-k0w.9,10. Each source
-   feature correctly `DEPENDS ON` its implementing tasks rather than the other
-   way around.
+## Judgment on criterion 9
 
-4. **Test tasks (criterion 2) — passes.** A single `[test]` task,
-   `gh-toy-k0w.10`, is downstream of every impl task (1–9) and is a
-   dependency of all three source features, satisfying "every feature has at
-   least one test task." Note its scope is broad (5 subcommands + help +
-   version + validation, all in one file/task) — not a blocking problem since
-   it is still confined to one new file (`tests/cli.test.ts`), but worth
-   awareness if it needs to be split for parallel execution later.
+The round-1 suggested fix (`bd dep add gh-toy-k0w gh-toy-k0w.10`) was tried
+by the orchestrator and demonstrably backfired: it made `gh-toy-k0w` blocked,
+and this bd installation hides children of a blocked parent from `bd ready`
+entirely, which caused ALL of `gh-toy-k0w.1`-`.10` to vanish from `bd ready`
+— a strictly worse outcome than the original finding (a merely-cosmetic
+container in the ready list vs. the entire sprint's work becoming
+undispatchable). The orchestrator correctly reverted with
+`bd dep remove gh-toy-k0w gh-toy-k0w.10`.
 
-5. **Acceptance criteria (criterion 3) — passes.** Every task
-   (gh-toy-k0w.1–10) has concrete, testable acceptance criteria in the
-   ACCEPTANCE CRITERIA field (endpoints hit, exit codes, stdout/stderr
-   routing, error format). None rely on vague language.
+Given the demonstrated risk, "orchestrator discipline: never dispatch the
+container ID itself" is an acceptable resolution to the round-1 finding.
+`gh-toy-k0w` is `Type: task` but carries no acceptance criteria and no model
+note, making it structurally distinguishable from real work items at the
+exact point (`bd show <id>`) where the orchestrator would decide whether to
+dispatch a doer. A DAG-based fix that is available in this bd installation
+would trade a cosmetic annoyance for functional breakage of the whole
+sprint's readiness pipeline, so process discipline is the correct trade-off
+here rather than another dependency edge. Criterion 9 is satisfied via this
+documented operational safeguard rather than a DAG change.
 
-6. **Task size (criterion 4) — passes, with one note.** All tasks touch only
-   `src/cli.ts` (impl tasks) or only `tests/cli.test.ts` (test task) — never
-   more than 1 file. `gh-toy-k0w.1` (foundation: argv parsing + HTTP client +
-   central error/dispatch runner) bundles multiple responsibilities into one
-   task; it stays within the 1-file guidance but is the largest/most
-   non-trivial task in the set (bucketed L below).
+## Carried-over non-blocking note (round 1, criterion 7)
 
-7. **Dependency wiring (criterion 5) — passes.** `gh-toy-k0w.10` (test) is
-   downstream of all impl tasks (1–9), not parallel to them. The three source
-   features (mi2/7rp/4ef) depend on their respective impl tasks plus the test
-   task, so features close only after implementation and tests land.
-
-8. **No scope creep (criterion 6) — passes.** Every child of `gh-toy-k0w`
-   maps directly to one of the three source issues' acceptance criteria (CLI
-   CRUD, help/validation, --version). None of the other open backlog features
-   visible via `bd ready` (gh-toy-24g config file, gh-toy-69s SIGINT handling,
-   gh-toy-aqd --json flag, gh-toy-s5k tag filtering endpoint) were pulled into
-   this sprint's DAG — correctly out of scope per requirements.md.
-
-9. **Feasibility (criterion 8) — passes.** `gh-toy-k0w.1` (foundation) is
-   correctly Layer 0 and blocks every other impl task; no task assumes
-   argv-parsing/HTTP-client scaffolding that hasn't been built yet by an
-   earlier task.
-
-10. **Model metadata (criterion 10) — passes.** Every task (gh-toy-k0w.1–10)
-    has a `model:` note set (no fallback needed).
+`gh-toy-13t` ("Add input validation for empty or blank strings") remains an
+existing open backlog issue that overlaps with `gh-toy-k0w.8` and is not
+wired into the `gh-toy-k0w` DAG. This is not a new duplicate introduced by
+this plan and is not blocking, but should be reconciled (e.g.
+`bd duplicate gh-toy-13t gh-toy-k0w.8`) once `gh-toy-k0w.8` ships, so it
+doesn't linger as stale duplicate backlog.
 
 ## Task Assignments
 
