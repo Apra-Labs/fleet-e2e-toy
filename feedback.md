@@ -1,63 +1,79 @@
 APPROVED
 
-## Re-review notes (round 2)
+## Summary
 
-Re-verified `bd ready` and `bd graph --compact gh-toy-k0w`:
+Reviewed gh-toy-k0w.1 through gh-toy-k0w.10 (all 10 sprint tasks) against
+requirements.md acceptance criteria and the three source issues
+(gh-toy-mi2, gh-toy-7rp, gh-toy-4ef). Diff touches only `src/cli.ts` (new,
+329 lines) and `tests/cli.test.ts` (new, 176 lines), plus `requirements.md`
+and `feedback.md` from the plan-review phase — no stray files, no changes
+to `src/api/`, `src/utils/validation.ts`, or any existing route/model.
 
-- `bd ready` returns 7 issues, including both `gh-toy-k0w` (the sprint
-  container) and `gh-toy-k0w.1` (the sole unblocked leaf task among
-  `gh-toy-k0w.1`-`.10`). `gh-toy-k0w.2`-`.10` correctly do NOT appear (they
-  are blocked, transitively, on `gh-toy-k0w.1`).
-- `bd graph --compact gh-toy-k0w` shows a clean 4-layer DAG (Layer 0:
-  `gh-toy-k0w.1`; Layer 1: `.2`-`.9`; Layer 2: `.10`; Layer 3: the three
-  source features `gh-toy-4ef`/`gh-toy-7rp`/`gh-toy-mi2`). No cycle exists.
-- Confirmed via `bd show gh-toy-k0w` that the container has no description,
-  no acceptance criteria, and no `model:` note — structurally unmistakable
-  from every real leaf task (each of which has a `model:` note and a
-  populated ACCEPTANCE CRITERIA section, e.g. `gh-toy-k0w.1`).
+## gh-toy-mi2 (5 CRUD subcommands) — met
 
-## Judgment on criterion 9
+- `list [--tag] [--q]`, `read --id`, `create --title --content [--tags]`,
+  `update --id [...]`, `delete --id` are all implemented in `src/cli.ts`
+  (lines 279-324), each calling the correct HTTP verb/path via the shared
+  `apiRequest` helper.
+- Success results are pretty-printed JSON to stdout; `delete` returns
+  `{ deleted: id }` since the API responds 204 (cli.ts:317-324).
+- API errors (4xx/5xx/network failure) are caught centrally in `run()`
+  (cli.ts:266-274) and printed as `{ "error": "<message>" }` to stderr with
+  exit 1 — verified end-to-end in `tests/cli.test.ts`'s
+  "create then read/list/update/delete" test, including a post-delete
+  `read` that correctly exits 1.
+- Manually smoke-tested `list --version` (version flag combined with a
+  subcommand) via `ts-node` — works as expected (see gh-toy-4ef below).
 
-The round-1 suggested fix (`bd dep add gh-toy-k0w gh-toy-k0w.10`) was tried
-by the orchestrator and demonstrably backfired: it made `gh-toy-k0w` blocked,
-and this bd installation hides children of a blocked parent from `bd ready`
-entirely, which caused ALL of `gh-toy-k0w.1`-`.10` to vanish from `bd ready`
-— a strictly worse outcome than the original finding (a merely-cosmetic
-container in the ready list vs. the entire sprint's work becoming
-undispatchable). The orchestrator correctly reverted with
-`bd dep remove gh-toy-k0w gh-toy-k0w.10`.
+## gh-toy-7rp (help system + input validation, no stack traces) — met
 
-Given the demonstrated risk, "orchestrator discipline: never dispatch the
-container ID itself" is an acceptable resolution to the round-1 finding.
-`gh-toy-k0w` is `Type: task` but carries no acceptance criteria and no model
-note, making it structurally distinguishable from real work items at the
-exact point (`bd show <id>`) where the orchestrator would decide whether to
-dispatch a doer. A DAG-based fix that is available in this bd installation
-would trade a cosmetic annoyance for functional breakage of the whole
-sprint's readiness pipeline, so process discipline is the correct trade-off
-here rather than another dependency edge. Criterion 9 is satisfied via this
-documented operational safeguard rather than a DAG change.
+- Top-level `--help`/`-h` (no subcommand) prints full usage and exits 0;
+  per-subcommand `--help`/`-h` prints that subcommand's usage and exits 0
+  (cli.ts:242-257; covered by 4 tests in `tests/cli.test.ts`).
+- Missing/empty/whitespace-only required flags are rejected via
+  `requireNonEmpty` (cli.ts:206-212) with message
+  "Error: <field> is required and must not be empty", exit 1, and no stack
+  trace reaches stderr (tests assert `not.toContain("at ")`). Verified for
+  missing (`read` with no `--id`), empty-string (`create --title ""`), and
+  whitespace-only (`delete --id "   "`) cases.
+- Minor non-blocking style note: the validation error message is wrapped in
+  the same `{ "error": "..." }` JSON envelope used for API errors
+  (`printError`, cli.ts:192-195), so stderr for a validation failure looks
+  like a 2-line JSON blob containing the required string rather than a bare
+  single-line message. The required substring is present and tests pass,
+  and this is a defensible reuse of the repo's "never return raw error
+  objects" convention, so not treated as a criterion failure — flagging for
+  awareness only.
 
-## Carried-over non-blocking note (round 1, criterion 7)
+## gh-toy-4ef (--version/-v) — met
 
-`gh-toy-13t` ("Add input validation for empty or blank strings") remains an
-existing open backlog issue that overlaps with `gh-toy-k0w.8` and is not
-wired into the `gh-toy-k0w` DAG. This is not a new duplicate introduced by
-this plan and is not blocking, but should be reconciled (e.g.
-`bd duplicate gh-toy-13t gh-toy-k0w.8`) once `gh-toy-k0w.8` ships, so it
-doesn't linger as stale duplicate backlog.
+- `--version`/`-v` is checked first in `run()` (cli.ts:232-238), before any
+  subcommand/help/validation dispatch, and prints exactly
+  `fleet-e2e-toy v1.0.0\n` with exit 0 — matches the literal required
+  string, verified by unit tests and confirmed manually with
+  `run(["list", "--version"])` (prints version, exit 0, ignores the
+  subcommand) — satisfies "works whether or not other flags/subcommands are
+  also present."
 
-## Task Assignments
+## Test suite / build / lint
 
-[
-  {"id":"gh-toy-k0w.1","bucket":"L","model":"standard"},
-  {"id":"gh-toy-k0w.2","bucket":"M","model":"standard"},
-  {"id":"gh-toy-k0w.3","bucket":"M","model":"cheap"},
-  {"id":"gh-toy-k0w.4","bucket":"M","model":"standard"},
-  {"id":"gh-toy-k0w.5","bucket":"M","model":"standard"},
-  {"id":"gh-toy-k0w.6","bucket":"M","model":"cheap"},
-  {"id":"gh-toy-k0w.7","bucket":"M","model":"standard"},
-  {"id":"gh-toy-k0w.8","bucket":"M","model":"standard"},
-  {"id":"gh-toy-k0w.9","bucket":"S","model":"cheap"},
-  {"id":"gh-toy-k0w.10","bucket":"M","model":"standard"}
-]
+- `npm run build` — clean, no errors.
+- `npm run lint` — clean, no errors.
+- `npm test` — 3 suites, 31 tests, all passing (`tests/cli.test.ts` 11/11,
+  `tests/notes.test.ts` 13/13, `tests/validation.test.ts` 8/8). CLI tests
+  correctly spin up the real Express `app` on an ephemeral port and point
+  `NOTEAPI_URL` at it, per requirements.md's testing guidance (no reuse of
+  `PORT`/3000/3001, no port collision risk).
+- `git status --porcelain` clean before and after review; no untracked
+  scaffold files left behind.
+
+## Prior feedback history
+
+Reviewed the two plan-review entries previously in `feedback.md` (round 1
+CHANGES NEEDED on the `bd ready` container-surfacing finding, round 2
+APPROVED via orchestrator discipline). Both are process/DAG concerns from
+the planning phase, not implementation-review findings, and are already
+resolved per the round-2 note; nothing further to carry forward into this
+implementation review.
+
+No new tasks needed.
