@@ -269,3 +269,17 @@ describe("delete command", () => {
     expect(stderr).not.toContain("at ");
   });
 });
+
+describe("network failure", () => {
+  it("surfaces a fetch rejection as a clean 'Error: ...' with exit non-zero", async () => {
+    const fn = jest.fn(async () => {
+      throw new Error("network down");
+    });
+    (global as unknown as { fetch: unknown }).fetch = fn as unknown;
+    const code = await dispatch(["read", "--id", "abc"]);
+    expect(code).toBe(1);
+    expect(stderr).toContain("Error:");
+    expect(stderr).toContain("network down");
+    expect(stderr).not.toContain("at ");
+  });
+});
