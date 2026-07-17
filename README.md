@@ -41,6 +41,27 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## CLI
+
+A command-line client (`noteapi-cli`, entry point `src/cli.ts`, compiled to
+`dist/cli.js`) talks to the running API over HTTP:
+
+```bash
+npm run build
+NOTEAPI_URL=http://localhost:3000 node dist/cli.js list
+node dist/cli.js create --title "Groceries" --content "Milk, eggs" --tags food,home
+node dist/cli.js read --id <id>
+node dist/cli.js update --id <id> --content "Milk, eggs, bread"
+node dist/cli.js delete --id <id>
+node dist/cli.js --help       # or -h, global or per-subcommand
+node dist/cli.js --version    # or -v
+```
+
+Base URL defaults to `http://localhost:3000` and is overridden via the
+`NOTEAPI_URL` environment variable. See `docs/cli.md` for the full design
+(HTTP-client-only architecture, validation and error-handling contract,
+subcommand reference).
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
