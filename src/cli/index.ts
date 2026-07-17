@@ -14,6 +14,12 @@ import { ApiError } from "./http";
 import { isHelpFlag, renderGlobalHelp, renderCommandHelp } from "./help";
 import packageJson from "../../package.json";
 
+// Register the CRUD subcommands for their side effect (each module calls
+// registerCommand at load time). Importing here means both the CLI binary and
+// the test suite (which imports `dispatch` from this module) see the same set
+// of dispatchable commands with no separate wiring.
+import "./notesRead";
+
 /** CLI display name used in the --version output. */
 const CLI_NAME = "fleet-e2e-toy";
 
