@@ -7,10 +7,15 @@
 
 import { notesClient, ApiError } from "./cli/client";
 import { validateTitle, validateContent, validateId } from "./cli/validate";
+import packageJson from "../package.json";
 
 export type Subcommand = "list" | "read" | "create" | "update" | "delete";
 
 const SUBCOMMANDS: Subcommand[] = ["list", "read", "create", "update", "delete"];
+
+// Product name and version constants.
+const PRODUCT_NAME = "fleet-e2e-toy";
+const PACKAGE_VERSION = packageJson.version;
 
 function isSubcommand(value: string): value is Subcommand {
   return (SUBCOMMANDS as string[]).includes(value);
@@ -53,6 +58,15 @@ function printResult(value: unknown): void {
 // Recognizes both long and short help flags.
 function isHelpFlag(value: string | undefined): boolean {
   return value === "--help" || value === "-h";
+}
+
+// Recognizes both long and short version flags.
+function isVersionFlag(value: string | undefined): boolean {
+  return value === "--version" || value === "-v";
+}
+
+function printVersion(): void {
+  process.stdout.write(`${PRODUCT_NAME} v${PACKAGE_VERSION}\n`);
 }
 
 function printGlobalUsage(): void {
@@ -134,6 +148,13 @@ function cleanMessage(err: unknown): string {
 
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+
+  // Version flag is resolved before anything else: works standalone or
+  // alongside other flags without a network call.
+  if (isVersionFlag(command) || rest.some(isVersionFlag)) {
+    printVersion();
+    return 0;
+  }
 
   // Global help is resolved before anything else: no command, unknown
   // command, or a valid command all short-circuit here without a network call.
