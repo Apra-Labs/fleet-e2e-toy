@@ -82,19 +82,31 @@ describe("command registry", () => {
 
 describe("dispatch", () => {
   let stderr: string;
-  let spy: jest.SpyInstance;
+  let stdout: string;
+  let errSpy: jest.SpyInstance;
+  let outSpy: jest.SpyInstance;
 
   beforeEach(() => {
     stderr = "";
-    spy = jest
+    stdout = "";
+    errSpy = jest
       .spyOn(process.stderr, "write")
       .mockImplementation((chunk: unknown) => {
         stderr += String(chunk);
         return true;
       });
+    outSpy = jest
+      .spyOn(process.stdout, "write")
+      .mockImplementation((chunk: unknown) => {
+        stdout += String(chunk);
+        return true;
+      });
   });
 
-  afterEach(() => spy.mockRestore());
+  afterEach(() => {
+    errSpy.mockRestore();
+    outSpy.mockRestore();
+  });
 
   it("returns non-zero and a clear message for an unknown command", async () => {
     const code = await dispatch(["bogus"]);
@@ -103,10 +115,12 @@ describe("dispatch", () => {
     expect(stderr).not.toContain("at "); // no stack trace
   });
 
-  it("returns non-zero when no command is provided", async () => {
+  it("prints global usage and exits 0 when no command is provided", async () => {
     const code = await dispatch([]);
-    expect(code).toBe(1);
-    expect(stderr).toContain("no command provided");
+    expect(code).toBe(0);
+    expect(stdout).toContain("Usage:");
+    expect(stdout).toContain("Commands:");
+    expect(stderr).toBe("");
   });
 
   it("dispatches to a registered command and passes remaining args", async () => {
@@ -137,5 +151,50 @@ describe("dispatch", () => {
     expect(code).toBe(1);
     expect(stderr).toContain("kaboom");
     expect(stderr).not.toContain("at "); // no stack trace
+  });
+
+  it("prints global usage listing registered commands for --help", async () => {
+    registerCommand({
+      name: "help-listed",
+      description: "shows up in global help",
+      usage: "help-listed",
+      run: () => 0,
+    });
+    const code = await dispatch(["--help"]);
+    expect(code).toBe(0);
+    expect(stdout).toContain("help-listed");
+    expect(stdout).toContain("shows up in global help");
+    expect(stderr).toBe("");
+  });
+
+  it("treats -h as the leading arg like --help", async () => {
+    const code = await dispatch(["-h"]);
+    expect(code).toBe(0);
+    expect(stdout).toContain("Usage:");
+    expect(stderr).toBe("");
+  });
+
+  it("prints the subcommand usage for '<command> --help' without running it", async () => {
+    let ran = false;
+    registerCommand({
+      name: "with-help",
+      description: "a command with help",
+      usage: "with-help <id> [--force]",
+      run: () => {
+        ran = true;
+      },
+    });
+    const code = await dispatch(["with-help", "--help"]);
+    expect(code).toBe(0);
+    expect(ran).toBe(false); // help short-circuits before run (no network)
+    expect(stdout).toContain("with-help <id> [--force]");
+    expect(stdout).toContain("a command with help");
+  });
+
+  it("reports an unknown command even when followed by --help", async () => {
+    const code = await dispatch(["nope", "--help"]);
+    expect(code).toBe(1);
+    expect(stderr).toContain("unknown command 'nope'");
+    expect(stderr).not.toContain("at ");
   });
 });

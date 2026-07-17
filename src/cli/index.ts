@@ -11,6 +11,7 @@
 
 import { getCommand, CommandContext } from "./commands";
 import { ApiError } from "./http";
+import { isHelpFlag, renderGlobalHelp, renderCommandHelp } from "./help";
 import packageJson from "../../package.json";
 
 /** CLI display name used in the --version output. */
@@ -37,17 +38,28 @@ export async function dispatch(argv: string[]): Promise<number> {
 
   const [commandName, ...rest] = argv;
 
-  // No subcommand given. Help wiring is a later task; for now signal misuse
-  // clearly rather than doing nothing.
-  if (!commandName) {
-    process.stderr.write("Error: no command provided\n");
-    return 1;
+  // No subcommand given, or `--help`/`-h` as the sole or leading arg: print the
+  // global usage (listing the registered commands) and exit successfully. No
+  // network call is made on any help path.
+  if (!commandName || isHelpFlag(commandName)) {
+    process.stdout.write(renderGlobalHelp());
+    return 0;
   }
 
   const command = getCommand(commandName);
   if (!command) {
+    // Unknown command — clear message, non-zero exit, no stack trace. This also
+    // covers `<bogus> --help`: there is no usage to show for a command that
+    // does not exist.
     process.stderr.write(`Error: unknown command '${commandName}'\n`);
     return 1;
+  }
+
+  // `<command> --help`/`-h`: print that command's usage and exit before running
+  // it, so help never triggers a network request.
+  if (rest.some((arg) => isHelpFlag(arg))) {
+    process.stdout.write(renderCommandHelp(command));
+    return 0;
   }
 
   const ctx: CommandContext = { args: rest };
