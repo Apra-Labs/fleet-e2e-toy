@@ -147,6 +147,11 @@ describe("CLI integration tests", () => {
     expect(stdout).toBe("fleet-e2e-toy v1.0.0");
   });
 
+  it("executes ./tool create \"some note\" -v successfully", () => {
+    const stdout = execSync(`"${toolCmd}" create "some note" -v`).toString().trim();
+    expect(stdout).toBe("fleet-e2e-toy v1.0.0");
+  });
+
   it("fails when passed an empty argument", () => {
     let error: unknown;
     try {
