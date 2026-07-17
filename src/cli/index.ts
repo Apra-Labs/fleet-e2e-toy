@@ -4,6 +4,7 @@ import { createNote, deleteNote, getNote, listNotes, updateNote } from "./client
 import { parseFlags } from "./args";
 import { Note } from "../models/note";
 import { isHelpFlag, printGlobalHelp, printSubcommandHelp } from "./help";
+import { validateOptionalFlag, validateRequiredFlag } from "./validation";
 
 const USAGE = "Usage: noteapi-cli <list|read|create|update|delete> [args...]";
 
@@ -27,8 +28,25 @@ async function runList(args: string[]): Promise<void> {
 
   const flags = parseFlags(args);
 
+  const tagResult = validateOptionalFlag("tag", flags.tag);
+  if (!tagResult.valid) {
+    process.stderr.write(`Error: ${tagResult.error}\n`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const qResult = validateOptionalFlag("q", flags.q);
+  if (!qResult.valid) {
+    process.stderr.write(`Error: ${qResult.error}\n`);
+    process.exitCode = 1;
+    return;
+  }
+
   try {
-    const notes = await listNotes({ tag: flags.tag, q: flags.q });
+    const notes = await listNotes({
+      tag: tagResult.value || undefined,
+      q: qResult.value || undefined,
+    });
     for (const note of notes) {
       printNoteSummary(note);
     }
@@ -46,16 +64,16 @@ async function runRead(args: string[]): Promise<void> {
   }
 
   const flags = parseFlags(args);
-  const id = flags.id;
+  const idResult = validateRequiredFlag("id", flags.id);
 
-  if (!id) {
-    process.stderr.write("Error: --id is required\n");
+  if (!idResult.valid) {
+    process.stderr.write(`Error: ${idResult.error}\n`);
     process.exitCode = 1;
     return;
   }
 
   try {
-    const note = await getNote(id);
+    const note = await getNote(idResult.value);
     printNoteFull(note);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -72,19 +90,22 @@ async function runCreate(args: string[]): Promise<void> {
 
   const flags = parseFlags(args);
 
-  if (!flags.title) {
-    process.stderr.write("Error: --title is required\n");
+  const titleResult = validateRequiredFlag("title", flags.title);
+  if (!titleResult.valid) {
+    process.stderr.write(`Error: ${titleResult.error}\n`);
     process.exitCode = 1;
     return;
   }
-  if (flags.content === undefined) {
-    process.stderr.write("Error: --content is required\n");
+
+  const contentResult = validateRequiredFlag("content", flags.content);
+  if (!contentResult.valid) {
+    process.stderr.write(`Error: ${contentResult.error}\n`);
     process.exitCode = 1;
     return;
   }
 
   try {
-    const note = await createNote({ title: flags.title, content: flags.content, tags: [] });
+    const note = await createNote({ title: titleResult.value, content: contentResult.value, tags: [] });
     printNoteFull(note);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -100,20 +121,34 @@ async function runUpdate(args: string[]): Promise<void> {
   }
 
   const flags = parseFlags(args);
-  const id = flags.id;
+  const idResult = validateRequiredFlag("id", flags.id);
 
-  if (!id) {
-    process.stderr.write("Error: --id is required\n");
+  if (!idResult.valid) {
+    process.stderr.write(`Error: ${idResult.error}\n`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const titleResult = validateOptionalFlag("title", flags.title);
+  if (!titleResult.valid) {
+    process.stderr.write(`Error: ${titleResult.error}\n`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const contentResult = validateOptionalFlag("content", flags.content);
+  if (!contentResult.valid) {
+    process.stderr.write(`Error: ${contentResult.error}\n`);
     process.exitCode = 1;
     return;
   }
 
   const updates: { title?: string; content?: string } = {};
-  if (flags.title !== undefined) updates.title = flags.title;
-  if (flags.content !== undefined) updates.content = flags.content;
+  if (flags.title !== undefined) updates.title = titleResult.value;
+  if (flags.content !== undefined) updates.content = contentResult.value;
 
   try {
-    const note = await updateNote(id, updates);
+    const note = await updateNote(idResult.value, updates);
     printNoteFull(note);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -129,17 +164,17 @@ async function runDelete(args: string[]): Promise<void> {
   }
 
   const flags = parseFlags(args);
-  const id = flags.id;
+  const idResult = validateRequiredFlag("id", flags.id);
 
-  if (!id) {
-    process.stderr.write("Error: --id is required\n");
+  if (!idResult.valid) {
+    process.stderr.write(`Error: ${idResult.error}\n`);
     process.exitCode = 1;
     return;
   }
 
   try {
-    await deleteNote(id);
-    process.stdout.write(`Deleted note ${id}\n`);
+    await deleteNote(idResult.value);
+    process.stdout.write(`Deleted note ${idResult.value}\n`);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`Error: ${message}\n`);
