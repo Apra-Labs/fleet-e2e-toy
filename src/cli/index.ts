@@ -5,8 +5,25 @@ import { parseFlags } from "./args";
 import { Note } from "../models/note";
 import { isHelpFlag, printGlobalHelp, printSubcommandHelp } from "./help";
 import { validateOptionalFlag, validateRequiredFlag } from "./validation";
+import * as fs from "fs";
+import * as path from "path";
 
 const USAGE = "Usage: noteapi-cli <list|read|create|update|delete> [args...]";
+
+function getVersion(): string {
+  try {
+    const packagePath = path.join(__dirname, "../..", "package.json");
+    const packageData = JSON.parse(fs.readFileSync(packagePath, "utf-8"));
+    return packageData.version;
+  } catch {
+    return "unknown";
+  }
+}
+
+function printVersion(): void {
+  const version = getVersion();
+  process.stdout.write(`noteapi v${version}\n`);
+}
 
 function printUsage(): void {
   process.stderr.write(`${USAGE}\n`);
@@ -188,6 +205,11 @@ export async function main(argv: string[]): Promise<void> {
   if (!subcommand) {
     printUsage();
     process.exitCode = 1;
+    return;
+  }
+
+  if (subcommand === "--version" || subcommand === "-v") {
+    printVersion();
     return;
   }
 
