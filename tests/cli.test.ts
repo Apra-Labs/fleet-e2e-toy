@@ -1,6 +1,8 @@
 import { main } from "../src/tool";
-import { execSync, spawnSync } from "child_process";
+import { spawnSync, spawn, ChildProcess } from "child_process";
 import * as path from "path";
+import * as http from "http";
+
 
 beforeAll(() => {
   jest.spyOn(globalThis, "fetch").mockImplementation(() => new Promise(() => {}));
@@ -261,5 +263,208 @@ describe("CLI integration tests", () => {
     expect(res.stderr).not.toContain("at ");
     expect(res.stderr).not.toContain("tool.ts");
   });
+
+  describe("CLI CRUD integration tests with real server", () => {
+    let serverProcess: ChildProcess;
+    let port: number;
+
+    const checkHealth = (p: number): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const req = http.get(`http://localhost:${p}/health`, (res) => {
+          resolve(res.statusCode === 200);
+        });
+        req.on("error", () => {
+          resolve(false);
+        });
+        req.end();
+      });
+    };
+
+    const getFreePort = (): Promise<number> => {
+      return new Promise((resolve, reject) => {
+        const s = http.createServer();
+        s.listen(0, () => {
+          const address = s.address();
+          const p = address && typeof address !== "string" ? address.port : 3001;
+          s.close(() => {
+            resolve(p);
+          });
+        });
+        s.on("error", reject);
+      });
+    };
+
+    beforeAll(async () => {
+      port = await getFreePort();
+      serverProcess = spawn("node", ["-r", "ts-node/register", "src/index.ts"], {
+        env: { ...process.env, PORT: String(port) }
+      });
+
+      // Wait for health check (retry up to 20 times, 100ms apart)
+      let ok = false;
+      for (let i = 0; i < 20; i++) {
+        ok = await checkHealth(port);
+        if (ok) {
+          ok = true;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      if (!ok) {
+        throw new Error(`Server failed to start on port ${port}`);
+      }
+    }, 10000); // 10s timeout
+
+    afterAll(() => {
+      if (serverProcess) {
+        serverProcess.kill("SIGTERM");
+      }
+    });
+
+    it("performs complete CRUD lifecycle successfully", () => {
+      // 1. List (empty)
+      const listRes1 = spawnSync(toolCmd, ["list"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(listRes1.status).toBe(0);
+      const list1 = JSON.parse(listRes1.stdout);
+      expect(list1).toEqual([]);
+
+      // 2. Create note 1
+      const createRes1 = spawnSync(toolCmd, ["create", "Note One", "Content for one", "--tag", "work", "--tag", "urgent"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(createRes1.status).toBe(0);
+      const note1 = JSON.parse(createRes1.stdout);
+      expect(note1.title).toBe("Note One");
+      expect(note1.content).toBe("Content for one");
+      expect(note1.tags).toEqual(["work", "urgent"]);
+      expect(note1.id).toBeDefined();
+
+      // 3. Create note 2
+      const createRes2 = spawnSync(toolCmd, ["create", "Note Two", "Content for two", "-t", "personal"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(createRes2.status).toBe(0);
+      const note2 = JSON.parse(createRes2.stdout);
+      expect(note2.title).toBe("Note Two");
+      expect(note2.content).toBe("Content for two");
+      expect(note2.tags).toEqual(["personal"]);
+
+      // 4. List (all)
+      const listRes2 = spawnSync(toolCmd, ["list"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(listRes2.status).toBe(0);
+      const list2 = JSON.parse(listRes2.stdout);
+      expect(list2.length).toBe(2);
+      expect(list2.map((n: { title: string }) => n.title)).toContain("Note One");
+      expect(list2.map((n: { title: string }) => n.title)).toContain("Note Two");
+
+      // 5. List with tag filter
+      const listResTag = spawnSync(toolCmd, ["list", "--tag", "work"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(listResTag.status).toBe(0);
+      const listTag = JSON.parse(listResTag.stdout);
+      expect(listTag.length).toBe(1);
+      expect(listTag[0].title).toBe("Note One");
+
+      // 6. List with query search
+      const listResQuery = spawnSync(toolCmd, ["list", "--query", "Two"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(listResQuery.status).toBe(0);
+      const listQuery = JSON.parse(listResQuery.stdout);
+      expect(listQuery.length).toBe(1);
+      expect(listQuery[0].title).toBe("Note Two");
+
+      // 7. Read existing note
+      const readRes1 = spawnSync(toolCmd, ["read", note1.id], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(readRes1.status).toBe(0);
+      const readNote1 = JSON.parse(readRes1.stdout);
+      expect(readNote1.id).toBe(note1.id);
+      expect(readNote1.title).toBe("Note One");
+
+      // 8. Update existing note
+      const updateRes = spawnSync(
+        toolCmd,
+        ["update", note1.id, "--title", "Updated Note One", "--content", "Updated content", "--tag", "archive"],
+        {
+          encoding: "utf-8",
+          env: { ...process.env, PORT: String(port) }
+        }
+      );
+      expect(updateRes.status).toBe(0);
+      const updatedNote = JSON.parse(updateRes.stdout);
+      expect(updatedNote.id).toBe(note1.id);
+      expect(updatedNote.title).toBe("Updated Note One");
+      expect(updatedNote.content).toBe("Updated content");
+      expect(updatedNote.tags).toEqual(["archive"]);
+
+      // Verify update persisted
+      const readRes2 = spawnSync(toolCmd, ["read", note1.id], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(readRes2.status).toBe(0);
+      const readNote2 = JSON.parse(readRes2.stdout);
+      expect(readNote2.title).toBe("Updated Note One");
+
+      // 9. Delete note
+      const deleteRes = spawnSync(toolCmd, ["delete", note1.id], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(deleteRes.status).toBe(0);
+
+      // Verify note is deleted
+      const readResDeleted = spawnSync(toolCmd, ["read", note1.id], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(readResDeleted.status).toBe(1);
+      const errorData = JSON.parse(readResDeleted.stderr);
+      expect(errorData.error).toBe("Note not found");
+    });
+
+    it("returns non-zero exit code on API errors for all operations", () => {
+      const nonExistentId = "00000000-0000-0000-0000-000000000000";
+
+      // Read non-existent
+      const readRes = spawnSync(toolCmd, ["read", nonExistentId], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(readRes.status).not.toBe(0);
+      expect(JSON.parse(readRes.stderr).error).toBe("Note not found");
+
+      // Update non-existent
+      const updateRes = spawnSync(toolCmd, ["update", nonExistentId, "--title", "test"], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(updateRes.status).not.toBe(0);
+      expect(JSON.parse(updateRes.stderr).error).toBe("Note not found");
+
+      // Delete non-existent
+      const deleteRes = spawnSync(toolCmd, ["delete", nonExistentId], {
+        encoding: "utf-8",
+        env: { ...process.env, PORT: String(port) }
+      });
+      expect(deleteRes.status).not.toBe(0);
+      expect(JSON.parse(deleteRes.stderr).error).toBe("Note not found");
+    });
+  });
 });
+
 
