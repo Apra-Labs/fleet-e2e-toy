@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { validateCreateInput, validateUpdateInput, validateCliArgument } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -64,3 +64,26 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("validateCliArgument", () => {
+  it("returns the value if it is non-empty", () => {
+    expect(validateCliArgument("some-value")).toBe("some-value");
+  });
+
+  it("throws error for undefined", () => {
+    expect(() => validateCliArgument(undefined)).toThrow("Argument cannot be empty or whitespace-only.");
+  });
+
+  it("throws error for empty string", () => {
+    expect(() => validateCliArgument("")).toThrow("Argument cannot be empty or whitespace-only.");
+  });
+
+  it("throws error for whitespace-only string", () => {
+    expect(() => validateCliArgument("   ")).toThrow("Argument cannot be empty or whitespace-only.");
+  });
+
+  it("uses custom argument name in error message if provided", () => {
+    expect(() => validateCliArgument("", "Title")).toThrow("Title cannot be empty or whitespace-only.");
+  });
+});
+

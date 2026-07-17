@@ -76,3 +76,11 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export function validateCliArgument(value: string | undefined, argName: string = "Argument"): string {
+  if (value === undefined || value.trim() === "") {
+    throw new Error(`${argName} cannot be empty or whitespace-only.`);
+  }
+  return value;
+}
+
