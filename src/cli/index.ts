@@ -3,13 +3,22 @@
 // Reads argv, dispatches to a registered subcommand, and reports errors
 // clearly (to stderr, without a stack trace) with a non-zero exit code.
 //
-// Subcommands, help text, and --version are intentionally NOT wired here yet —
-// later tasks register commands via `registerCommand` (see commands.ts) and
-// add the help/version extension points. This module only provides the
-// skeleton dispatch mechanism those tasks build on.
+// Subcommands and help text are intentionally NOT wired here yet — later
+// tasks register commands via `registerCommand` (see commands.ts) and add
+// the help extension point. This module provides the skeleton dispatch
+// mechanism those tasks build on, plus the --version/-v flag.
 
 import { getCommand, CommandContext } from "./commands";
 import { ApiError } from "./http";
+import packageJson from "../../package.json";
+
+/** CLI display name used in the --version output. */
+const CLI_NAME = "fleet-e2e-toy";
+
+/** Print the CLI version string, sourced at runtime from package.json. */
+function printVersion(): void {
+  process.stdout.write(`${CLI_NAME} v${packageJson.version}\n`);
+}
 
 /**
  * Dispatch the given argv (already stripped of `node` and the script path).
@@ -18,6 +27,13 @@ import { ApiError } from "./http";
  * clear message is written to stderr.
  */
 export async function dispatch(argv: string[]): Promise<number> {
+  // --version/-v is recognized anywhere in argv, standalone or alongside a
+  // subcommand, and short-circuits before any subcommand dispatch.
+  if (argv.includes("--version") || argv.includes("-v")) {
+    printVersion();
+    return 0;
+  }
+
   const [commandName, ...rest] = argv;
 
   // No subcommand given. Help wiring is a later task; for now signal misuse
