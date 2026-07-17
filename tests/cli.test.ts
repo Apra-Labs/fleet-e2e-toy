@@ -1,4 +1,5 @@
 import { normalizeApiError, getBaseUrl } from "../src/cli/http";
+import { requireNonBlank, CliValidationError } from "../src/cli/validate";
 import { dispatch } from "../src/cli/index";
 import {
   registerCommand,
@@ -196,5 +197,64 @@ describe("dispatch", () => {
     expect(code).toBe(1);
     expect(stderr).toContain("unknown command 'nope'");
     expect(stderr).not.toContain("at ");
+  });
+});
+
+describe("requireNonBlank", () => {
+  it("returns the value unchanged when it is non-blank", () => {
+    expect(requireNonBlank("hello", "--title")).toBe("hello");
+  });
+
+  it("preserves surrounding whitespace of an otherwise non-blank value", () => {
+    expect(requireNonBlank("  padded  ", "--title")).toBe("  padded  ");
+  });
+
+  it("throws when the value is undefined", () => {
+    expect(() => requireNonBlank(undefined, "--id")).toThrow(CliValidationError);
+  });
+
+  it("throws when the value is null", () => {
+    expect(() => requireNonBlank(null, "--id")).toThrow(CliValidationError);
+  });
+
+  it("throws for an empty string", () => {
+    expect(() => requireNonBlank("", "--title")).toThrow(CliValidationError);
+  });
+
+  it("throws for a whitespace-only string", () => {
+    expect(() => requireNonBlank("   \t ", "--content")).toThrow(
+      CliValidationError
+    );
+  });
+
+  it("names the offending argument in the error message", () => {
+    expect(() => requireNonBlank("", "--id")).toThrow(/--id/);
+  });
+
+  it("propagates through dispatch as a clean 'Error: ...' with no stack trace", async () => {
+    let stderr = "";
+    const spy = jest
+      .spyOn(process.stderr, "write")
+      .mockImplementation((chunk: unknown) => {
+        stderr += String(chunk);
+        return true;
+      });
+    let networkCalled = false;
+    registerCommand({
+      name: "needs-id",
+      description: "requires --id",
+      usage: "needs-id --id <id>",
+      run: () => {
+        requireNonBlank(undefined, "--id");
+        networkCalled = true; // unreachable: validation throws first
+      },
+    });
+    const code = await dispatch(["needs-id"]);
+    spy.mockRestore();
+    expect(code).toBe(1);
+    expect(networkCalled).toBe(false); // rejected before any network call
+    expect(stderr).toContain("Error:");
+    expect(stderr).toContain("--id");
+    expect(stderr).not.toContain("at "); // no stack trace
   });
 });
