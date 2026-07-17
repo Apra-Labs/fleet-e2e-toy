@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { getNote, listNotes } from "./client";
+import { createNote, deleteNote, getNote, listNotes, updateNote } from "./client";
 import { parseFlags } from "./args";
 import { Note } from "../models/note";
 
@@ -53,19 +53,72 @@ async function runRead(args: string[]): Promise<void> {
   }
 }
 
-async function runCreate(_args: string[]): Promise<void> {
-  process.stderr.write("create: not yet implemented\n");
-  process.exitCode = 1;
+async function runCreate(args: string[]): Promise<void> {
+  const flags = parseFlags(args);
+
+  if (!flags.title) {
+    process.stderr.write("Error: --title is required\n");
+    process.exitCode = 1;
+    return;
+  }
+  if (flags.content === undefined) {
+    process.stderr.write("Error: --content is required\n");
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    const note = await createNote({ title: flags.title, content: flags.content, tags: [] });
+    printNoteFull(note);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`Error: ${message}\n`);
+    process.exitCode = 1;
+  }
 }
 
-async function runUpdate(_args: string[]): Promise<void> {
-  process.stderr.write("update: not yet implemented\n");
-  process.exitCode = 1;
+async function runUpdate(args: string[]): Promise<void> {
+  const flags = parseFlags(args);
+  const id = flags.id;
+
+  if (!id) {
+    process.stderr.write("Error: --id is required\n");
+    process.exitCode = 1;
+    return;
+  }
+
+  const updates: { title?: string; content?: string } = {};
+  if (flags.title !== undefined) updates.title = flags.title;
+  if (flags.content !== undefined) updates.content = flags.content;
+
+  try {
+    const note = await updateNote(id, updates);
+    printNoteFull(note);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`Error: ${message}\n`);
+    process.exitCode = 1;
+  }
 }
 
-async function runDelete(_args: string[]): Promise<void> {
-  process.stderr.write("delete: not yet implemented\n");
-  process.exitCode = 1;
+async function runDelete(args: string[]): Promise<void> {
+  const flags = parseFlags(args);
+  const id = flags.id;
+
+  if (!id) {
+    process.stderr.write("Error: --id is required\n");
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    await deleteNote(id);
+    process.stdout.write(`Deleted note ${id}\n`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`Error: ${message}\n`);
+    process.exitCode = 1;
+  }
 }
 
 export async function main(argv: string[]): Promise<void> {
