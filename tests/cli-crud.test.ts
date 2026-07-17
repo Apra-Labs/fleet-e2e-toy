@@ -2,6 +2,7 @@
 // full path: CLI dispatcher -> HTTP client -> real Express app.
 
 import { runCli, startTestServer, stopTestServer, resetNotes } from "./helpers/cli-harness";
+import { noteStore } from "../src/models/note";
 
 beforeAll(async () => {
   await startTestServer();
@@ -42,12 +43,28 @@ describe("list", () => {
   });
 
   it("respects --tag filter", async () => {
-    await runCli(["create", "--title", "Tagged", "--content", "Body"]);
-    // create doesn't support --tag directly, so filter against title/content via --q instead
-    const result = await runCli(["list", "--tag", "nonexistent-tag"]);
+    // The CLI's `create` command has no --tags flag, so seed a tagged note
+    // directly via noteStore (available to the test harness) to exercise the
+    // real matching logic in src/api/notes.ts (`n.tags.includes(tag)`).
+    const now = new Date().toISOString();
+    noteStore.create({
+      id: "tagged-note-1",
+      title: "Tagged Note",
+      content: "Body",
+      tags: ["work"],
+      createdAt: now,
+      updatedAt: now,
+    });
+    await runCli(["create", "--title", "Untagged", "--content", "Body"]);
 
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe("");
+    const matching = await runCli(["list", "--tag", "work"]);
+    expect(matching.exitCode).toBe(0);
+    expect(matching.stdout).toContain("Tagged Note");
+    expect(matching.stdout).not.toContain("Untagged");
+
+    const nonMatching = await runCli(["list", "--tag", "nonexistent-tag"]);
+    expect(nonMatching.exitCode).toBe(0);
+    expect(nonMatching.stdout).toBe("");
   });
 
   it("respects --q filter", async () => {
