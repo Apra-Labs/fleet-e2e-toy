@@ -5,28 +5,31 @@
     "_doc": "USD per 1M output tokens. Source: Anthropic published pricing 2026-06-04. Update when pricing changes. This file is the single source of truth -- DEFAULT_CALIBRATION in auto-sprint.js is only used to bootstrap this file on first run.",
     "claude-haiku-4-5": 5,
     "claude-sonnet-4-6": 15,
-    "claude-opus-4-8": 25
+    "claude-opus-4-8": 25,
+    "cheap": 5,
+    "standard": 15,
+    "premium": 25
   },
   "role_models": {
-    "_doc": "Fixed model per workflow role. 'doer' and 'reviewer' are NOT here -- the planner sets model per task in beads metadata; reviewer escalates to max(task_model, sonnet). Change an entry here to reroute a role to a different model tier.",
-    "setup": "claude-haiku-4-5",
-    "planner": "claude-opus-4-8",
-    "plan-reviewer": "claude-sonnet-4-6",
-    "deployer": "claude-sonnet-4-6",
-    "integ-test-runner": "claude-sonnet-4-6",
-    "ci-watcher": "claude-haiku-4-5",
-    "harvester": "claude-sonnet-4-6",
-    "log-flush": "claude-haiku-4-5",
-    "check-blockers": "claude-haiku-4-5",
-    "ready-streaks": "claude-haiku-4-5"
+    "_doc": "standard",
+    "setup": "cheap",
+    "planner": "premium",
+    "plan-reviewer": "standard",
+    "deployer": "standard",
+    "integ-test-runner": "standard",
+    "ci-watcher": "cheap",
+    "harvester": "standard",
+    "log-flush": "cheap",
+    "check-blockers": "cheap",
+    "ready-streaks": "cheap"
   },
   "doer_model_fallback": {
     "_doc": "Model assumed for doer cost estimation when a task has no model metadata in beads. In practice the planner always sets model metadata -- this is a safety net only.",
-    "model": "claude-sonnet-4-6"
+    "model": "standard"
   },
   "reviewer_model_rule": {
     "_doc": "Reviewer model is max(doer_task_model, minimum). If the doer used opus, reviewer uses opus; otherwise reviewer uses sonnet. This mirrors the reviewerModel selection in auto-sprint.js.",
-    "minimum": "claude-sonnet-4-6"
+    "minimum": "standard"
   },
   "complexity_buckets": {
     "_doc": "Estimated doer output tokens per task by complexity bucket S/M/L. Plan-reviewer assigns a bucket to each task by reading its description. historical.bucket_avg_tokens overrides these defaults once enough sprint data has been collected.",
@@ -75,9 +78,9 @@
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 1,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 2,
+    "sprints_sampled": 2,
+    "last_updated": "2026-07-17T14:58:25-04:00",
+    "cycle_avg": 1.5,
     "reviewer_ratio_avg": 0.44004665942641086,
     "bucket_avg_tokens": {},
     "roles": {
