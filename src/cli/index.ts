@@ -19,6 +19,7 @@ import packageJson from "../../package.json";
 // the test suite (which imports `dispatch` from this module) see the same set
 // of dispatchable commands with no separate wiring.
 import "./notesRead";
+import "./notesWrite";
 
 /** CLI display name used in the --version output. */
 const CLI_NAME = "fleet-e2e-toy";
