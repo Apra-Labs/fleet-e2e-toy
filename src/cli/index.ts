@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // NoteAPI CLI entrypoint.
 //
 // Reads argv, dispatches to a registered subcommand, and reports errors
