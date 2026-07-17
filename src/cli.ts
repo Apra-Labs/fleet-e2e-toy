@@ -50,6 +50,40 @@ function printResult(value: unknown): void {
   process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 }
 
+// Recognizes both long and short help flags.
+function isHelpFlag(value: string | undefined): boolean {
+  return value === "--help" || value === "-h";
+}
+
+function printGlobalUsage(): void {
+  process.stdout.write("Usage: noteapi-cli <command> [options]\n");
+  process.stdout.write(`Commands: ${SUBCOMMANDS.join(", ")}\n`);
+  process.stdout.write(
+    "Run `noteapi-cli <command> --help` for command-specific options.\n"
+  );
+}
+
+// Per-subcommand usage text, printed by both `--help`/`-h`.
+const SUBCOMMAND_USAGE: Record<Subcommand, string> = {
+  list:
+    "Usage: noteapi-cli list [--tag <tag>] [--q <query>]\n" +
+    "  List notes, optionally filtered by tag and/or a search query.\n",
+  read:
+    "Usage: noteapi-cli read --id <id>\n" + "  Read a single note by id.\n",
+  create:
+    "Usage: noteapi-cli create --title <title> --content <content> [--tags <tag1,tag2>]\n" +
+    "  Create a new note.\n",
+  update:
+    "Usage: noteapi-cli update --id <id> [--title <title>] [--content <content>] [--tags <tag1,tag2>]\n" +
+    "  Update an existing note.\n",
+  delete:
+    "Usage: noteapi-cli delete --id <id>\n" + "  Delete a note by id.\n",
+};
+
+function printSubcommandUsage(command: Subcommand): void {
+  process.stdout.write(SUBCOMMAND_USAGE[command]);
+}
+
 // Subcommand handlers. Each parses its own flags, validates required
 // arguments before making any HTTP call, and prints results to stdout.
 const handlers: Record<Subcommand, (args: string[]) => Promise<void>> = {
@@ -101,6 +135,13 @@ function cleanMessage(err: unknown): string {
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
 
+  // Global help is resolved before anything else: no command, unknown
+  // command, or a valid command all short-circuit here without a network call.
+  if (isHelpFlag(command)) {
+    printGlobalUsage();
+    return 0;
+  }
+
   if (!command) {
     process.stderr.write("Usage: noteapi-cli <command> [options]\n");
     process.stderr.write(`Commands: ${SUBCOMMANDS.join(", ")}\n`);
@@ -111,6 +152,13 @@ export async function run(argv: string[]): Promise<number> {
     process.stderr.write(`Unknown command: ${command}\n`);
     process.stderr.write(`Commands: ${SUBCOMMANDS.join(", ")}\n`);
     return 1;
+  }
+
+  // Per-subcommand help, checked before flag parsing/validation/dispatch so
+  // no HTTP request is ever made when help is requested.
+  if (rest.some(isHelpFlag)) {
+    printSubcommandUsage(command);
+    return 0;
   }
 
   try {
