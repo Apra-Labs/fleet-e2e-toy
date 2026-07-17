@@ -36,8 +36,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function listNotes(): Promise<Note[]> {
-  return request<Note[]>("/api/notes");
+export interface ListNotesFilters {
+  tag?: string;
+  q?: string;
+}
+
+export async function listNotes(filters: ListNotesFilters = {}): Promise<Note[]> {
+  const params = new URLSearchParams();
+  if (filters.tag) params.set("tag", filters.tag);
+  if (filters.q) params.set("q", filters.q);
+  const query = params.toString();
+  return request<Note[]>(`/api/notes${query ? `?${query}` : ""}`);
 }
 
 export async function getNote(id: string): Promise<Note> {

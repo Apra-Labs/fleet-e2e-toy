@@ -1,19 +1,56 @@
 #!/usr/bin/env node
 
+import { getNote, listNotes } from "./client";
+import { parseFlags } from "./args";
+import { Note } from "../models/note";
+
 const USAGE = "Usage: noteapi-cli <list|read|create|update|delete> [args...]";
 
 function printUsage(): void {
   process.stderr.write(`${USAGE}\n`);
 }
 
-async function runList(_args: string[]): Promise<void> {
-  process.stderr.write("list: not yet implemented\n");
-  process.exitCode = 1;
+function printNoteSummary(note: Note): void {
+  process.stdout.write(`${note.id}\t${note.title}\n`);
 }
 
-async function runRead(_args: string[]): Promise<void> {
-  process.stderr.write("read: not yet implemented\n");
-  process.exitCode = 1;
+function printNoteFull(note: Note): void {
+  process.stdout.write(`${JSON.stringify(note, null, 2)}\n`);
+}
+
+async function runList(args: string[]): Promise<void> {
+  const flags = parseFlags(args);
+
+  try {
+    const notes = await listNotes({ tag: flags.tag, q: flags.q });
+    for (const note of notes) {
+      printNoteSummary(note);
+    }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`Error: ${message}\n`);
+    process.exitCode = 1;
+  }
+}
+
+async function runRead(args: string[]): Promise<void> {
+  const flags = parseFlags(args);
+  const id = flags.id;
+
+  if (!id) {
+    process.stderr.write("Error: --id is required\n");
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    const note = await getNote(id);
+    printNoteFull(note);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`Error: ${message}\n`);
+    process.exitCode = 1;
+  }
 }
 
 async function runCreate(_args: string[]): Promise<void> {
