@@ -2,6 +2,10 @@ import { main } from "../src/tool";
 import { execSync } from "child_process";
 import * as path from "path";
 
+beforeAll(() => {
+  jest.spyOn(globalThis, "fetch").mockImplementation(() => new Promise(() => {}));
+});
+
 describe("CLI version flag unit tests", () => {
   let logSpy: jest.SpyInstance;
   let exitSpy: jest.SpyInstance;
