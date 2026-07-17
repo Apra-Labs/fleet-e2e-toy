@@ -3,6 +3,7 @@
 import { createNote, deleteNote, getNote, listNotes, updateNote } from "./client";
 import { parseFlags } from "./args";
 import { Note } from "../models/note";
+import { isHelpFlag, printGlobalHelp, printSubcommandHelp } from "./help";
 
 const USAGE = "Usage: noteapi-cli <list|read|create|update|delete> [args...]";
 
@@ -19,6 +20,11 @@ function printNoteFull(note: Note): void {
 }
 
 async function runList(args: string[]): Promise<void> {
+  if (isHelpFlag(args)) {
+    printSubcommandHelp("list");
+    return;
+  }
+
   const flags = parseFlags(args);
 
   try {
@@ -34,6 +40,11 @@ async function runList(args: string[]): Promise<void> {
 }
 
 async function runRead(args: string[]): Promise<void> {
+  if (isHelpFlag(args)) {
+    printSubcommandHelp("read");
+    return;
+  }
+
   const flags = parseFlags(args);
   const id = flags.id;
 
@@ -54,6 +65,11 @@ async function runRead(args: string[]): Promise<void> {
 }
 
 async function runCreate(args: string[]): Promise<void> {
+  if (isHelpFlag(args)) {
+    printSubcommandHelp("create");
+    return;
+  }
+
   const flags = parseFlags(args);
 
   if (!flags.title) {
@@ -78,6 +94,11 @@ async function runCreate(args: string[]): Promise<void> {
 }
 
 async function runUpdate(args: string[]): Promise<void> {
+  if (isHelpFlag(args)) {
+    printSubcommandHelp("update");
+    return;
+  }
+
   const flags = parseFlags(args);
   const id = flags.id;
 
@@ -102,6 +123,11 @@ async function runUpdate(args: string[]): Promise<void> {
 }
 
 async function runDelete(args: string[]): Promise<void> {
+  if (isHelpFlag(args)) {
+    printSubcommandHelp("delete");
+    return;
+  }
+
   const flags = parseFlags(args);
   const id = flags.id;
 
@@ -127,6 +153,11 @@ export async function main(argv: string[]): Promise<void> {
   if (!subcommand) {
     printUsage();
     process.exitCode = 1;
+    return;
+  }
+
+  if (subcommand === "--help" || subcommand === "-h") {
+    printGlobalHelp();
     return;
   }
 
