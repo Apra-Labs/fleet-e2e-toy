@@ -41,6 +41,21 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## CLI
+
+A `noteapi-cli` command-line client is available for driving the API from the
+shell, with `list` / `read` / `create` / `update` / `delete` subcommands,
+`--help`/`-h` usage output (global and per-subcommand), a `--version`/`-v`
+flag, and input validation that rejects empty/whitespace-only required
+values. See `docs/cli.md` for the full design, command reference, and error
+contract.
+
+```bash
+npm run cli -- --help
+npm run cli -- create --title "First note" --content "Hello"
+npm run cli -- list --tag demo
+```
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
