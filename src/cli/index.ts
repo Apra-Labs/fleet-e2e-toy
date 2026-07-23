@@ -64,9 +64,58 @@ function printError(message: string): void {
   process.stderr.write(`${JSON.stringify({ error: message })}\n`);
 }
 
+function isBlank(value: string): boolean {
+  return value.trim().length === 0;
+}
+
+/**
+ * Validates that a required string flag is present and not empty/whitespace-only.
+ * Returns the value on success, or undefined and prints an error if invalid.
+ */
+function requireNonBlankString(value: string | undefined, flagName: string): string | undefined {
+  if (value === undefined) {
+    printError(`Missing required flag --${flagName}`);
+    return undefined;
+  }
+  if (isBlank(value)) {
+    printError(`Flag --${flagName} must not be empty or whitespace-only`);
+    return undefined;
+  }
+  return value;
+}
+
+/**
+ * Validates that an optional string flag, if present, is not empty/whitespace-only.
+ * Returns true if the value is valid (including when absent).
+ */
+function validateOptionalNonBlankString(value: string | undefined, flagName: string): boolean {
+  if (value === undefined) return true;
+  if (isBlank(value)) {
+    printError(`Flag --${flagName} must not be empty or whitespace-only`);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validates that an optional string-array flag (e.g. repeatable --tag), if present,
+ * contains no empty/whitespace-only entries.
+ */
+function validateNonBlankStringArray(values: string[] | undefined, flagName: string): boolean {
+  if (values === undefined) return true;
+  if (values.some(isBlank)) {
+    printError(`Flag --${flagName} must not be empty or whitespace-only`);
+    return false;
+  }
+  return true;
+}
+
 async function runList(flags: Record<string, string | boolean | string[]>): Promise<number> {
   const tag = asString(flags.tag);
   const q = asString(flags.q);
+
+  if (!validateOptionalNonBlankString(tag, "tag")) return 1;
+  if (!validateOptionalNonBlankString(q, "q")) return 1;
 
   try {
     const notes = await listNotes({ tag, q });
@@ -79,11 +128,8 @@ async function runList(flags: Record<string, string | boolean | string[]>): Prom
 }
 
 async function runRead(flags: Record<string, string | boolean | string[]>): Promise<number> {
-  const id = asString(flags.id);
-  if (!id) {
-    printError("Missing required flag --id");
-    return 1;
-  }
+  const id = requireNonBlankString(asString(flags.id), "id");
+  if (id === undefined) return 1;
 
   try {
     const note = await getNote(id);
@@ -96,18 +142,20 @@ async function runRead(flags: Record<string, string | boolean | string[]>): Prom
 }
 
 async function runCreate(flags: Record<string, string | boolean | string[]>): Promise<number> {
-  const title = asString(flags.title);
-  const content = asString(flags.content);
-  const tags = asStringArray(flags.tag) ?? [];
+  const title = requireNonBlankString(asString(flags.title), "title");
+  if (title === undefined) return 1;
 
-  if (!title) {
-    printError("Missing required flag --title");
-    return 1;
-  }
-  if (content === undefined) {
+  const rawContent = asString(flags.content);
+  if (rawContent === undefined) {
     printError("Missing required flag --content");
     return 1;
   }
+  const content = requireNonBlankString(rawContent, "content");
+  if (content === undefined) return 1;
+
+  const tagsInput = asStringArray(flags.tag);
+  if (!validateNonBlankStringArray(tagsInput, "tag")) return 1;
+  const tags = tagsInput ?? [];
 
   try {
     const note = await createNote({ title, content, tags });
@@ -120,15 +168,16 @@ async function runCreate(flags: Record<string, string | boolean | string[]>): Pr
 }
 
 async function runUpdate(flags: Record<string, string | boolean | string[]>): Promise<number> {
-  const id = asString(flags.id);
-  if (!id) {
-    printError("Missing required flag --id");
-    return 1;
-  }
+  const id = requireNonBlankString(asString(flags.id), "id");
+  if (id === undefined) return 1;
 
   const title = asString(flags.title);
   const content = asString(flags.content);
   const tags = asStringArray(flags.tag);
+
+  if (!validateOptionalNonBlankString(title, "title")) return 1;
+  if (!validateOptionalNonBlankString(content, "content")) return 1;
+  if (!validateNonBlankStringArray(tags, "tag")) return 1;
 
   const updates: { title?: string; content?: string; tags?: string[] } = {};
   if (title !== undefined) updates.title = title;
@@ -146,11 +195,8 @@ async function runUpdate(flags: Record<string, string | boolean | string[]>): Pr
 }
 
 async function runDelete(flags: Record<string, string | boolean | string[]>): Promise<number> {
-  const id = asString(flags.id);
-  if (!id) {
-    printError("Missing required flag --id");
-    return 1;
-  }
+  const id = requireNonBlankString(asString(flags.id), "id");
+  if (id === undefined) return 1;
 
   try {
     await deleteNote(id);
