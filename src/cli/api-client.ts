@@ -1,4 +1,4 @@
-import { Note } from "../models/note";
+import { CreateNoteInput, Note, UpdateNoteInput } from "../models/note";
 
 export interface ApiClientOptions {
   baseUrl?: string;
@@ -65,4 +65,68 @@ export async function getNote(id: string, options?: ApiClientOptions): Promise<N
   }
 
   return (await res.json()) as Note;
+}
+
+export async function createNote(input: CreateNoteInput, options?: ApiClientOptions): Promise<Note> {
+  const baseUrl = resolveBaseUrl(options);
+  const url = new URL("/api/notes", baseUrl);
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    throw new ApiError(`Could not reach NoteAPI at ${baseUrl}: ${(err as Error).message}`);
+  }
+
+  if (!res.ok) {
+    throw new ApiError(await parseErrorBody(res));
+  }
+
+  return (await res.json()) as Note;
+}
+
+export async function updateNote(
+  id: string,
+  input: UpdateNoteInput,
+  options?: ApiClientOptions
+): Promise<Note> {
+  const baseUrl = resolveBaseUrl(options);
+  const url = new URL(`/api/notes/${encodeURIComponent(id)}`, baseUrl);
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    throw new ApiError(`Could not reach NoteAPI at ${baseUrl}: ${(err as Error).message}`);
+  }
+
+  if (!res.ok) {
+    throw new ApiError(await parseErrorBody(res));
+  }
+
+  return (await res.json()) as Note;
+}
+
+export async function deleteNote(id: string, options?: ApiClientOptions): Promise<void> {
+  const baseUrl = resolveBaseUrl(options);
+  const url = new URL(`/api/notes/${encodeURIComponent(id)}`, baseUrl);
+
+  let res: Response;
+  try {
+    res = await fetch(url, { method: "DELETE" });
+  } catch (err) {
+    throw new ApiError(`Could not reach NoteAPI at ${baseUrl}: ${(err as Error).message}`);
+  }
+
+  if (!res.ok) {
+    throw new ApiError(await parseErrorBody(res));
+  }
 }

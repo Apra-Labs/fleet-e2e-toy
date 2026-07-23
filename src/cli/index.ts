@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-import { ApiError, getNote, listNotes } from "./api-client";
+import { ApiError, createNote, deleteNote, getNote, listNotes, updateNote } from "./api-client";
 
 interface ParsedArgs {
   positional: string[];
-  flags: Record<string, string | boolean>;
+  flags: Record<string, string | boolean | string[]>;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positional: string[] = [];
-  const flags: Record<string, string | boolean> = {};
+  const flags: Record<string, string | boolean | string[]> = {};
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -16,7 +16,18 @@ function parseArgs(argv: string[]): ParsedArgs {
       const key = arg.slice(2);
       const next = argv[i + 1];
       if (next !== undefined && !next.startsWith("--")) {
-        flags[key] = next;
+        const existing = flags[key];
+        if (existing !== undefined) {
+          if (Array.isArray(existing)) {
+            existing.push(next);
+          } else if (typeof existing === "string") {
+            flags[key] = [existing, next];
+          } else {
+            flags[key] = next;
+          }
+        } else {
+          flags[key] = next;
+        }
         i++;
       } else {
         flags[key] = true;
@@ -29,13 +40,24 @@ function parseArgs(argv: string[]): ParsedArgs {
   return { positional, flags };
 }
 
+function asString(value: string | boolean | string[] | undefined): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function asStringArray(value: string | boolean | string[] | undefined): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") return [value];
+  return undefined;
+}
+
 function printError(message: string): void {
   process.stderr.write(`${JSON.stringify({ error: message })}\n`);
 }
 
-async function runList(flags: Record<string, string | boolean>): Promise<number> {
-  const tag = typeof flags.tag === "string" ? flags.tag : undefined;
-  const q = typeof flags.q === "string" ? flags.q : undefined;
+async function runList(flags: Record<string, string | boolean | string[]>): Promise<number> {
+  const tag = asString(flags.tag);
+  const q = asString(flags.q);
 
   try {
     const notes = await listNotes({ tag, q });
@@ -47,8 +69,8 @@ async function runList(flags: Record<string, string | boolean>): Promise<number>
   }
 }
 
-async function runRead(flags: Record<string, string | boolean>): Promise<number> {
-  const id = typeof flags.id === "string" ? flags.id : undefined;
+async function runRead(flags: Record<string, string | boolean | string[]>): Promise<number> {
+  const id = asString(flags.id);
   if (!id) {
     printError("Missing required flag --id");
     return 1;
@@ -64,6 +86,73 @@ async function runRead(flags: Record<string, string | boolean>): Promise<number>
   }
 }
 
+async function runCreate(flags: Record<string, string | boolean | string[]>): Promise<number> {
+  const title = asString(flags.title);
+  const content = asString(flags.content);
+  const tags = asStringArray(flags.tag) ?? [];
+
+  if (!title) {
+    printError("Missing required flag --title");
+    return 1;
+  }
+  if (content === undefined) {
+    printError("Missing required flag --content");
+    return 1;
+  }
+
+  try {
+    const note = await createNote({ title, content, tags });
+    process.stdout.write(`${JSON.stringify(note, null, 2)}\n`);
+    return 0;
+  } catch (err) {
+    printError(err instanceof ApiError ? err.message : "Unexpected error while creating note");
+    return 1;
+  }
+}
+
+async function runUpdate(flags: Record<string, string | boolean | string[]>): Promise<number> {
+  const id = asString(flags.id);
+  if (!id) {
+    printError("Missing required flag --id");
+    return 1;
+  }
+
+  const title = asString(flags.title);
+  const content = asString(flags.content);
+  const tags = asStringArray(flags.tag);
+
+  const updates: { title?: string; content?: string; tags?: string[] } = {};
+  if (title !== undefined) updates.title = title;
+  if (content !== undefined) updates.content = content;
+  if (tags !== undefined) updates.tags = tags;
+
+  try {
+    const note = await updateNote(id, updates);
+    process.stdout.write(`${JSON.stringify(note, null, 2)}\n`);
+    return 0;
+  } catch (err) {
+    printError(err instanceof ApiError ? err.message : "Unexpected error while updating note");
+    return 1;
+  }
+}
+
+async function runDelete(flags: Record<string, string | boolean | string[]>): Promise<number> {
+  const id = asString(flags.id);
+  if (!id) {
+    printError("Missing required flag --id");
+    return 1;
+  }
+
+  try {
+    await deleteNote(id);
+    process.stdout.write(`${JSON.stringify({ message: `Note ${id} deleted` })}\n`);
+    return 0;
+  } catch (err) {
+    printError(err instanceof ApiError ? err.message : "Unexpected error while deleting note");
+    return 1;
+  }
+}
+
 export async function main(argv: string[]): Promise<number> {
   const { positional, flags } = parseArgs(argv);
   const command = positional[0];
@@ -73,8 +162,14 @@ export async function main(argv: string[]): Promise<number> {
       return runList(flags);
     case "read":
       return runRead(flags);
+    case "create":
+      return runCreate(flags);
+    case "update":
+      return runUpdate(flags);
+    case "delete":
+      return runDelete(flags);
     default:
-      printError(`Unknown command '${command ?? ""}'. Expected 'list' or 'read'.`);
+      printError(`Unknown command '${command ?? ""}'. Expected one of: list, read, create, update, delete.`);
       return 1;
   }
 }
