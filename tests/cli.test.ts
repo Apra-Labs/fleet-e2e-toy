@@ -230,5 +230,59 @@ describe("CLI", () => {
       expect(code).toBe(1);
       expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining("Unknown command"));
     });
+
+    it("prints a usage hint to stderr", async () => {
+      const code = await main(["bogus"]);
+
+      expect(code).toBe(1);
+      expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining("Usage:"));
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("help", () => {
+    it("'--help' prints top-level usage and exits 0", async () => {
+      const code = await main(["--help"]);
+
+      expect(code).toBe(0);
+      expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Usage:"));
+      expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("list"));
+      expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("create"));
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it("'-h' prints top-level usage and exits 0", async () => {
+      const code = await main(["-h"]);
+
+      expect(code).toBe(0);
+      expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Usage:"));
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it.each(["list", "read", "create", "update", "delete"])(
+      "'%s --help' prints subcommand-specific usage and exits 0",
+      async (subcommand) => {
+        const code = await main([subcommand, "--help"]);
+
+        expect(code).toBe(0);
+        expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining(`Usage: noteapi-cli ${subcommand}`));
+        expect(fetchSpy).not.toHaveBeenCalled();
+      }
+    );
+
+    it("'list -h' prints subcommand-specific usage and exits 0", async () => {
+      const code = await main(["list", "-h"]);
+
+      expect(code).toBe(0);
+      expect(stdoutSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: noteapi-cli list"));
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it("help output does not contain stack traces", async () => {
+      await main(["--help"]);
+
+      const output = stdoutSpy.mock.calls[0][0] as string;
+      expect(output).not.toContain("at ");
+    });
   });
 });

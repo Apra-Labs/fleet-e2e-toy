@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { ApiError, createNote, deleteNote, getNote, listNotes, updateNote } from "./api-client";
+import { TOP_LEVEL_USAGE, isSubcommand, subcommandUsage } from "./help";
 
 interface ParsedArgs {
   positional: string[];
@@ -12,7 +13,9 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg.startsWith("--")) {
+    if (arg === "-h") {
+      flags.help = true;
+    } else if (arg.startsWith("--")) {
       const key = arg.slice(2);
       const next = argv[i + 1];
       if (next !== undefined && !next.startsWith("--")) {
@@ -156,6 +159,23 @@ async function runDelete(flags: Record<string, string | boolean | string[]>): Pr
 export async function main(argv: string[]): Promise<number> {
   const { positional, flags } = parseArgs(argv);
   const command = positional[0];
+  const helpRequested = flags.help === true;
+
+  if (command === undefined || command.length === 0) {
+    process.stdout.write(`${TOP_LEVEL_USAGE}\n`);
+    return 0;
+  }
+
+  if (!isSubcommand(command)) {
+    printError(`Unknown command '${command}'. Expected one of: list, read, create, update, delete.`);
+    process.stderr.write(`${TOP_LEVEL_USAGE}\n`);
+    return 1;
+  }
+
+  if (helpRequested) {
+    process.stdout.write(`${subcommandUsage(command)}\n`);
+    return 0;
+  }
 
   switch (command) {
     case "list":
@@ -168,9 +188,6 @@ export async function main(argv: string[]): Promise<number> {
       return runUpdate(flags);
     case "delete":
       return runDelete(flags);
-    default:
-      printError(`Unknown command '${command ?? ""}'. Expected one of: list, read, create, update, delete.`);
-      return 1;
   }
 }
 
