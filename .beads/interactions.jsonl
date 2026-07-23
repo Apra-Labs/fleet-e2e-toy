@@ -1,0 +1,4 @@
+{"id":"int-1fd9b3b5c29f3b37a066c68961f7d9a9","kind":"field_change","created_at":"2026-07-23T20:37:39.24814601Z","actor":"pm-e2e","issue_id":"gh-toy-13t","extra":{"field":"priority","new_value":"2","old_value":"1"}}
+{"id":"int-56e9413365f0e29cca98abb0ea876b9c","kind":"field_change","created_at":"2026-07-23T20:46:01.973269577Z","actor":"pm-e2e","issue_id":"gh-toy-mi2.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-f2f48d710b0c28692c8793e84055cd0a","kind":"field_change","created_at":"2026-07-23T20:49:45.361450016Z","actor":"pm-e2e","issue_id":"gh-toy-mi2.2","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-37d7982f7989e9e2ca4126c0d8af3171","kind":"field_change","created_at":"2026-07-23T20:51:02.634058987Z","actor":"pm-e2e","issue_id":"gh-toy-7rp.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}

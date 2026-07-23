@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { ApiError, createNote, deleteNote, getNote, listNotes, updateNote } from "./api-client";
-import { TOP_LEVEL_USAGE, isSubcommand, subcommandUsage } from "./help";
+import { TOP_LEVEL_USAGE, isSubcommand, subcommandUsage, getVersionString } from "./help";
 
 interface ParsedArgs {
   positional: string[];
@@ -15,25 +15,31 @@ function parseArgs(argv: string[]): ParsedArgs {
     const arg = argv[i];
     if (arg === "-h") {
       flags.help = true;
+    } else if (arg === "-v") {
+      flags.version = true;
     } else if (arg.startsWith("--")) {
       const key = arg.slice(2);
-      const next = argv[i + 1];
-      if (next !== undefined && !next.startsWith("--")) {
-        const existing = flags[key];
-        if (existing !== undefined) {
-          if (Array.isArray(existing)) {
-            existing.push(next);
-          } else if (typeof existing === "string") {
-            flags[key] = [existing, next];
+      if (key === "version") {
+        flags.version = true;
+      } else {
+        const next = argv[i + 1];
+        if (next !== undefined && !next.startsWith("--")) {
+          const existing = flags[key];
+          if (existing !== undefined) {
+            if (Array.isArray(existing)) {
+              existing.push(next);
+            } else if (typeof existing === "string") {
+              flags[key] = [existing, next];
+            } else {
+              flags[key] = next;
+            }
           } else {
             flags[key] = next;
           }
+          i++;
         } else {
-          flags[key] = next;
+          flags[key] = true;
         }
-        i++;
-      } else {
-        flags[key] = true;
       }
     } else {
       positional.push(arg);
@@ -158,6 +164,13 @@ async function runDelete(flags: Record<string, string | boolean | string[]>): Pr
 
 export async function main(argv: string[]): Promise<number> {
   const { positional, flags } = parseArgs(argv);
+  const versionRequested = flags.version === true;
+
+  if (versionRequested) {
+    process.stdout.write(`${getVersionString()}\n`);
+    return 0;
+  }
+
   const command = positional[0];
   const helpRequested = flags.help === true;
 

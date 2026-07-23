@@ -1,4 +1,5 @@
 const TOOL_NAME = "noteapi-cli";
+const VERSION = "1.0.0";
 
 export const SUBCOMMANDS = ["list", "read", "create", "update", "delete"] as const;
 export type Subcommand = (typeof SUBCOMMANDS)[number];
@@ -73,4 +74,8 @@ export function isSubcommand(value: string | undefined): value is Subcommand {
 
 export function subcommandUsage(command: Subcommand): string {
   return SUBCOMMAND_USAGE[command];
+}
+
+export function getVersionString(): string {
+  return `fleet-e2e-toy v${VERSION}`;
 }

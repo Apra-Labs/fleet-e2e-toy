@@ -1,1 +1,25 @@
 {"ts":"2026-07-23T16:34:32Z","type":"meta","branch":"pmlite-e2e/s10-1784838842816","startedAt":"20260723_163432","roots":["gh-toy-mi2","gh-toy-7rp","gh-toy-4ef"],"goal":"P1","transcriptDir":"/home/akhil/.claude/projects/-tmp-pmlite-e2e-s10-yx96Qw-repo"}
+{"ts":"2026-07-23T16:34:32Z","type":"cycle-start","cycle":1,"branch":"pmlite-e2e/s10-1784838842816"}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"setup-shell","model":"cheap","context":"","outTokens":1740,"costUsd":0.0087}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"setup","model":"cheap","context":"","outTokens":2761,"costUsd":0.0138}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"state-read","model":"cheap","context":"","outTokens":390,"costUsd":0.0019}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"preflight-bd-schema","model":"cheap","context":"","outTokens":204,"costUsd":0.001}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"state-init","model":"cheap","context":"","outTokens":834,"costUsd":0.0042}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"sprint-meta","model":"cheap","context":"","outTokens":733,"costUsd":0.0037}
+{"ts":"2026-07-23T16:47:45-0400","cycle":"setup","phase":"Plan","label":"stamp-setup","model":"cheap","context":"","outTokens":128,"costUsd":0.0006}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"stamp-plan-c1","model":"cheap","context":"","outTokens":135,"costUsd":0.0007}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"cycle-meta-c1","model":"cheap","context":"","outTokens":910,"costUsd":0.0046}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"cycle-state","model":"cheap","context":"","outTokens":2278,"costUsd":0.0114}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"state-c1-plan","model":"cheap","context":"","outTokens":836,"costUsd":0.0042}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"planner-c1-r0","model":"premium","context":"planning sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":10317,"costUsd":0.2579}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"plan-reviewer-c1-r0","model":"standard","context":"reviewing plan for sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":7475,"costUsd":0.1121}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"feedback-commit-plan-reviewer-c1-r0","model":"cheap","context":"","outTokens":1691,"costUsd":0.0085}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"planner-c1-r1","model":"premium","context":"planning sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":2600,"costUsd":0.065}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"plan-reviewer-c1-r1","model":"standard","context":"reviewing plan for sprint goals gh-toy-mi2, gh-toy-7rp, gh-toy-4ef","outTokens":4672,"costUsd":0.0701}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Plan","label":"plan-commit-c1","model":"cheap","context":"","outTokens":1930,"costUsd":0.0097}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"stamp-develop-c1","model":"cheap","context":"","outTokens":140,"costUsd":0.0007}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"state-c1-dev","model":"cheap","context":"","outTokens":828,"costUsd":0.0041}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"heartbeat-c1-i0","model":"cheap","context":"","outTokens":831,"costUsd":0.0042}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":1927,"costUsd":0.0096}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"doer-c1-i0: gh-toy-mi2.1","model":"standard","context":"tasks gh-toy-mi2.1","outTokens":10635,"costUsd":0.1595}
+{"ts":"2026-07-23T16:47:45-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i1: gh-toy-mi2.1","model":"standard","context":"reviewing tasks gh-toy-mi2.1","outTokens":6334,"costUsd":0.095}
