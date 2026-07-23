@@ -5,7 +5,10 @@
     "_doc": "USD per 1M output tokens. Source: Anthropic published pricing 2026-06-04. Update when pricing changes. This file is the single source of truth -- DEFAULT_CALIBRATION in auto-sprint.js is only used to bootstrap this file on first run.",
     "claude-haiku-4-5": 5,
     "claude-sonnet-4-6": 15,
-    "claude-opus-4-8": 25
+    "claude-opus-4-8": 25,
+    "cheap": 5,
+    "standard": 15,
+    "premium": 25
   },
   "role_models": {
     "_doc": "Fixed model per workflow role. 'doer' and 'reviewer' are NOT here -- the planner sets model per task in beads metadata; reviewer escalates to max(task_model, sonnet). Change an entry here to reroute a role to a different model tier.",
@@ -72,12 +75,36 @@
     "outlier_pct": 200,
     "calibration_failure_pct": 500
   },
+  "doer_token_ceiling": {
+    "_doc": "Maximum output tokens for a single doer streak, keyed by tier name. Streaks that exceed this token budget are split and re-queued.",
+    "cheap": 40000,
+    "standard": 80000,
+    "premium": 150000
+  },
+  "context_limits": {
+    "_doc": "Doer context-window budgeting. Used to predict whether a ready-task streak will fit in the model usable context before autocompact/session-limit truncation, and to split streaks proactively. Keyed by tier.",
+    "model_context_tokens": {
+      "_doc": "Total context window per tier (tokens).",
+      "cheap": 200000,
+      "standard": 200000,
+      "premium": 200000
+    },
+    "autocompact_headroom_fraction": 0.72,
+    "base_prompt_tokens": 9000,
+    "per_task_input_overhead_tokens": 3500,
+    "output_expansion_factor": 1
+  },
+  "parallelism": {
+    "_doc": "Doer concurrency (EXPERIMENTAL -- default 1 = proven serial path). When max_doers>1, independent bd-ready tasks are fanned out into isolated git worktrees, worked by one doer each in parallel, then merged back into the sprint branch sequentially with a conflict->re-queue fallback. This path is NOT yet default: on s10 (win32) it hit cross-platform worktree fragility (worktree \"already exists\" leak on re-create, and worktree-branch merges landing nothing -> 0 commits). Until that is hardened and validated on all runner OSes, max_doers stays 1 so sprints use the pre-parallelism serial path (which commits doers directly on the sprint branch, no worktree/merge machinery). Set >1 to opt into the experimental parallel path. Width is also capped by the harness concurrency limit and the number of ready tasks. Project-agnostic: no assumptions about language, layout, or task shape.",
+    "max_doers": 1,
+    "worktree_root": ".auto-sprint/wt"
+  },
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 1,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 2,
+    "sprints_sampled": 2,
+    "last_updated": "2026-07-23",
+    "cycle_avg": 1,
     "reviewer_ratio_avg": 0.44004665942641086,
     "bucket_avg_tokens": {},
     "roles": {
@@ -139,6 +166,83 @@
       },
       "check-blockers": {
         "avg_output_tokens": 1419,
+        "sample_n": 1
+      },
+      "log-append-test": {
+        "avg_output_tokens": 2953,
+        "sample_n": 1
+      },
+      "exit-check": {
+        "avg_output_tokens": 4293,
+        "sample_n": 1
+      },
+      "stamp-harvest": {
+        "avg_output_tokens": 270,
+        "sample_n": 1
+      },
+      "harvest-clean-process-files": {
+        "avg_output_tokens": 764,
+        "sample_n": 1
+      },
+      "log-append-end": {
+        "avg_output_tokens": 1933,
+        "sample_n": 1
+      },
+      "final-reviewer": {
+        "avg_output_tokens": 5690,
+        "sample_n": 1
+      }
+    },
+    "cycle_sample_n": 1,
+    "bucket_sample_n": {},
+    "tuple_averages": {
+      "log-append-test|N/A|haiku": {
+        "role": "log-append-test",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 2953,
+        "sample_n": 1
+      },
+      "exit-check|N/A|haiku": {
+        "role": "exit-check",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 4293,
+        "sample_n": 1
+      },
+      "stamp-harvest|N/A|haiku": {
+        "role": "stamp-harvest",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 270,
+        "sample_n": 1
+      },
+      "harvest-clean-process-files|N/A|haiku": {
+        "role": "harvest-clean-process-files",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 764,
+        "sample_n": 1
+      },
+      "log-append-end|N/A|haiku": {
+        "role": "log-append-end",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1933,
+        "sample_n": 1
+      },
+      "final-reviewer|N/A|opus": {
+        "role": "final-reviewer",
+        "size": "N/A",
+        "model": "opus",
+        "avg_output_tokens": 5690,
+        "sample_n": 1
+      },
+      "harvester|N/A|sonnet": {
+        "role": "harvester",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 8245,
         "sample_n": 1
       }
     }
