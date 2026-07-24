@@ -9,6 +9,7 @@
 import { commandUsage, wantsHelp } from "./help";
 import { parseFlags, validateNonEmpty, ValidationError } from "./args";
 import { listHandler } from "./commands/list";
+import { readHandler } from "./commands/read";
 
 export interface CommandIO {
   out: (line: string) => void;
@@ -67,7 +68,7 @@ function notImplemented(name: string): CommandHandler {
 export const listCommand: CommandHandler = withHelp("list", listHandler);
 export const readCommand: CommandHandler = withHelp(
   "read",
-  withRequiredFlags(["id"], notImplemented("read"))
+  withRequiredFlags(["id"], readHandler)
 );
 export const createCommand: CommandHandler = withHelp(
   "create",
