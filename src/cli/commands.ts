@@ -2,9 +2,9 @@
 // subcommand name and returns a process exit code (0 = success). Handlers write
 // their own results to stdout via the provided writer and errors via stderr.
 //
-// These are intentionally stubs: sibling tasks (gh-toy-mi2.2..mi2.6) fill in the
-// list/read/create/update/delete behaviour. Keeping them here lets the entrypoint
-// dispatch table stay stable while each command is implemented independently.
+// Each subcommand's core behaviour lives in ./commands/<name>.ts; this module
+// wires --help handling and required-flag validation around each handler and
+// exposes the dispatch table consumed by the entrypoint.
 
 import { commandUsage, wantsHelp } from "./help";
 import { parseFlags, validateNonEmpty, ValidationError } from "./args";
@@ -12,6 +12,7 @@ import { listHandler } from "./commands/list";
 import { readHandler } from "./commands/read";
 import { createHandler } from "./commands/create";
 import { updateHandler } from "./commands/update";
+import { deleteHandler } from "./commands/delete";
 
 export interface CommandIO {
   out: (line: string) => void;
@@ -60,13 +61,6 @@ function withRequiredFlags(
   };
 }
 
-function notImplemented(name: string): CommandHandler {
-  return async (_args: string[], io: CommandIO): Promise<number> => {
-    io.err(`${name}: not implemented yet`);
-    return 1;
-  };
-}
-
 export const listCommand: CommandHandler = withHelp("list", listHandler);
 export const readCommand: CommandHandler = withHelp(
   "read",
@@ -80,7 +74,10 @@ export const updateCommand: CommandHandler = withHelp(
   "update",
   withRequiredFlags(["id"], updateHandler)
 );
-export const deleteCommand: CommandHandler = withHelp("delete", notImplemented("delete"));
+export const deleteCommand: CommandHandler = withHelp(
+  "delete",
+  withRequiredFlags(["id"], deleteHandler)
+);
 
 // Registry of known subcommands, consumed by the entrypoint dispatcher.
 export const commands: Record<string, CommandHandler> = {
