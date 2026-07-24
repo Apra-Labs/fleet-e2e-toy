@@ -4,10 +4,11 @@ import { readCommand } from "./commands/read";
 import { createCommand } from "./commands/create";
 import { updateCommand } from "./commands/update";
 import { deleteCommand } from "./commands/delete";
+import { SubcommandName, hasHelpFlag, isHelpFlag, printGlobalUsage, printSubcommandUsage } from "./help";
 
 export type CommandHandler = (args: string[]) => Promise<void>;
 
-const commands: Record<string, CommandHandler> = {
+const commands: Record<SubcommandName, CommandHandler> = {
   list: listCommand,
   read: readCommand,
   create: createCommand,
@@ -23,13 +24,23 @@ function printUsage(): void {
 export async function run(argv: string[]): Promise<number> {
   const [subcommand, ...rest] = argv;
 
+  if (subcommand && isHelpFlag(subcommand)) {
+    printGlobalUsage();
+    return 0;
+  }
+
   if (!subcommand || !(subcommand in commands)) {
     printUsage();
     return 1;
   }
 
+  if (hasHelpFlag(rest)) {
+    printSubcommandUsage(subcommand as SubcommandName);
+    return 0;
+  }
+
   try {
-    await commands[subcommand](rest);
+    await commands[subcommand as SubcommandName](rest);
     return 0;
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
