@@ -1,13 +1,14 @@
 import { apiRequest } from "../client";
 import { parseFlags } from "../args";
+import { requireNonEmptyFlags } from "../validation";
+
+const USAGE = "Usage: delete --id <id>";
 
 export async function deleteCommand(args: string[]): Promise<void> {
   const flags = parseFlags(args);
-  const id = flags.id;
+  requireNonEmptyFlags(flags, ["id"], USAGE);
 
-  if (!id) {
-    throw new Error("Usage: delete --id <id>");
-  }
+  const id = flags.id;
 
   await apiRequest<void>(`/api/notes/${encodeURIComponent(id)}`, {
     method: "DELETE",

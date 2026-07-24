@@ -65,4 +65,22 @@ describe("CLI dispatcher", () => {
     // dispatcher reached the list handler and did not print raw usage.
     expect([0, 1]).toContain(code);
   });
+
+  it("rejects a whitespace-only --id for read without a stack trace", async () => {
+    const code = await run(["read", "--id", "   "]);
+    expect(code).toBe(1);
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: read --id"));
+    for (const call of errorSpy.mock.calls) {
+      expect(String(call[0])).not.toMatch(/at .+\(.+:\d+:\d+\)/);
+    }
+  });
+
+  it("rejects an empty --title for create without a stack trace", async () => {
+    const code = await run(["create", "--title", "", "--content", "C"]);
+    expect(code).toBe(1);
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: create"));
+    for (const call of errorSpy.mock.calls) {
+      expect(String(call[0])).not.toMatch(/at .+\(.+:\d+:\d+\)/);
+    }
+  });
 });

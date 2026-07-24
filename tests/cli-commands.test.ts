@@ -84,6 +84,20 @@ describe("CLI commands", () => {
       await expect(readCommand(["--id", "missing"])).rejects.toThrow(/Note not found/);
       expect(mockedApiRequest).toHaveBeenCalledWith("/api/notes/missing");
     });
+
+    it("rejects an empty --id with a clear error", async () => {
+      const { readCommand } = await import("../src/cli/commands/read");
+
+      await expect(readCommand(["--id", ""])).rejects.toThrow(/Usage: read --id/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
+
+    it("rejects a whitespace-only --id with a clear error", async () => {
+      const { readCommand } = await import("../src/cli/commands/read");
+
+      await expect(readCommand(["--id", "   "])).rejects.toThrow(/Usage: read --id/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
   });
 
   describe("create", () => {
@@ -120,6 +134,20 @@ describe("CLI commands", () => {
 
       await expect(createCommand(["--title", "T", "--content", "C"])).rejects.toThrow(/Title is required/);
     });
+
+    it("rejects a whitespace-only --title with a clear error", async () => {
+      const { createCommand } = await import("../src/cli/commands/create");
+
+      await expect(createCommand(["--title", "   ", "--content", "C"])).rejects.toThrow(/Usage: create/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
+
+    it("rejects a whitespace-only --content with a clear error", async () => {
+      const { createCommand } = await import("../src/cli/commands/create");
+
+      await expect(createCommand(["--title", "T", "--content", "   "])).rejects.toThrow(/Usage: create/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
   });
 
   describe("update", () => {
@@ -155,6 +183,20 @@ describe("CLI commands", () => {
 
       await expect(updateCommand(["--id", "missing", "--title", "New"])).rejects.toThrow(/Note not found/);
     });
+
+    it("rejects a whitespace-only --id with a clear error", async () => {
+      const { updateCommand } = await import("../src/cli/commands/update");
+
+      await expect(updateCommand(["--id", "   ", "--title", "New"])).rejects.toThrow(/Usage: update/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
+
+    it("rejects a whitespace-only --title with a clear error", async () => {
+      const { updateCommand } = await import("../src/cli/commands/update");
+
+      await expect(updateCommand(["--id", "1", "--title", "   "])).rejects.toThrow(/Usage: update/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
   });
 
   describe("delete", () => {
@@ -180,6 +222,13 @@ describe("CLI commands", () => {
       mockedApiRequest.mockRejectedValueOnce(new ApiError("Note not found", 404));
 
       await expect(deleteCommand(["--id", "missing"])).rejects.toThrow(/Note not found/);
+    });
+
+    it("rejects a whitespace-only --id with a clear error", async () => {
+      const { deleteCommand } = await import("../src/cli/commands/delete");
+
+      await expect(deleteCommand(["--id", "   "])).rejects.toThrow(/Usage: delete --id/);
+      expect(mockedApiRequest).not.toHaveBeenCalled();
     });
   });
 });
