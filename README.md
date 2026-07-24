@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,26 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+The `noteapi` CLI is a thin HTTP client over the API above (it requires the API server to
+be running, or `NOTEAPI_URL` pointing at one).
+
+```bash
+npm run cli -- create --title "Groceries" --content "milk, eggs" --tag home
+npm run cli -- list --tag home
+npm run cli -- read --id <id>
+npm run cli -- update --id <id> --title "Groceries v2"
+npm run cli -- delete --id <id>
+npm run cli -- --help          # global usage
+npm run cli -- create --help   # per-subcommand usage
+npm run cli -- --version       # prints CLI version
+```
+
+Every subcommand supports `--help`/`-h`. Required flags are validated up front with
+readable errors (no stack traces) before any API call is made. See `docs/cli.md` for the
+CLI's internal design (dispatch, validation composition, error handling).
 
 ## Tech Stack
 
