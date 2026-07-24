@@ -14,6 +14,11 @@ export async function run(argv: string[], io: CommandIO): Promise<number> {
     return 1;
   }
 
+  if (name === "--version" || name === "-v") {
+    io.out("fleet-e2e-toy v1.0.0");
+    return 0;
+  }
+
   if (name === "--help" || name === "-h" || name === "help") {
     io.out(USAGE);
     return 0;
