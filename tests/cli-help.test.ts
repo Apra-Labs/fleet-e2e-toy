@@ -65,4 +65,25 @@ describe("CLI help", () => {
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
     expect(errorSpy).not.toHaveBeenCalled();
   });
+
+  it("prints version and exits 0 for 'list --version'", async () => {
+    const code = await run(["list", "--version"]);
+    expect(code).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it("prints version and exits 0 for 'read -v'", async () => {
+    const code = await run(["read", "-v"]);
+    expect(code).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it("prints version and exits 0 for 'create --id abc --version'", async () => {
+    const code = await run(["create", "--id", "abc", "--version"]);
+    expect(code).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
 });

@@ -19,3 +19,7 @@ export function printVersion(): void {
 export function isVersionFlag(arg: string | undefined): boolean {
   return arg === "--version" || arg === "-v";
 }
+
+export function hasVersionFlag(args: string[]): boolean {
+  return args.some((arg) => isVersionFlag(arg));
+}

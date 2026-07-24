@@ -23,3 +23,10 @@
 {"ts":"2026-07-23T23:18:58-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2491,"costUsd":0.0125}
 {"ts":"2026-07-23T23:18:58-0400","cycle":1,"phase":"Develop","label":"doer-c1-i0: gh-toy-mi2.1","model":"standard","context":"tasks gh-toy-mi2.1","outTokens":9748,"costUsd":0.1462}
 {"ts":"2026-07-23T23:18:58-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i1: gh-toy-mi2.1","model":"standard","context":"reviewing tasks gh-toy-mi2.1","outTokens":5413,"costUsd":0.0812}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"heartbeat-c1-i1","model":"cheap","context":"","outTokens":1083,"costUsd":0.0054}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i1","model":"cheap","context":"23 new entries","outTokens":3819,"costUsd":0.0191}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":3905,"costUsd":0.0195}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"doer-c1-i1: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.1","model":"standard","context":"tasks gh-toy-mi2.2, gh-toy-mi2.3, gh-toy-7rp.1","outTokens":17368,"costUsd":0.2605}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"doer-c1-i1: gh-toy-4ef.1","model":"cheap","context":"tasks gh-toy-4ef.1","outTokens":5071,"costUsd":0.0254}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i2: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.1 +1more","model":"standard","context":"reviewing tasks gh-toy-mi2.2, gh-toy-mi2.3, gh-toy-7rp.1, gh-toy-4ef.1","outTokens":7231,"costUsd":0.1085}
+{"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"review-apply-c1-i2","model":"cheap","context":"","outTokens":511,"costUsd":0.0026}
