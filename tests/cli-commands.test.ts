@@ -1,8 +1,12 @@
-import { apiRequest } from "../src/cli/client";
+import { apiRequest, ApiError } from "../src/cli/client";
 
-jest.mock("../src/cli/client", () => ({
-  apiRequest: jest.fn(),
-}));
+jest.mock("../src/cli/client", () => {
+  const actual = jest.requireActual("../src/cli/client");
+  return {
+    apiRequest: jest.fn(),
+    ApiError: actual.ApiError,
+  };
+});
 
 const mockedApiRequest = apiRequest as jest.MockedFunction<typeof apiRequest>;
 
@@ -39,6 +43,13 @@ describe("CLI commands", () => {
       expect(calledPath).toContain("tag=work");
       expect(calledPath).toContain("q=meeting");
     });
+
+    it("propagates a clear error when the API request fails", async () => {
+      const { listCommand } = await import("../src/cli/commands/list");
+      mockedApiRequest.mockRejectedValueOnce(new ApiError("Could not reach NoteAPI at http://localhost:3000"));
+
+      await expect(listCommand([])).rejects.toThrow(/Could not reach NoteAPI/);
+    });
   });
 
   describe("read", () => {
@@ -64,6 +75,14 @@ describe("CLI commands", () => {
 
       await expect(readCommand([])).rejects.toThrow(/Usage: read --id/);
       expect(mockedApiRequest).not.toHaveBeenCalled();
+    });
+
+    it("propagates a clear error when the note is not found (404)", async () => {
+      const { readCommand } = await import("../src/cli/commands/read");
+      mockedApiRequest.mockRejectedValueOnce(new ApiError("Note not found", 404));
+
+      await expect(readCommand(["--id", "missing"])).rejects.toThrow(/Note not found/);
+      expect(mockedApiRequest).toHaveBeenCalledWith("/api/notes/missing");
     });
   });
 
@@ -94,6 +113,13 @@ describe("CLI commands", () => {
       );
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("T"));
     });
+
+    it("propagates a clear error when the API request fails", async () => {
+      const { createCommand } = await import("../src/cli/commands/create");
+      mockedApiRequest.mockRejectedValueOnce(new ApiError("title: Title is required and must be a non-empty string", 400));
+
+      await expect(createCommand(["--title", "T", "--content", "C"])).rejects.toThrow(/Title is required/);
+    });
   });
 
   describe("update", () => {
@@ -122,6 +148,13 @@ describe("CLI commands", () => {
         expect.objectContaining({ method: "PUT", body: JSON.stringify({ title: "New" }) })
       );
     });
+
+    it("propagates a clear error when the note is not found (404)", async () => {
+      const { updateCommand } = await import("../src/cli/commands/update");
+      mockedApiRequest.mockRejectedValueOnce(new ApiError("Note not found", 404));
+
+      await expect(updateCommand(["--id", "missing", "--title", "New"])).rejects.toThrow(/Note not found/);
+    });
   });
 
   describe("delete", () => {
@@ -140,6 +173,13 @@ describe("CLI commands", () => {
 
       expect(mockedApiRequest).toHaveBeenCalledWith("/api/notes/1", expect.objectContaining({ method: "DELETE" }));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("1"));
+    });
+
+    it("propagates a clear error when the note is not found (404)", async () => {
+      const { deleteCommand } = await import("../src/cli/commands/delete");
+      mockedApiRequest.mockRejectedValueOnce(new ApiError("Note not found", 404));
+
+      await expect(deleteCommand(["--id", "missing"])).rejects.toThrow(/Note not found/);
     });
   });
 });
