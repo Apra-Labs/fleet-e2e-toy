@@ -1,26 +1,22 @@
 #!/usr/bin/env node
 import { commands, CommandIO } from "./commands";
 import { ApiError } from "./client";
+import { GLOBAL_USAGE } from "./help";
 
-const USAGE = `Usage: noteapi <command> [options]
-
-Commands:
-  list     List notes (optional --tag, --q filters)
-  read     Read a note (--id required)
-  create   Create a note (--title, --content required)
-  update   Update a note (--id required; --title, --content optional)
-  delete   Delete a note (--id required)
-
-Environment:
-  NOTEAPI_URL  Base URL of the NoteAPI server (default http://localhost:3000)`;
+const USAGE = GLOBAL_USAGE;
 
 // Dispatch argv to the matching subcommand handler. Returns a process exit code.
 export async function run(argv: string[], io: CommandIO): Promise<number> {
   const [name, ...rest] = argv;
 
-  if (!name || name === "--help" || name === "-h" || name === "help") {
+  if (!name) {
     io.out(USAGE);
-    return name ? 0 : 1;
+    return 1;
+  }
+
+  if (name === "--help" || name === "-h" || name === "help") {
+    io.out(USAGE);
+    return 0;
   }
 
   const handler = commands[name];

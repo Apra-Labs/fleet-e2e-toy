@@ -6,6 +6,8 @@
 // list/read/create/update/delete behaviour. Keeping them here lets the entrypoint
 // dispatch table stay stable while each command is implemented independently.
 
+import { commandUsage, wantsHelp } from "./help";
+
 export interface CommandIO {
   out: (line: string) => void;
   err: (line: string) => void;
@@ -16,6 +18,18 @@ export type CommandHandler = (
   io: CommandIO
 ) => Promise<number>;
 
+// Wraps a handler so that --help/-h is honoured before the handler's own
+// argument parsing runs: prints the subcommand's usage to stdout and exits 0.
+function withHelp(name: string, handler: CommandHandler): CommandHandler {
+  return async (args: string[], io: CommandIO): Promise<number> => {
+    if (wantsHelp(args)) {
+      io.out(commandUsage(name));
+      return 0;
+    }
+    return handler(args, io);
+  };
+}
+
 function notImplemented(name: string): CommandHandler {
   return async (_args: string[], io: CommandIO): Promise<number> => {
     io.err(`${name}: not implemented yet`);
@@ -23,11 +37,11 @@ function notImplemented(name: string): CommandHandler {
   };
 }
 
-export const listCommand: CommandHandler = notImplemented("list");
-export const readCommand: CommandHandler = notImplemented("read");
-export const createCommand: CommandHandler = notImplemented("create");
-export const updateCommand: CommandHandler = notImplemented("update");
-export const deleteCommand: CommandHandler = notImplemented("delete");
+export const listCommand: CommandHandler = withHelp("list", notImplemented("list"));
+export const readCommand: CommandHandler = withHelp("read", notImplemented("read"));
+export const createCommand: CommandHandler = withHelp("create", notImplemented("create"));
+export const updateCommand: CommandHandler = withHelp("update", notImplemented("update"));
+export const deleteCommand: CommandHandler = withHelp("delete", notImplemented("delete"));
 
 // Registry of known subcommands, consumed by the entrypoint dispatcher.
 export const commands: Record<string, CommandHandler> = {
