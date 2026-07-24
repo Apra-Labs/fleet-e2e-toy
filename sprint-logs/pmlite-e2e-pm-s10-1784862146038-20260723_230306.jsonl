@@ -30,3 +30,26 @@
 {"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"doer-c1-i1: gh-toy-4ef.1","model":"cheap","context":"tasks gh-toy-4ef.1","outTokens":5071,"costUsd":0.0254}
 {"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i2: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.1 +1more","model":"standard","context":"reviewing tasks gh-toy-mi2.2, gh-toy-mi2.3, gh-toy-7rp.1, gh-toy-4ef.1","outTokens":7231,"costUsd":0.1085}
 {"ts":"2026-07-23T23:27:25-0400","cycle":1,"phase":"Develop","label":"review-apply-c1-i2","model":"cheap","context":"","outTokens":511,"costUsd":0.0026}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"heartbeat-c1-i2","model":"cheap","context":"","outTokens":2076,"costUsd":0.0104}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i2","model":"cheap","context":"7 new entries","outTokens":3429,"costUsd":0.0171}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"feedback-write-reviewer-c1-i2: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.1 +1more","model":"cheap","context":"","outTokens":5282,"costUsd":0.0264}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":3945,"costUsd":0.0197}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"doer-c1-i2: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.2","model":"standard","context":"tasks gh-toy-mi2.2, gh-toy-mi2.3, gh-toy-7rp.2","outTokens":18292,"costUsd":0.2744}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"doer-c1-i2: gh-toy-4ef.1","model":"cheap","context":"tasks gh-toy-4ef.1","outTokens":4605,"costUsd":0.023}
+{"ts":"2026-07-23T23:34:39-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i3: gh-toy-mi2.2 gh-toy-mi2.3 gh-toy-7rp.2 +1more","model":"standard","context":"reviewing tasks gh-toy-mi2.2, gh-toy-mi2.3, gh-toy-7rp.2, gh-toy-4ef.1","outTokens":4996,"costUsd":0.0749}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"heartbeat-c1-i3","model":"cheap","context":"","outTokens":1065,"costUsd":0.0053}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i3","model":"cheap","context":"7 new entries","outTokens":2372,"costUsd":0.0119}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2882,"costUsd":0.0144}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"doer-c1-i3: gh-toy-mi2.4 gh-toy-7rp.3","model":"standard","context":"tasks gh-toy-mi2.4, gh-toy-7rp.3","outTokens":9012,"costUsd":0.1352}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"doer-c1-i3: gh-toy-4ef.2","model":"cheap","context":"tasks gh-toy-4ef.2","outTokens":2623,"costUsd":0.0131}
+{"ts":"2026-07-23T23:39:37-0400","cycle":1,"phase":"Develop","label":"reviewer-c1-i4: gh-toy-mi2.4 gh-toy-7rp.3 gh-toy-4ef.2","model":"standard","context":"reviewing tasks gh-toy-mi2.4, gh-toy-7rp.3, gh-toy-4ef.2","outTokens":5209,"costUsd":0.0781}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Develop","label":"heartbeat-c1-i4","model":"cheap","context":"","outTokens":1042,"costUsd":0.0052}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Develop","label":"log-append-iter-c1-i4","model":"cheap","context":"6 new entries","outTokens":1756,"costUsd":0.0088}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Develop","label":"ready-streaks","model":"cheap","context":"","outTokens":2669,"costUsd":0.0133}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Develop","label":"push-sha-c1","model":"cheap","context":"","outTokens":376,"costUsd":0.0019}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Test","label":"stamp-test-c1","model":"cheap","context":"","outTokens":154,"costUsd":0.0008}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Test","label":"deployer-c1","model":"standard","context":"","outTokens":1759,"costUsd":0.0264}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Test","label":"integ-scope","model":"cheap","context":"","outTokens":1838,"costUsd":0.0092}
+{"ts":"2026-07-23T23:43:04-0400","cycle":1,"phase":"Test","label":"integ-runner-c1","model":"standard","context":"","outTokens":6269,"costUsd":0.094}
+{"ts":"2026-07-23T23:43:34-0400","cycle":1,"phase":"Test","label":"log-append-test-c1","model":"cheap","context":"8 new entries","outTokens":1417,"costUsd":0.0071}
+{"ts":"2026-07-23T23:43:34-0400","cycle":1,"phase":"Develop","label":"exit-check","model":"cheap","context":"","outTokens":3257,"costUsd":0.0163}
