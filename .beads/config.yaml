@@ -7,10 +7,11 @@
 # If not set, bd init will auto-detect from directory name
 # Example: issue-prefix: "myproject" creates issues like "myproject-1", "myproject-2", etc.
 issue-prefix: "gh-toy"
-
 # Use no-db mode: JSONL-only, no Dolt database
 # When true, bd will use .beads/issues.jsonl as the source of truth
 no-db: true
+sync:
+    remote: "git+https://github.com/Apra-Labs/fleet-e2e-toy"
 
 # Enable JSON output by default
 # json: false
