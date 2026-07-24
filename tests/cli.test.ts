@@ -37,7 +37,7 @@ describe("CLI dispatcher", () => {
   it("dispatches to the read handler and surfaces handler errors without a stack trace", async () => {
     const code = await run(["read"]);
     expect(code).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: read <id>"));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: read --id"));
   });
 
   it("dispatches to the create handler and surfaces handler errors without a stack trace", async () => {
@@ -55,7 +55,7 @@ describe("CLI dispatcher", () => {
   it("dispatches to the delete handler and surfaces handler errors without a stack trace", async () => {
     const code = await run(["delete"]);
     expect(code).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: delete <id>"));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage: delete --id"));
   });
 
   it("dispatches to the list handler, which attempts to reach the API", async () => {
