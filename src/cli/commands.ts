@@ -7,6 +7,7 @@
 // dispatch table stay stable while each command is implemented independently.
 
 import { commandUsage, wantsHelp } from "./help";
+import { parseFlags, validateNonEmpty, ValidationError } from "./args";
 
 export interface CommandIO {
   out: (line: string) => void;
@@ -30,6 +31,31 @@ function withHelp(name: string, handler: CommandHandler): CommandHandler {
   };
 }
 
+// Wraps a handler so that the given required string flags are validated
+// (present, non-empty, non-blank) before the handler runs. On failure, writes
+// a readable error naming the offending flag to stderr (no stack trace) and
+// returns a non-zero exit code.
+function withRequiredFlags(
+  requiredFlags: string[],
+  handler: CommandHandler
+): CommandHandler {
+  return async (args: string[], io: CommandIO): Promise<number> => {
+    const flags = parseFlags(args);
+    try {
+      for (const flag of requiredFlags) {
+        validateNonEmpty(flag, flags[flag]);
+      }
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        io.err(`error: ${err.message}`);
+        return 1;
+      }
+      throw err;
+    }
+    return handler(args, io);
+  };
+}
+
 function notImplemented(name: string): CommandHandler {
   return async (_args: string[], io: CommandIO): Promise<number> => {
     io.err(`${name}: not implemented yet`);
@@ -38,9 +64,18 @@ function notImplemented(name: string): CommandHandler {
 }
 
 export const listCommand: CommandHandler = withHelp("list", notImplemented("list"));
-export const readCommand: CommandHandler = withHelp("read", notImplemented("read"));
-export const createCommand: CommandHandler = withHelp("create", notImplemented("create"));
-export const updateCommand: CommandHandler = withHelp("update", notImplemented("update"));
+export const readCommand: CommandHandler = withHelp(
+  "read",
+  withRequiredFlags(["id"], notImplemented("read"))
+);
+export const createCommand: CommandHandler = withHelp(
+  "create",
+  withRequiredFlags(["title", "content"], notImplemented("create"))
+);
+export const updateCommand: CommandHandler = withHelp(
+  "update",
+  withRequiredFlags(["id"], notImplemented("update"))
+);
 export const deleteCommand: CommandHandler = withHelp("delete", notImplemented("delete"));
 
 // Registry of known subcommands, consumed by the entrypoint dispatcher.
