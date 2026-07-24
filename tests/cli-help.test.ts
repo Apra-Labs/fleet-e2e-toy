@@ -51,4 +51,18 @@ describe("CLI help", () => {
       expect(String(call[0])).not.toMatch(/at .+\(.+:\d+:\d+\)/);
     }
   });
+
+  it("prints version and exits 0 for --version", async () => {
+    const code = await run(["--version"]);
+    expect(code).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it("prints version and exits 0 for -v", async () => {
+    const code = await run(["-v"]);
+    expect(code).toBe(0);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("noteapi v"));
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
 });

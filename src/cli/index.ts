@@ -5,6 +5,7 @@ import { createCommand } from "./commands/create";
 import { updateCommand } from "./commands/update";
 import { deleteCommand } from "./commands/delete";
 import { SubcommandName, hasHelpFlag, isHelpFlag, printGlobalUsage, printSubcommandUsage } from "./help";
+import { isVersionFlag, printVersion } from "./version";
 
 export type CommandHandler = (args: string[]) => Promise<void>;
 
@@ -23,6 +24,11 @@ function printUsage(): void {
 
 export async function run(argv: string[]): Promise<number> {
   const [subcommand, ...rest] = argv;
+
+  if (subcommand && isVersionFlag(subcommand)) {
+    printVersion();
+    return 0;
+  }
 
   if (subcommand && isHelpFlag(subcommand)) {
     printGlobalUsage();
