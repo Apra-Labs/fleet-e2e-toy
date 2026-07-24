@@ -11,6 +11,7 @@ import { parseFlags, validateNonEmpty, ValidationError } from "./args";
 import { listHandler } from "./commands/list";
 import { readHandler } from "./commands/read";
 import { createHandler } from "./commands/create";
+import { updateHandler } from "./commands/update";
 
 export interface CommandIO {
   out: (line: string) => void;
@@ -77,7 +78,7 @@ export const createCommand: CommandHandler = withHelp(
 );
 export const updateCommand: CommandHandler = withHelp(
   "update",
-  withRequiredFlags(["id"], notImplemented("update"))
+  withRequiredFlags(["id"], updateHandler)
 );
 export const deleteCommand: CommandHandler = withHelp("delete", notImplemented("delete"));
 
