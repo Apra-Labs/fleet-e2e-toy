@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 57 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,30 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+## CLI
+
+A command-line client (`fleet-e2e-toy`) is available for exercising the API
+from a terminal instead of curl. It talks to a running NoteAPI server over
+HTTP (configurable via the `NOTEAPI_URL` environment variable, default
+`http://localhost:3000`).
+
+```bash
+npm start                                       # start the server in one terminal
+npm run cli -- --version                        # fleet-e2e-toy v1.0.0
+npm run cli -- --help                            # global usage
+npm run cli -- create --title "Hi" --content "Body" --tag demo
+npm run cli -- list --tag demo
+npm run cli -- read --id <id>
+npm run cli -- update --id <id> --title "New title"
+npm run cli -- delete --id <id>
+```
+
+Every subcommand supports `<command> --help` for its own usage. Required
+flags are validated before any network call is made (empty/whitespace-only
+values are rejected with a clear error and non-zero exit). API and network
+failures are reported as `Error: <message>` on stderr with a non-zero exit —
+never a raw stack trace. See `docs/cli.md` for design details.
 
 ## Tech Stack
 
