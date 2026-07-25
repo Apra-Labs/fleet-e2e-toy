@@ -16,6 +16,29 @@ function captureStdout(): { output: string[]; restore: () => void } {
   };
 }
 
+function captureOutput(): { stdout: string[]; stderr: string[]; restore: () => void } {
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+  const origOut = process.stdout.write.bind(process.stdout);
+  const origErr = process.stderr.write.bind(process.stderr);
+  process.stdout.write = ((chunk: string) => {
+    stdout.push(String(chunk));
+    return true;
+  }) as typeof process.stdout.write;
+  process.stderr.write = ((chunk: string) => {
+    stderr.push(String(chunk));
+    return true;
+  }) as typeof process.stderr.write;
+  return {
+    stdout,
+    stderr,
+    restore: () => {
+      process.stdout.write = origOut;
+      process.stderr.write = origErr;
+    },
+  };
+}
+
 beforeEach(() => {
   noteStore.clear();
 });
@@ -85,5 +108,35 @@ describe("per-subcommand help", () => {
     cap.restore();
     expect(code).toBe(0);
     expect(cap.output.join("")).toContain("Usage: noteapi list");
+  });
+});
+
+describe("input validation via the CLI", () => {
+  it("'create --title \"   \"' -> clear error, non-zero exit, no stack trace, no note created", async () => {
+    const cap = captureOutput();
+    const code = await run(["create", "--title", "   ", "--content", "Body"]);
+    cap.restore();
+    expect(code).not.toBe(0);
+    expect(cap.stderr.join("")).toMatch(/--title is required/);
+    expect(cap.stderr.join("")).not.toMatch(/at /);
+    expect(noteStore.getAll()).toHaveLength(0);
+  });
+
+  it("'create --title \"\"' (empty string) -> clear error, non-zero exit, no stack trace", async () => {
+    const cap = captureOutput();
+    const code = await run(["create", "--title", "", "--content", "Body"]);
+    cap.restore();
+    expect(code).not.toBe(0);
+    expect(cap.stderr.join("")).toMatch(/--title is required/);
+    expect(cap.stderr.join("")).not.toMatch(/at /);
+  });
+
+  it("'read --id \"   \"' (whitespace-only) -> clear error, non-zero exit, no stack trace", async () => {
+    const cap = captureOutput();
+    const code = await run(["read", "--id", "   "]);
+    cap.restore();
+    expect(code).not.toBe(0);
+    expect(cap.stderr.join("")).toMatch(/--id is required/);
+    expect(cap.stderr.join("")).not.toMatch(/at /);
   });
 });
