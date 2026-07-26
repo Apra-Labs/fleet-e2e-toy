@@ -1,0 +1,2 @@
+{"id":"int-67d98472022f0d1f64946e276efb1ea7","kind":"field_change","created_at":"2026-07-26T04:34:54.314584673Z","actor":"bella","issue_id":"gh-toy-aeg.1","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
+{"id":"int-0487b1f33d36d2ffaf3f4330683d2704","kind":"field_change","created_at":"2026-07-26T04:35:31.478381997Z","actor":"bella","issue_id":"gh-toy-aeg.2","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
