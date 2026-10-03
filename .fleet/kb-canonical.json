@@ -1,9 +1,9 @@
 {
   "version": 2,
   "provenance": {
-    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
-    "branch": "main",
-    "entry_count": 1
+    "commit": "d339ac47e1e9a1e46b82b6035e77e821e54b9f70",
+    "branch": "kb-acceptance",
+    "entry_count": 2
   },
   "entries": [
     {
@@ -21,6 +21,23 @@
       ],
       "confidence": "CONFIRMED",
       "updated_at": "2026-10-03T07:36:34.353Z"
+    },
+    {
+      "id": "a818ecf7-6cbf-4ba8-a35e-7cb4d67b86e6",
+      "type": "learning",
+      "title": "SIGINT shutdown in src/index.ts uses close plus unref'd exit fallback",
+      "summary": "The server's SIGINT handler closes the http.Server and exits 130, with an unref'd 500ms timer as a fallback for stalled keep-alive connections; no SIGTERM handler, by design.",
+      "symbols": [
+        "server",
+        "process.once"
+      ],
+      "source_files": [
+        "src/index.ts",
+        "tests/sigint.test.ts",
+        "tests/version.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-10-03T08:49:52.986Z"
     }
   ]
 }
