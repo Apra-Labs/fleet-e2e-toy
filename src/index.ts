@@ -8,6 +8,13 @@ if (args.includes("--version") || args.includes("-v")) {
   process.exit(0);
 }
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`NoteAPI running on http://localhost:${PORT}`);
+});
+
+process.once("SIGINT", () => {
+  process.stderr.write("Interrupted.\n");
+  server.close(() => process.exit(130));
+  // Keep-alive connections can stall close; do not wait indefinitely.
+  setTimeout(() => process.exit(130), 500).unref();
 });
