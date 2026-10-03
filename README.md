@@ -28,7 +28,10 @@ cd noteapi-demo
 npm install
 npm test        # 21 tests, all passing
 npm start       # http://localhost:3000
+npm start -- --version   # prints the version and exits (also -v)
 ```
+
+See `docs/cli-version-flag.md` for details.
 
 ## API Endpoints
 
