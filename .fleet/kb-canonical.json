@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 1
+  },
+  "entries": [
+    {
+      "id": "306dc678-f4ab-4aab-92e5-485c3823b525",
+      "type": "runbook",
+      "title": "Spawning src/index.ts in jest without leaking servers",
+      "summary": "Use node_modules/.bin/ts-node directly with detached spawn and a process-group kill to test the server-start path of src/index.ts.",
+      "symbols": [
+        "spawn",
+        "process.kill"
+      ],
+      "source_files": [
+        "tests/version.test.ts",
+        "src/index.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-10-03T07:36:34.353Z"
+    }
+  ]
+}
