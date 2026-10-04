@@ -33,6 +33,9 @@ npm start -- --version   # prints the version and exits (also -v)
 
 See `docs/cli-version-flag.md` for details.
 
+Empty or whitespace-only command-line arguments are rejected with a one-line error on
+stderr and exit code 1. See `docs/cli-blank-args.md`.
+
 Ctrl-C (SIGINT) shuts the server down cleanly: prints `Interrupted.`, frees the port, and
 exits with code 130. See `docs/sigint-shutdown.md`.
 

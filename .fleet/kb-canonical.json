@@ -1,9 +1,9 @@
 {
   "version": 2,
   "provenance": {
-    "commit": "d339ac47e1e9a1e46b82b6035e77e821e54b9f70",
-    "branch": "kb-acceptance",
-    "entry_count": 2
+    "commit": "36c237f71c993f02dbc6d6a4009625f6048cc6aa",
+    "branch": "kb-acceptance-2",
+    "entry_count": 3
   },
   "entries": [
     {
@@ -21,6 +21,23 @@
       ],
       "confidence": "CONFIRMED",
       "updated_at": "2026-10-03T07:36:34.353Z"
+    },
+    {
+      "id": "5fd924f4-0928-41e6-8328-a9239eafdf82",
+      "type": "knowledge",
+      "title": "Blank argv check in src/index.ts precedes --version and listen",
+      "summary": "src/index.ts rejects any empty or whitespace-only argv token via findBlankArgs before the --version check, exiting 1 with a single stderr line.",
+      "symbols": [
+        "findBlankArgs",
+        "isBlank"
+      ],
+      "source_files": [
+        "src/index.ts",
+        "src/utils/validation.ts",
+        "tests/cli-args.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-10-04T04:50:27.087Z"
     },
     {
       "id": "a818ecf7-6cbf-4ba8-a35e-7cb4d67b86e6",
