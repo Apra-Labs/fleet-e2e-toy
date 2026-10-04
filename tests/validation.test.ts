@@ -1,4 +1,24 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import {
+  findBlankArgs,
+  isBlank,
+  validateCreateInput,
+  validateUpdateInput,
+} from "../src/utils/validation";
+
+describe("isBlank / findBlankArgs", () => {
+  it.each(["", "   ", "\t", "\n", " \t\n "])("treats %j as blank", (v) => {
+    expect(isBlank(v)).toBe(true);
+  });
+
+  it.each(["a", " a ", "--version"])("treats %j as not blank", (v) => {
+    expect(isBlank(v)).toBe(false);
+  });
+
+  it("returns positions of blank tokens", () => {
+    expect(findBlankArgs(["a", "", "--version", "  "])).toEqual([1, 3]);
+    expect(findBlankArgs(["a", "b"])).toEqual([]);
+  });
+});
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {

@@ -42,6 +42,18 @@ export function validateCreateInput(
   };
 }
 
+export function isBlank(value: string): boolean {
+  return value.trim().length === 0;
+}
+
+export function findBlankArgs(args: string[]): number[] {
+  const positions: number[] = [];
+  args.forEach((arg, i) => {
+    if (isBlank(arg)) positions.push(i);
+  });
+  return positions;
+}
+
 export function validateUpdateInput(
   body: unknown
 ): { valid: true; data: UpdateNoteInput } | { valid: false; errors: ValidationError[] } {
