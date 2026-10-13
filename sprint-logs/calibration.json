@@ -5,7 +5,10 @@
     "_doc": "USD per 1M output tokens. Source: Anthropic published pricing 2026-06-04. Update when pricing changes. This file is the single source of truth -- DEFAULT_CALIBRATION in auto-sprint.js is only used to bootstrap this file on first run.",
     "claude-haiku-4-5": 5,
     "claude-sonnet-4-6": 15,
-    "claude-opus-4-8": 25
+    "claude-opus-4-8": 25,
+    "cheap": 5,
+    "standard": 15,
+    "premium": 25
   },
   "role_models": {
     "_doc": "Fixed model per workflow role. 'doer' and 'reviewer' are NOT here -- the planner sets model per task in beads metadata; reviewer escalates to max(task_model, sonnet). Change an entry here to reroute a role to a different model tier.",
@@ -72,46 +75,74 @@
     "outlier_pct": 200,
     "calibration_failure_pct": 500
   },
+  "doer_token_ceiling": {
+    "_doc": "Maximum output tokens for a single doer streak, keyed by tier name. Streaks that exceed this token budget are split and re-queued.",
+    "cheap": 40000,
+    "standard": 80000,
+    "premium": 150000
+  },
+  "context_limits": {
+    "_doc": "Doer context-window budgeting. Used to predict whether a ready-task streak will fit in the model usable context before autocompact/session-limit truncation, and to split streaks proactively. Keyed by tier.",
+    "model_context_tokens": {
+      "_doc": "Total context window per tier (tokens).",
+      "cheap": 200000,
+      "standard": 200000,
+      "premium": 200000
+    },
+    "autocompact_headroom_fraction": 0.72,
+    "base_prompt_tokens": 9000,
+    "per_task_input_overhead_tokens": 3500,
+    "output_expansion_factor": 1
+  },
+  "parallelism": {
+    "_doc": "Doer concurrency (EXPERIMENTAL -- default 1 = proven serial path). When max_doers>1, independent bd-ready tasks are fanned out into isolated git worktrees, worked by one doer each in parallel, then merged back into the sprint branch sequentially with a conflict->re-queue fallback. This path is NOT yet default: on s10 (win32) it hit cross-platform worktree fragility (worktree \"already exists\" leak on re-create, and worktree-branch merges landing nothing -> 0 commits). Until that is hardened and validated on all runner OSes, max_doers stays 1 so sprints use the pre-parallelism serial path (which commits doers directly on the sprint branch, no worktree/merge machinery). Set >1 to opt into the experimental parallel path. Width is also capped by the harness concurrency limit and the number of ready tasks. Project-agnostic: no assumptions about language, layout, or task shape.",
+    "max_doers": 1,
+    "worktree_root": ".auto-sprint/wt"
+  },
   "historical": {
     "_doc": "Written by harvester after each sprint. Contains actual per-role output token averages from sprint-log JSONL files. Used by auto-sprint.js computeSprintQuote() to improve future estimates. Do not edit manually.",
     "max_sprints_in_sample": 5,
-    "sprints_sampled": 1,
-    "last_updated": "2026-06-22",
-    "cycle_avg": 2,
-    "reviewer_ratio_avg": 0.44004665942641086,
-    "bucket_avg_tokens": {},
+    "sprints_sampled": 2,
+    "last_updated": "2026-07-23",
+    "cycle_avg": 1,
+    "reviewer_ratio_avg": 0.34246616406121194,
+    "bucket_avg_tokens": {
+      "M": 6076.190476190475,
+      "L": 5943.333333333333,
+      "S": 4099.666666666667
+    },
     "roles": {
       "cycle-state": {
-        "avg_output_tokens": 0,
-        "sample_n": 1
+        "avg_output_tokens": 1205.5,
+        "sample_n": 2
       },
       "planner": {
-        "avg_output_tokens": 0,
-        "sample_n": 2
+        "avg_output_tokens": 4369.5,
+        "sample_n": 4
       },
       "plan-reviewer": {
-        "avg_output_tokens": 0,
-        "sample_n": 2
+        "avg_output_tokens": 4806.5,
+        "sample_n": 4
       },
       "feedback-commit-plan-reviewer": {
-        "avg_output_tokens": 0,
-        "sample_n": 1
+        "avg_output_tokens": 1854.5,
+        "sample_n": 2
       },
       "write-quote": {
         "avg_output_tokens": 1979,
         "sample_n": 1
       },
       "ready-streaks": {
-        "avg_output_tokens": 2084.4285714285716,
-        "sample_n": 7
+        "avg_output_tokens": 2540.25,
+        "sample_n": 12
       },
       "doer": {
-        "avg_output_tokens": 6215.25,
-        "sample_n": 8
+        "avg_output_tokens": 7762.733333333334,
+        "sample_n": 15
       },
       "reviewer": {
-        "avg_output_tokens": 3646.6666666666665,
-        "sample_n": 6
+        "avg_output_tokens": 4472.9,
+        "sample_n": 10
       },
       "feedback-commit-reviewer": {
         "avg_output_tokens": 1833,
@@ -126,12 +157,12 @@
         "sample_n": 1
       },
       "deployer": {
-        "avg_output_tokens": 1258,
-        "sample_n": 1
+        "avg_output_tokens": 1508.5,
+        "sample_n": 2
       },
       "integ-runner": {
-        "avg_output_tokens": 3977,
-        "sample_n": 1
+        "avg_output_tokens": 5123,
+        "sample_n": 2
       },
       "teardown": {
         "avg_output_tokens": 419,
@@ -139,6 +170,374 @@
       },
       "check-blockers": {
         "avg_output_tokens": 1419,
+        "sample_n": 1
+      },
+      "setup-shell": {
+        "avg_output_tokens": 1594,
+        "sample_n": 1
+      },
+      "setup": {
+        "avg_output_tokens": 2583,
+        "sample_n": 1
+      },
+      "state-read": {
+        "avg_output_tokens": 406,
+        "sample_n": 1
+      },
+      "preflight-bd-schema": {
+        "avg_output_tokens": 205,
+        "sample_n": 1
+      },
+      "state-init": {
+        "avg_output_tokens": 849,
+        "sample_n": 1
+      },
+      "sprint-meta": {
+        "avg_output_tokens": 844,
+        "sample_n": 1
+      },
+      "stamp-setup": {
+        "avg_output_tokens": 138,
+        "sample_n": 1
+      },
+      "stamp-plan": {
+        "avg_output_tokens": 160,
+        "sample_n": 1
+      },
+      "cycle-meta": {
+        "avg_output_tokens": 396,
+        "sample_n": 1
+      },
+      "state": {
+        "avg_output_tokens": 875.5,
+        "sample_n": 2
+      },
+      "plan-commit": {
+        "avg_output_tokens": 1976,
+        "sample_n": 1
+      },
+      "stamp-develop": {
+        "avg_output_tokens": 139,
+        "sample_n": 1
+      },
+      "heartbeat": {
+        "avg_output_tokens": 1224.2,
+        "sample_n": 5
+      },
+      "log-append-iter": {
+        "avg_output_tokens": 2844,
+        "sample_n": 4
+      },
+      "review-apply": {
+        "avg_output_tokens": 511,
+        "sample_n": 1
+      },
+      "feedback-write-reviewer": {
+        "avg_output_tokens": 5282,
+        "sample_n": 1
+      },
+      "push-sha": {
+        "avg_output_tokens": 376,
+        "sample_n": 1
+      },
+      "stamp-test": {
+        "avg_output_tokens": 154,
+        "sample_n": 1
+      },
+      "integ-scope": {
+        "avg_output_tokens": 1838,
+        "sample_n": 1
+      },
+      "log-append-test": {
+        "avg_output_tokens": 1417,
+        "sample_n": 1
+      },
+      "exit-check": {
+        "avg_output_tokens": 3257,
+        "sample_n": 1
+      },
+      "stamp-harvest": {
+        "avg_output_tokens": 267,
+        "sample_n": 1
+      },
+      "harvest-clean-process-files": {
+        "avg_output_tokens": 1275,
+        "sample_n": 1
+      },
+      "log-append-end": {
+        "avg_output_tokens": 1644,
+        "sample_n": 1
+      },
+      "final-reviewer": {
+        "avg_output_tokens": 4441,
+        "sample_n": 1
+      }
+    },
+    "cycle_sample_n": 1,
+    "reviewer_ratio_sample_n": 1,
+    "bucket_sample_n": {
+      "M": 7,
+      "L": 2,
+      "S": 3
+    },
+    "tuple_averages": {
+      "setup-shell|N/A|haiku": {
+        "role": "setup-shell",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1594,
+        "sample_n": 1
+      },
+      "setup|N/A|haiku": {
+        "role": "setup",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 2583,
+        "sample_n": 1
+      },
+      "state-read|N/A|haiku": {
+        "role": "state-read",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 406,
+        "sample_n": 1
+      },
+      "preflight-bd-schema|N/A|haiku": {
+        "role": "preflight-bd-schema",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 205,
+        "sample_n": 1
+      },
+      "state-init|N/A|haiku": {
+        "role": "state-init",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 849,
+        "sample_n": 1
+      },
+      "sprint-meta|N/A|haiku": {
+        "role": "sprint-meta",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 844,
+        "sample_n": 1
+      },
+      "stamp-setup|N/A|haiku": {
+        "role": "stamp-setup",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 138,
+        "sample_n": 1
+      },
+      "stamp-plan|N/A|haiku": {
+        "role": "stamp-plan",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 160,
+        "sample_n": 1
+      },
+      "cycle-meta|N/A|haiku": {
+        "role": "cycle-meta",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 396,
+        "sample_n": 1
+      },
+      "cycle-state|N/A|haiku": {
+        "role": "cycle-state",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 2411,
+        "sample_n": 1
+      },
+      "state|N/A|haiku": {
+        "role": "state",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 875.5,
+        "sample_n": 2
+      },
+      "planner|N/A|opus": {
+        "role": "planner",
+        "size": "N/A",
+        "model": "opus",
+        "avg_output_tokens": 8739,
+        "sample_n": 2
+      },
+      "plan-reviewer|N/A|sonnet": {
+        "role": "plan-reviewer",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 9613,
+        "sample_n": 2
+      },
+      "feedback-commit-plan-reviewer|N/A|haiku": {
+        "role": "feedback-commit-plan-reviewer",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 3709,
+        "sample_n": 1
+      },
+      "plan-commit|N/A|haiku": {
+        "role": "plan-commit",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1976,
+        "sample_n": 1
+      },
+      "stamp-develop|N/A|haiku": {
+        "role": "stamp-develop",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 139,
+        "sample_n": 1
+      },
+      "heartbeat|N/A|haiku": {
+        "role": "heartbeat",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1224.2,
+        "sample_n": 5
+      },
+      "ready-streaks|N/A|haiku": {
+        "role": "ready-streaks",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 3178.4,
+        "sample_n": 5
+      },
+      "doer|M|sonnet": {
+        "role": "doer",
+        "size": "M",
+        "model": "sonnet",
+        "avg_output_tokens": 6076.190476190475,
+        "sample_n": 7
+      },
+      "reviewer|N/A|sonnet": {
+        "role": "reviewer",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 5712.25,
+        "sample_n": 4
+      },
+      "log-append-iter|N/A|haiku": {
+        "role": "log-append-iter",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 2844,
+        "sample_n": 4
+      },
+      "doer|L|sonnet": {
+        "role": "doer",
+        "size": "L",
+        "model": "sonnet",
+        "avg_output_tokens": 5943.333333333333,
+        "sample_n": 2
+      },
+      "doer|S|haiku": {
+        "role": "doer",
+        "size": "S",
+        "model": "haiku",
+        "avg_output_tokens": 4099.666666666667,
+        "sample_n": 3
+      },
+      "review-apply|N/A|haiku": {
+        "role": "review-apply",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 511,
+        "sample_n": 1
+      },
+      "feedback-write-reviewer|N/A|haiku": {
+        "role": "feedback-write-reviewer",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 5282,
+        "sample_n": 1
+      },
+      "push-sha|N/A|haiku": {
+        "role": "push-sha",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 376,
+        "sample_n": 1
+      },
+      "stamp-test|N/A|haiku": {
+        "role": "stamp-test",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 154,
+        "sample_n": 1
+      },
+      "deployer|N/A|sonnet": {
+        "role": "deployer",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 1759,
+        "sample_n": 1
+      },
+      "integ-scope|N/A|haiku": {
+        "role": "integ-scope",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1838,
+        "sample_n": 1
+      },
+      "integ-runner|N/A|sonnet": {
+        "role": "integ-runner",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 6269,
+        "sample_n": 1
+      },
+      "log-append-test|N/A|haiku": {
+        "role": "log-append-test",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1417,
+        "sample_n": 1
+      },
+      "exit-check|N/A|haiku": {
+        "role": "exit-check",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 3257,
+        "sample_n": 1
+      },
+      "stamp-harvest|N/A|haiku": {
+        "role": "stamp-harvest",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 267,
+        "sample_n": 1
+      },
+      "harvest-clean-process-files|N/A|haiku": {
+        "role": "harvest-clean-process-files",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1275,
+        "sample_n": 1
+      },
+      "log-append-end|N/A|haiku": {
+        "role": "log-append-end",
+        "size": "N/A",
+        "model": "haiku",
+        "avg_output_tokens": 1644,
+        "sample_n": 1
+      },
+      "final-reviewer|N/A|opus": {
+        "role": "final-reviewer",
+        "size": "N/A",
+        "model": "opus",
+        "avg_output_tokens": 4441,
+        "sample_n": 1
+      },
+      "harvester|N/A|sonnet": {
+        "role": "harvester",
+        "size": "N/A",
+        "model": "sonnet",
+        "avg_output_tokens": 8744,
         "sample_n": 1
       }
     }

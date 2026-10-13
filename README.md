@@ -41,6 +41,26 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## CLI
+
+A `noteapi-cli` command-line client is included for interacting with a running NoteAPI
+server. See `docs/cli.md` for design details.
+
+```bash
+noteapi-cli list [--tag <tag>] [--q <query>]
+noteapi-cli read --id <id>
+noteapi-cli create --title <title> --content <content>
+noteapi-cli update --id <id> [--title <title>] [--content <content>]
+noteapi-cli delete --id <id>
+noteapi-cli --help | -h            # global or per-subcommand usage
+noteapi-cli --version | -v         # print CLI version and exit
+```
+
+The CLI talks to `http://localhost:3000` by default; set `NOTEAPI_URL` to point it at a
+different host. Empty/whitespace-only required flags are rejected with a usage message
+and a non-zero exit code; API errors are printed as `Error: <message>` with no stack
+trace.
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
