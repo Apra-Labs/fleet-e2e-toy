@@ -26,9 +26,16 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
-```
+npm run build   # compile TypeScript to dist/
+npm start -- --version  # print version and exit
+
+## CLI Flags
+
+| Flag | Description |
+|------|-------------|
+| `--version`, `-v` | Print application version (reads from `package.json`) and exit |
 
 ## API Endpoints
 
