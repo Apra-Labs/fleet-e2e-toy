@@ -138,3 +138,48 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("content length cap (10000 chars)", () => {
+  const tooLong = { field: "content", message: "Content must be at most 10000 characters" };
+
+  it("POST rejects 10001-char content with 400", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Big", content: "a".repeat(10001) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(tooLong);
+  });
+
+  it("POST accepts 10000-char content with 201", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Big", content: "a".repeat(10000) });
+    expect(res.status).toBe(201);
+  });
+
+  it("PUT rejects 10001-char content with 400 and leaves note unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Orig", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "a".repeat(10001) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(tooLong);
+
+    const get = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(get.body.content).toBe("Old");
+  });
+
+  it("PUT accepts 10000-char content with 200", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Orig", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ content: "a".repeat(10000) });
+    expect(res.status).toBe(200);
+  });
+});
