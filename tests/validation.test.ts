@@ -64,3 +64,33 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("content length cap", () => {
+  const tooLong = { field: "content", message: "Content must be at most 10000 characters" };
+
+  it("validateCreateInput rejects 10001-char content", () => {
+    const result = validateCreateInput({ title: "Note", content: "a".repeat(10001) });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toContainEqual(tooLong);
+    }
+  });
+
+  it("validateCreateInput accepts 10000-char content", () => {
+    const result = validateCreateInput({ title: "Note", content: "a".repeat(10000) });
+    expect(result.valid).toBe(true);
+  });
+
+  it("validateUpdateInput rejects 10001-char content", () => {
+    const result = validateUpdateInput({ content: "a".repeat(10001) });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toContainEqual(tooLong);
+    }
+  });
+
+  it("validateUpdateInput accepts 10000-char content", () => {
+    const result = validateUpdateInput({ content: "a".repeat(10000) });
+    expect(result.valid).toBe(true);
+  });
+});

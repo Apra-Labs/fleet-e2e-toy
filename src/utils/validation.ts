@@ -1,5 +1,8 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+export const MAX_CONTENT_LENGTH = 10000;
+const CONTENT_TOO_LONG_MESSAGE = `Content must be at most ${MAX_CONTENT_LENGTH} characters`;
+
 export interface ValidationError {
   field: string;
   message: string;
@@ -22,6 +25,8 @@ export function validateCreateInput(
 
   if (typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (obj.content.length > MAX_CONTENT_LENGTH) {
+    errors.push({ field: "content", message: CONTENT_TOO_LONG_MESSAGE });
   }
 
   if (obj.tags !== undefined) {
@@ -57,8 +62,12 @@ export function validateUpdateInput(
     errors.push({ field: "title", message: "Title must be a non-empty string" });
   }
 
-  if (obj.content !== undefined && typeof obj.content !== "string") {
-    errors.push({ field: "content", message: "Content must be a string" });
+  if (obj.content !== undefined) {
+    if (typeof obj.content !== "string") {
+      errors.push({ field: "content", message: "Content must be a string" });
+    } else if (obj.content.length > MAX_CONTENT_LENGTH) {
+      errors.push({ field: "content", message: CONTENT_TOO_LONG_MESSAGE });
+    }
   }
 
   if (obj.tags !== undefined) {
