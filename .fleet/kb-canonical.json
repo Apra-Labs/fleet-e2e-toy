@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 0
+  },
+  "entries": [],
+  "demotions": [
+    {
+      "id": "aa210a90-063c-4d5f-bcf4-d4c29aeb9988",
+      "at": "2026-11-17T03:28:57.807Z",
+      "reason": "demoted"
+    }
+  ]
+}
