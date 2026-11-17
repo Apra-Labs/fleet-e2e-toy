@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 29 tests, all passing
 npm start       # http://localhost:3000
 ```
 
@@ -40,6 +40,12 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+
+### Tag validation
+
+`tags` on create and update must be an array of strings with no repeats. A duplicate
+returns `400` with `{ field: "tags", message: "Tags must not contain duplicates" }`.
+The check is exact and case-sensitive, so `["a","A"]` is accepted.
 
 ## Tech Stack
 
