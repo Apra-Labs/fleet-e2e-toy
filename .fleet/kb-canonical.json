@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 1
+  },
+  "entries": [
+    {
+      "id": "dac3194f-a458-444a-b08d-428f382df16c",
+      "type": "knowledge",
+      "title": "Title max-length check is chained as else-if after the required check",
+      "summary": "validateCreateInput/validateUpdateInput reject trimmed titles over MAX_TITLE_LENGTH (100) via an else-if after the missing/empty check, so only one title error is ever emitted.",
+      "symbols": [
+        "validateCreateInput",
+        "validateUpdateInput",
+        "MAX_TITLE_LENGTH"
+      ],
+      "source_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts",
+        "tests/notes.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T03:07:27.988Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "f97222eb2e89ea86752cf04e3d60aeab21db94fa",
+        "tests/notes.test.ts": "6e63f6a2e5a864f9fe2d65a0499cd0beba528ed7",
+        "tests/validation.test.ts": "30296155b18588a9e6379c8fa46ebbb613ec1fca"
+      }
+    }
+  ]
+}
