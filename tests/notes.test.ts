@@ -87,6 +87,25 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 for a 101-character title with the max-length error", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(101), content: "Body", tags: [] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual({
+      field: "title",
+      message: "Title must be at most 100 characters",
+    });
+  });
+
+  it("returns 201 for a 100-character title", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(100), content: "Body", tags: [] });
+    expect(res.status).toBe(201);
+    expect(res.body.title).toBe("a".repeat(100));
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +128,36 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 for a 101-character title and leaves the note unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Keep me", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(101) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual({
+      field: "title",
+      message: "Title must be at most 100 characters",
+    });
+
+    const get = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(get.body.title).toBe("Keep me");
+  });
+
+  it("accepts a 100-character title", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Short", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(100) });
+    expect(res.status).toBe(200);
+    expect(res.body.title).toBe("a".repeat(100));
   });
 });
 

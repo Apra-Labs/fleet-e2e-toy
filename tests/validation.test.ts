@@ -64,3 +64,38 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("title maximum length (100 characters)", () => {
+  const tooLong = { field: "title", message: "Title must be at most 100 characters" };
+
+  it("accepts a 100-character title on create and update", () => {
+    expect(validateCreateInput({ title: "a".repeat(100), content: "x" }).valid).toBe(true);
+    expect(validateUpdateInput({ title: "a".repeat(100) }).valid).toBe(true);
+  });
+
+  it("rejects a 101-character title on create with the max-length error", () => {
+    const result = validateCreateInput({ title: "a".repeat(101), content: "x" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toContainEqual(tooLong);
+    }
+  });
+
+  it("rejects a 101-character title on update with the max-length error", () => {
+    const result = validateUpdateInput({ title: "a".repeat(101) });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toContainEqual(tooLong);
+    }
+  });
+
+  it("measures length after trimming (100 chars plus surrounding spaces is valid)", () => {
+    const padded = " " + "a".repeat(100) + " ";
+    const created = validateCreateInput({ title: padded, content: "x" });
+    expect(created.valid).toBe(true);
+    if (created.valid) {
+      expect(created.data.title).toHaveLength(100);
+    }
+    expect(validateUpdateInput({ title: padded }).valid).toBe(true);
+  });
+});
