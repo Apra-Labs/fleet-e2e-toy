@@ -138,3 +138,44 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("tag length limit over HTTP", () => {
+  const tagError = { field: "tags", message: "Each tag must be at most 30 characters" };
+
+  it("POST rejects a 31-character tag with 400", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "C", tags: ["a".repeat(31)] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(tagError);
+  });
+
+  it("POST accepts a 30-character tag", async () => {
+    const tags = ["a".repeat(30)];
+    const res = await request(app).post("/api/notes").send({ title: "T", content: "C", tags });
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual(tags);
+  });
+
+  it("PUT rejects a 31-character tag and leaves tags unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "C", tags: ["keep"] });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["a".repeat(31)] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(tagError);
+
+    const get = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(get.body.tags).toEqual(["keep"]);
+  });
+
+  it("PUT accepts a 30-character tag", async () => {
+    const create = await request(app).post("/api/notes").send({ title: "T", content: "C", tags: [] });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["a".repeat(30)] });
+    expect(res.status).toBe(200);
+  });
+});
