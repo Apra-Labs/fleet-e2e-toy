@@ -39,6 +39,8 @@ npm start       # http://localhost:3000
 | POST | `/api/notes` | Create a note |
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
+
+Note titles are required on create and limited to 100 characters (measured after trimming whitespace). Longer titles are rejected with a 400 and `{ field: "title", message: "Title must be at most 100 characters" }`.
 | GET | `/health` | Health check |
 
 ## Tech Stack
