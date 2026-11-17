@@ -5,6 +5,18 @@ export interface ValidationError {
   message: string;
 }
 
+export const MAX_TAG_LENGTH = 30;
+
+function validateTags(tags: unknown, errors: ValidationError[]): void {
+  if (!Array.isArray(tags) || !tags.every((t) => typeof t === "string")) {
+    errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    return;
+  }
+  if ((tags as string[]).some((t) => t.length > MAX_TAG_LENGTH)) {
+    errors.push({ field: "tags", message: `Each tag must be at most ${MAX_TAG_LENGTH} characters` });
+  }
+}
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
@@ -24,11 +36,7 @@ export function validateCreateInput(
     errors.push({ field: "content", message: "Content must be a string" });
   }
 
-  if (obj.tags !== undefined) {
-    if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
-      errors.push({ field: "tags", message: "Tags must be an array of strings" });
-    }
-  }
+  if (obj.tags !== undefined) validateTags(obj.tags, errors);
 
   if (errors.length > 0) return { valid: false, errors };
 
@@ -61,11 +69,7 @@ export function validateUpdateInput(
     errors.push({ field: "content", message: "Content must be a string" });
   }
 
-  if (obj.tags !== undefined) {
-    if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
-      errors.push({ field: "tags", message: "Tags must be an array of strings" });
-    }
-  }
+  if (obj.tags !== undefined) validateTags(obj.tags, errors);
 
   if (errors.length > 0) return { valid: false, errors };
 

@@ -64,3 +64,35 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("tag length limit", () => {
+  const tagError = { field: "tags", message: "Each tag must be at most 30 characters" };
+
+  it("create rejects a 31-character tag", () => {
+    const result = validateCreateInput({ title: "N", content: "B", tags: ["a".repeat(31)] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors).toContainEqual(tagError);
+  });
+
+  it("create accepts a 30-character tag", () => {
+    const result = validateCreateInput({ title: "N", content: "B", tags: ["a".repeat(30)] });
+    expect(result.valid).toBe(true);
+  });
+
+  it("update rejects a 31-character tag", () => {
+    const result = validateUpdateInput({ tags: ["a".repeat(31)] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors).toContainEqual(tagError);
+  });
+
+  it("update accepts a 30-character tag", () => {
+    const result = validateUpdateInput({ tags: ["a".repeat(30)] });
+    expect(result.valid).toBe(true);
+  });
+
+  it("does not emit the length error for non-string tags", () => {
+    const result = validateCreateInput({ title: "N", content: "B", tags: [1] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors).toEqual([{ field: "tags", message: "Tags must be an array of strings" }]);
+  });
+});
