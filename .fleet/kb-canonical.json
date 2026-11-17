@@ -1,29 +1,11 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "608c28e",
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
     "branch": "main",
-    "entry_count": 2
+    "entry_count": 1
   },
   "entries": [
-    {
-      "id": "81855793-cfa8-44ab-abb5-5b997602ce6a",
-      "type": "knowledge",
-      "title": "Note titles have no maximum length",
-      "summary": "validateCreateInput and validateUpdateInput in src/utils/validation.ts accept a title of any length as long as it is a non-empty string after trimming. There is no maximum title length check.",
-      "symbols": [
-        "validateCreateInput",
-        "validateUpdateInput"
-      ],
-      "source_files": [
-        "src/utils/validation.ts"
-      ],
-      "confidence": "CONFIRMED",
-      "updated_at": "2026-11-17T02:56:09.289Z",
-      "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
-      }
-    },
     {
       "id": "c4eea105-6031-45c5-bf05-624a7184af62",
       "type": "knowledge",
@@ -40,6 +22,13 @@
       "source_file_hashes": {
         "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
       }
+    }
+  ],
+  "demotions": [
+    {
+      "id": "81855793-cfa8-44ab-abb5-5b997602ce6a",
+      "at": "2026-11-17T03:20:29.994Z",
+      "reason": "demoted"
     }
   ]
 }
