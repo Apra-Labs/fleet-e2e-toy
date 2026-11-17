@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 1
+  },
+  "entries": [
+    {
+      "id": "36d5c134-8a94-418d-a6c3-913e10328520",
+      "type": "knowledge",
+      "title": "Note content is capped by MAX_CONTENT_LENGTH in validation.ts",
+      "summary": "validateCreateInput and validateUpdateInput reject content strings longer than MAX_CONTENT_LENGTH (10000, JS .length) with {field: content, message: Content must be at most 10000 characters}; exactly 10000 is valid.",
+      "symbols": [
+        "validateCreateInput",
+        "validateUpdateInput",
+        "MAX_CONTENT_LENGTH"
+      ],
+      "source_files": [
+        "src/utils/validation.ts",
+        "src/api/notes.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T03:52:56.085Z",
+      "source_file_hashes": {
+        "src/api/notes.ts": "c0240280e4139a8e01c3a624e2e1d6bdb329e8b8",
+        "src/utils/validation.ts": "8c99762201dc852bef3f227aaf2bdf7cab4c95f9"
+      }
+    }
+  ]
+}
