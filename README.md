@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # all tests passing
 npm start       # http://localhost:3000
 ```
 
@@ -36,8 +36,8 @@ npm start       # http://localhost:3000
 |--------|------|-------------|
 | GET | `/api/notes` | List all notes (optional: `?tag=`, `?q=`) |
 | GET | `/api/notes/:id` | Get a note by ID |
-| POST | `/api/notes` | Create a note |
-| PUT | `/api/notes/:id` | Update a note |
+| POST | `/api/notes` | Create a note (title max 100 chars, max 10 tags) |
+| PUT | `/api/notes/:id` | Update a note (same title and tag limits) |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
