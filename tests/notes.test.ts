@@ -87,6 +87,25 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 with duplicate-tags error when tags repeat", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Dup", content: "Body", tags: ["a", "a"] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual({
+      field: "tags",
+      message: "Tags must not contain duplicates",
+    });
+  });
+
+  it("returns 201 for distinct tags", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Distinct", content: "Body", tags: ["a", "b"] });
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual(["a", "b"]);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +128,33 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 with duplicate-tags error when tags repeat", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["a", "a"] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual({
+      field: "tags",
+      message: "Tags must not contain duplicates",
+    });
+  });
+
+  it("returns 200 for distinct tags", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["a", "b"] });
+    expect(res.status).toBe(200);
+    expect(res.body.tags).toEqual(["a", "b"]);
   });
 });
 

@@ -42,6 +42,24 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects duplicate tags with the exact error", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: ["a", "a"] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toEqual([
+        { field: "tags", message: "Tags must not contain duplicates" },
+      ]);
+    }
+  });
+
+  it("accepts distinct tags and keeps them", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: ["a", "b"] });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(["a", "b"]);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -62,5 +80,23 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+
+  it("rejects duplicate tags with the exact error", () => {
+    const result = validateUpdateInput({ tags: ["a", "a"] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toEqual([
+        { field: "tags", message: "Tags must not contain duplicates" },
+      ]);
+    }
+  });
+
+  it("accepts distinct tags and keeps them", () => {
+    const result = validateUpdateInput({ tags: ["a", "b"] });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(["a", "b"]);
+    }
   });
 });
