@@ -3,9 +3,49 @@
   "provenance": {
     "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
     "branch": "main",
-    "entry_count": 0
+    "entry_count": 2
   },
-  "entries": [],
+  "entries": [
+    {
+      "id": "55a88d98-32eb-4a19-bc38-d7c18c069696",
+      "type": "knowledge",
+      "title": "Note tags are limited to 10 per note on create and update",
+      "summary": "validateCreateInput and validateUpdateInput reject more than 10 tags with {field:'tags', message:'A note can have at most 10 tags'}. The check runs only after the array-of-strings check passes, so each request gets at most one tags error.",
+      "symbols": [
+        "validateCreateInput",
+        "validateUpdateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts",
+        "tests/notes.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T03:31:41.671Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "362155287f0018fdd370b101a610b6eb1e244d9f",
+        "tests/notes.test.ts": "e9ddba84754273008fbe07c2a52b584108a90511",
+        "tests/validation.test.ts": "0f65856e01322cecbd3af240ceb42abd5ee0fd23"
+      }
+    },
+    {
+      "id": "5bfcf322-7228-4fa0-8934-94ac34511d4b",
+      "type": "knowledge",
+      "title": "validateCreateInput accepts an empty content string",
+      "summary": "Create validation only requires content to be a string. An empty string is accepted and stored; only a missing or non-string content gets the 'Content must be a string' error.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T03:31:41.573Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "362155287f0018fdd370b101a610b6eb1e244d9f"
+      }
+    }
+  ],
   "demotions": [
     {
       "id": "aa210a90-063c-4d5f-bcf4-d4c29aeb9988",
