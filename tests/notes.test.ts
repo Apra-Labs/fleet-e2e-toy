@@ -2,6 +2,8 @@ import request from "supertest";
 import app from "../src/app";
 import { noteStore } from "../src/models/note";
 
+const TITLE_TOO_LONG = { field: "title", message: "Title must be at most 100 characters" };
+
 beforeEach(() => {
   noteStore.clear();
 });
@@ -82,6 +84,22 @@ describe("POST /api/notes", () => {
     expect(res.body.createdAt).toBeDefined();
   });
 
+  it("returns 400 when title is 101 characters", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(101), content: "x" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(TITLE_TOO_LONG);
+  });
+
+  it("accepts a 100-character title", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "a".repeat(100), content: "x" });
+    expect(res.status).toBe(201);
+    expect(res.body.title).toBe("a".repeat(100));
+  });
+
   it("returns 400 for invalid input", async () => {
     const res = await request(app).post("/api/notes").send({ content: "No title" });
     expect(res.status).toBe(400);
@@ -102,6 +120,24 @@ describe("PUT /api/notes/:id", () => {
     expect(res.status).toBe(200);
     expect(res.body.title).toBe("Updated");
     expect(res.body.content).toBe("Old");
+  });
+
+  it("returns 400 when title is 101 characters", async () => {
+    const create = await request(app).post("/api/notes").send({ title: "Orig", content: "c" });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(101) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(TITLE_TOO_LONG);
+  });
+
+  it("accepts a 100-character title", async () => {
+    const create = await request(app).post("/api/notes").send({ title: "Orig", content: "c" });
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ title: "a".repeat(100) });
+    expect(res.status).toBe(200);
+    expect(res.body.title).toBe("a".repeat(100));
   });
 
   it("returns 404 for non-existent note", async () => {
