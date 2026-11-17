@@ -41,6 +41,8 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+Validation: `POST` and `PUT` reject with `400` and `{ errors }` if `tags` is not an array of strings or any tag is longer than 30 characters. See `docs/tag-validation.md`.
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
