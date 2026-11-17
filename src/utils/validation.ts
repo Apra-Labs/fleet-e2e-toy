@@ -27,6 +27,8 @@ export function validateCreateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (new Set(obj.tags as string[]).size !== obj.tags.length) {
+      errors.push({ field: "tags", message: "Tags must not contain duplicates" });
     }
   }
 
@@ -64,6 +66,8 @@ export function validateUpdateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (new Set(obj.tags as string[]).size !== obj.tags.length) {
+      errors.push({ field: "tags", message: "Tags must not contain duplicates" });
     }
   }
 
