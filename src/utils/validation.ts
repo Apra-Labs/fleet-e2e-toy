@@ -27,6 +27,8 @@ export function validateCreateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.length > 10) {
+      errors.push({ field: "tags", message: "A note can have at most 10 tags" });
     }
   }
 
@@ -64,6 +66,8 @@ export function validateUpdateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.length > 10) {
+      errors.push({ field: "tags", message: "A note can have at most 10 tags" });
     }
   }
 
