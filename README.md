@@ -41,6 +41,8 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+Note `content` is limited to 10000 characters. `POST` and `PUT` return 400 with a validation error when it is longer; exactly 10000 is accepted.
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
