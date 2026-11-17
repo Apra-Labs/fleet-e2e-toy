@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e",
+    "branch": "main",
+    "entry_count": 2
+  },
+  "entries": [
+    {
+      "id": "81855793-cfa8-44ab-abb5-5b997602ce6a",
+      "type": "knowledge",
+      "title": "Note titles have no maximum length",
+      "summary": "validateCreateInput and validateUpdateInput in src/utils/validation.ts accept a title of any length as long as it is a non-empty string after trimming. There is no maximum title length check.",
+      "symbols": [
+        "validateCreateInput",
+        "validateUpdateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T02:56:09.289Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "c4eea105-6031-45c5-bf05-624a7184af62",
+      "type": "knowledge",
+      "title": "Create validation trims the note title",
+      "summary": "validateCreateInput in src/utils/validation.ts returns the title with surrounding whitespace removed (title.trim()). Content is returned unchanged.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-17T02:56:09.549Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    }
+  ]
+}
