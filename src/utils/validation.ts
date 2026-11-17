@@ -1,5 +1,8 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+const MAX_TITLE_LENGTH = 100;
+const TITLE_TOO_LONG_MESSAGE = `Title must be at most ${MAX_TITLE_LENGTH} characters`;
+
 export interface ValidationError {
   field: string;
   message: string;
@@ -18,6 +21,8 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
+  } else if (obj.title.trim().length > MAX_TITLE_LENGTH) {
+    errors.push({ field: "title", message: TITLE_TOO_LONG_MESSAGE });
   }
 
   if (typeof obj.content !== "string") {
@@ -55,6 +60,8 @@ export function validateUpdateInput(
 
   if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
     errors.push({ field: "title", message: "Title must be a non-empty string" });
+  } else if (typeof obj.title === "string" && obj.title.trim().length > MAX_TITLE_LENGTH) {
+    errors.push({ field: "title", message: TITLE_TOO_LONG_MESSAGE });
   }
 
   if (obj.content !== undefined && typeof obj.content !== "string") {
