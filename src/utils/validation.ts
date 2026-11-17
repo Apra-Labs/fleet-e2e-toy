@@ -5,6 +5,8 @@ export interface ValidationError {
   message: string;
 }
 
+const MAX_TITLE_LENGTH = 100;
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
@@ -18,6 +20,8 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
+  } else if (obj.title.trim().length > MAX_TITLE_LENGTH) {
+    errors.push({ field: "title", message: "Title must be at most 100 characters" });
   }
 
   if (typeof obj.content !== "string") {
@@ -53,8 +57,12 @@ export function validateUpdateInput(
 
   const obj = body as Record<string, unknown>;
 
-  if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
-    errors.push({ field: "title", message: "Title must be a non-empty string" });
+  if (obj.title !== undefined) {
+    if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
+      errors.push({ field: "title", message: "Title must be a non-empty string" });
+    } else if (obj.title.trim().length > MAX_TITLE_LENGTH) {
+      errors.push({ field: "title", message: "Title must be at most 100 characters" });
+    }
   }
 
   if (obj.content !== undefined && typeof obj.content !== "string") {
