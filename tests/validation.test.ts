@@ -64,3 +64,28 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("tag limit", () => {
+  const tags = (n: number): string[] => Array.from({ length: n }, (_, i) => `t${i}`);
+  const err = { field: "tags", message: "A note can have at most 10 tags" };
+
+  it("create accepts 10 tags", () => {
+    expect(validateCreateInput({ title: "T", content: "C", tags: tags(10) }).valid).toBe(true);
+  });
+
+  it("create rejects 11 tags", () => {
+    const result = validateCreateInput({ title: "T", content: "C", tags: tags(11) });
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors).toContainEqual(err);
+  });
+
+  it("update accepts 10 tags", () => {
+    expect(validateUpdateInput({ tags: tags(10) }).valid).toBe(true);
+  });
+
+  it("update rejects 11 tags", () => {
+    const result = validateUpdateInput({ tags: tags(11) });
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors).toContainEqual(err);
+  });
+});

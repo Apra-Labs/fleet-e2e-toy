@@ -112,6 +112,35 @@ describe("PUT /api/notes/:id", () => {
   });
 });
 
+describe("tag limit", () => {
+  const tags = (n: number): string[] => Array.from({ length: n }, (_, i) => `t${i}`);
+  const err = { field: "tags", message: "A note can have at most 10 tags" };
+
+  it("POST rejects 11 tags", async () => {
+    const res = await request(app).post("/api/notes").send({ title: "T", content: "C", tags: tags(11) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(err);
+  });
+
+  it("POST accepts 10 tags", async () => {
+    const res = await request(app).post("/api/notes").send({ title: "T", content: "C", tags: tags(10) });
+    expect(res.status).toBe(201);
+  });
+
+  it("PUT rejects 11 tags", async () => {
+    const create = await request(app).post("/api/notes").send({ title: "T", content: "C", tags: [] });
+    const res = await request(app).put(`/api/notes/${create.body.id}`).send({ tags: tags(11) });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContainEqual(err);
+  });
+
+  it("PUT accepts 10 tags", async () => {
+    const create = await request(app).post("/api/notes").send({ title: "T", content: "C", tags: [] });
+    const res = await request(app).put(`/api/notes/${create.body.id}`).send({ tags: tags(10) });
+    expect(res.status).toBe(200);
+  });
+});
+
 describe("DELETE /api/notes/:id", () => {
   it("deletes a note and returns 204", async () => {
     const create = await request(app)
