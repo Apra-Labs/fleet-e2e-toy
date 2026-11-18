@@ -42,6 +42,25 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects duplicate tags", () => {
+    const result = validateCreateInput({ title: "a", content: "b", tags: ["work", "work"] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      const err = result.errors.find((e) => e.field === "tags");
+      expect(err).toBeDefined();
+      expect(err?.message).toMatch(/duplicate/i);
+    }
+  });
+
+  it("accepts non-repeating tags including case-differing ones", () => {
+    const tags = ["x", "X", "work"];
+    const result = validateCreateInput({ title: "a", content: "b", tags });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(tags);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -62,5 +81,24 @@ describe("validateUpdateInput", () => {
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
     expect(result.valid).toBe(true);
+  });
+
+  it("rejects duplicate tags", () => {
+    const result = validateUpdateInput({ tags: ["work", "work"] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      const err = result.errors.find((e) => e.field === "tags");
+      expect(err).toBeDefined();
+      expect(err?.message).toMatch(/duplicate/i);
+    }
+  });
+
+  it("accepts non-repeating tags including case-differing ones", () => {
+    const tags = ["x", "X", "urgent"];
+    const result = validateUpdateInput({ tags });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(tags);
+    }
   });
 });

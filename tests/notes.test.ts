@@ -87,6 +87,27 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 for duplicate tags", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Dup", content: "Body", tags: ["a", "a"] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: "tags" })])
+    );
+    const list = await request(app).get("/api/notes");
+    expect(list.body).toHaveLength(0);
+  });
+
+  it("accepts unique tags and echoes them unchanged", async () => {
+    const tags = ["a", "A", "b"];
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Unique", content: "Body", tags });
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual(tags);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -109,6 +130,33 @@ describe("PUT /api/notes/:id", () => {
       .put("/api/notes/no-such-id")
       .send({ title: "Nope" });
     expect(res.status).toBe(404);
+  });
+
+  it("returns 400 for duplicate tags and leaves stored tags unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: ["keep"] });
+
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags: ["a", "a"] });
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: "tags" })])
+    );
+
+    const stored = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(stored.body.tags).toEqual(["keep"]);
+  });
+
+  it("accepts unique tags on update and echoes them unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+    const tags = ["a", "A"];
+    const res = await request(app).put(`/api/notes/${create.body.id}`).send({ tags });
+    expect(res.status).toBe(200);
+    expect(res.body.tags).toEqual(tags);
   });
 });
 
