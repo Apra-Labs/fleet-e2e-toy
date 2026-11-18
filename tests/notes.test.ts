@@ -138,3 +138,70 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("length limits", () => {
+  const fields = (body: { errors: { field: string }[] }) => body.errors.map((e) => e.field);
+
+  describe("POST /api/notes", () => {
+    it("returns 201 for a 200-char title", async () => {
+      const res = await request(app).post("/api/notes").send({ title: "a".repeat(200), content: "x" });
+      expect(res.status).toBe(201);
+    });
+
+    it("returns 400 with a title error for a 201-char title", async () => {
+      const res = await request(app).post("/api/notes").send({ title: "a".repeat(201), content: "x" });
+      expect(res.status).toBe(400);
+      expect(fields(res.body)).toContain("title");
+    });
+
+    it("returns 201 for 10000-char content", async () => {
+      const res = await request(app).post("/api/notes").send({ title: "t", content: "x".repeat(10000) });
+      expect(res.status).toBe(201);
+    });
+
+    it("returns 400 with a content error for 10001-char content", async () => {
+      const res = await request(app).post("/api/notes").send({ title: "t", content: "x".repeat(10001) });
+      expect(res.status).toBe(400);
+      expect(fields(res.body)).toContain("content");
+    });
+  });
+
+  describe("PUT /api/notes/:id", () => {
+    const createNote = async () => {
+      const res = await request(app).post("/api/notes").send({ title: "Original", content: "Old" });
+      return res.body.id as string;
+    };
+
+    it("returns 200 for a 200-char title", async () => {
+      const id = await createNote();
+      const res = await request(app).put(`/api/notes/${id}`).send({ title: "a".repeat(200) });
+      expect(res.status).toBe(200);
+    });
+
+    it("returns 400 for a 201-char title and leaves the note unchanged", async () => {
+      const id = await createNote();
+      const res = await request(app).put(`/api/notes/${id}`).send({ title: "a".repeat(201) });
+      expect(res.status).toBe(400);
+      expect(fields(res.body)).toContain("title");
+      const get = await request(app).get(`/api/notes/${id}`);
+      expect(get.body.title).toBe("Original");
+      expect(get.body.content).toBe("Old");
+    });
+
+    it("returns 200 for 10000-char content", async () => {
+      const id = await createNote();
+      const res = await request(app).put(`/api/notes/${id}`).send({ content: "x".repeat(10000) });
+      expect(res.status).toBe(200);
+    });
+
+    it("returns 400 for 10001-char content and leaves the note unchanged", async () => {
+      const id = await createNote();
+      const res = await request(app).put(`/api/notes/${id}`).send({ content: "x".repeat(10001) });
+      expect(res.status).toBe(400);
+      expect(fields(res.body)).toContain("content");
+      const get = await request(app).get(`/api/notes/${id}`);
+      expect(get.body.title).toBe("Original");
+      expect(get.body.content).toBe("Old");
+    });
+  });
+});

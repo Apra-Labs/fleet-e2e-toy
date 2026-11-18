@@ -64,3 +64,63 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("length limits", () => {
+  const fieldsOf = (r: ReturnType<typeof validateCreateInput>) => (r.valid ? [] : r.errors.map((e) => e.field));
+
+  describe("validateCreateInput", () => {
+    it("accepts a 200-char title", () => {
+      expect(validateCreateInput({ title: "a".repeat(200), content: "x" }).valid).toBe(true);
+    });
+
+    it("rejects a 201-char title with a title error", () => {
+      const r = validateCreateInput({ title: "a".repeat(201), content: "x" });
+      expect(r.valid).toBe(false);
+      expect(fieldsOf(r)).toContain("title");
+    });
+
+    it("accepts a 200-char title padded with whitespace (limit applies after trim)", () => {
+      expect(validateCreateInput({ title: `  ${"a".repeat(200)}  `, content: "x" }).valid).toBe(true);
+    });
+
+    it("accepts 10000-char content", () => {
+      expect(validateCreateInput({ title: "t", content: "x".repeat(10000) }).valid).toBe(true);
+    });
+
+    it("rejects 10001-char content with a content error", () => {
+      const r = validateCreateInput({ title: "t", content: "x".repeat(10001) });
+      expect(r.valid).toBe(false);
+      expect(fieldsOf(r)).toContain("content");
+    });
+  });
+
+  describe("validateUpdateInput", () => {
+    it("accepts a 200-char title", () => {
+      expect(validateUpdateInput({ title: "a".repeat(200) }).valid).toBe(true);
+    });
+
+    it("rejects a 201-char title with a title error", () => {
+      const r = validateUpdateInput({ title: "a".repeat(201) });
+      expect(r.valid).toBe(false);
+      expect(fieldsOf(r as ReturnType<typeof validateCreateInput>)).toContain("title");
+    });
+
+    it("accepts a 200-char title padded with whitespace (limit applies after trim)", () => {
+      expect(validateUpdateInput({ title: `  ${"a".repeat(200)}  ` }).valid).toBe(true);
+    });
+
+    it("accepts 10000-char content", () => {
+      expect(validateUpdateInput({ content: "x".repeat(10000) }).valid).toBe(true);
+    });
+
+    it("rejects 10001-char content with a content error", () => {
+      const r = validateUpdateInput({ content: "x".repeat(10001) });
+      expect(r.valid).toBe(false);
+      expect(fieldsOf(r as ReturnType<typeof validateCreateInput>)).toContain("content");
+    });
+
+    it("still accepts an empty object", () => {
+      expect(validateUpdateInput({}).valid).toBe(true);
+    });
+  });
+});
