@@ -41,6 +41,7 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 | GET | `/api/ping` | Liveness ping, returns `{"pong": true}` |
+| GET | `/api/time` | Current server time, returns `{"now": "<ISO 8601 timestamp>"}` |
 
 ## Tech Stack
 
