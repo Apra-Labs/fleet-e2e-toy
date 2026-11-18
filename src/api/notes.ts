@@ -6,7 +6,6 @@ import { validateCreateInput, validateUpdateInput } from "../utils/validation";
 const router = Router();
 
 // TODO: Add pagination to GET /api/notes (query params: page, limit)
-// TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
 

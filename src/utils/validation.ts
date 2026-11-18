@@ -1,5 +1,8 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+export const TITLE_MAX_LENGTH = 200;
+export const CONTENT_MAX_LENGTH = 10000;
+
 export interface ValidationError {
   field: string;
   message: string;
@@ -18,10 +21,14 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
+  } else if (obj.title.trim().length > TITLE_MAX_LENGTH) {
+    errors.push({ field: "title", message: `Title must be at most ${TITLE_MAX_LENGTH} characters` });
   }
 
   if (typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (obj.content.length > CONTENT_MAX_LENGTH) {
+    errors.push({ field: "content", message: `Content must be at most ${CONTENT_MAX_LENGTH} characters` });
   }
 
   if (obj.tags !== undefined) {
@@ -55,10 +62,14 @@ export function validateUpdateInput(
 
   if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
     errors.push({ field: "title", message: "Title must be a non-empty string" });
+  } else if (typeof obj.title === "string" && obj.title.trim().length > TITLE_MAX_LENGTH) {
+    errors.push({ field: "title", message: `Title must be at most ${TITLE_MAX_LENGTH} characters` });
   }
 
   if (obj.content !== undefined && typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (typeof obj.content === "string" && obj.content.length > CONTENT_MAX_LENGTH) {
+    errors.push({ field: "content", message: `Content must be at most ${CONTENT_MAX_LENGTH} characters` });
   }
 
   if (obj.tags !== undefined) {
