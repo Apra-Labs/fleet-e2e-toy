@@ -41,6 +41,8 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+Creating or updating a note with a `tags` array that repeats an exact string returns `400` (`Tags must not contain duplicates`); tags differing only in case are allowed. See `docs/note-validation.md`.
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
