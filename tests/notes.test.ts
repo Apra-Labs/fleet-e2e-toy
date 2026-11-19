@@ -87,6 +87,27 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("rejects 11 tags with 400 and a tags error", async () => {
+    const tags = Array.from({ length: 11 }, (_, i) => `tag${i}`);
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Too many", content: "Body", tags });
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors.some((e: { field: string }) => e.field === "tags")).toBe(true);
+    expect(noteStore.getAll()).toHaveLength(0);
+  });
+
+  it("accepts exactly 10 tags and returns all of them", async () => {
+    const tags = Array.from({ length: 10 }, (_, i) => `tag${i}`);
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "Ten tags", content: "Body", tags });
+
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual(tags);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
@@ -102,6 +123,20 @@ describe("PUT /api/notes/:id", () => {
     expect(res.status).toBe(200);
     expect(res.body.title).toBe("Updated");
     expect(res.body.content).toBe("Old");
+  });
+
+  it("still accepts 11 tags (tag cap is create-only)", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Original", content: "Old", tags: [] });
+
+    const tags = Array.from({ length: 11 }, (_, i) => `tag${i}`);
+    const res = await request(app)
+      .put(`/api/notes/${create.body.id}`)
+      .send({ tags });
+
+    expect(res.status).toBe(200);
+    expect(res.body.tags).toEqual(tags);
   });
 
   it("returns 404 for non-existent note", async () => {
