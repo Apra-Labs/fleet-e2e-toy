@@ -1,9 +1,9 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "commit": "489f4192823e4281fdacd6c44e7fbbbc53df3ba5",
     "branch": "kb834-base",
-    "entry_count": 2
+    "entry_count": 3
   },
   "entries": [
     {
@@ -21,6 +21,27 @@
       "updated_at": "2026-11-19T21:13:32.664Z",
       "source_file_hashes": {
         "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "c034e08a-b324-43d1-b5d1-a01cc7ad22f6",
+      "type": "knowledge",
+      "title": "Tag cap of 10 applies to create only, not update",
+      "summary": "validateCreateInput rejects more than MAX_TAGS (10) tags with a field 'tags' error, while validateUpdateInput has no tag-count limit, so PUT /api/notes/:id can set 11+ tags.",
+      "symbols": [
+        "validateCreateInput",
+        "validateUpdateInput",
+        "MAX_TAGS"
+      ],
+      "source_files": [
+        "src/utils/validation.ts",
+        "tests/notes.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-19T21:27:57.636Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "5b386f6024eb452c2ecec1d91995388be983f1a9",
+        "tests/notes.test.ts": "f5008b8762acce944c3bab27198104d21773ebc8"
       }
     },
     {
