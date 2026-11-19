@@ -16,8 +16,6 @@ export interface ValidationError {
   message: string;
 }
 
-export const MAX_TITLE_LENGTH = 100;
-
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
@@ -31,8 +29,6 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
-  } else if (obj.title.trim().length > MAX_TITLE_LENGTH) {
-    errors.push({ field: "title", message: `Title must be at most ${MAX_TITLE_LENGTH} characters` });
   }
 
   if (typeof obj.content !== "string") {
@@ -61,8 +57,8 @@ export function validateCreateInput(
  * Validates the body of an update (PUT/PATCH) request for a note.
  *
  * All three fields are optional; each check runs only when its field is not `undefined`:
- * - `title`: if present, must be a string that is non-empty after trimming. There is no
- *   maximum length on update; `MAX_TITLE_LENGTH` (100) applies to create only.
+ * - `title`: if present, must be a string that is non-empty after trimming. Titles have
+ *   no maximum length.
  * - `content`: if present, must be a string. An empty string is allowed.
  * - `tags`: if present, must be an array whose elements are all strings.
  *

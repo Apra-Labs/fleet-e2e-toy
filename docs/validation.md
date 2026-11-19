@@ -4,17 +4,12 @@ Validation helpers live in `src/utils/validation.ts` and are called by the API h
 
 ## Note title length
 
-- `MAX_TITLE_LENGTH` (100) is exported from `src/utils/validation.ts`.
-- `validateCreateInput` rejects a title whose **trimmed** length exceeds 100 characters, reporting field `title` with the message `Title must be at most 100 characters`. A title of exactly 100 characters, or 100 characters plus surrounding whitespace, is accepted.
-- The length check is an `else if` after the required/non-empty check, so a missing or empty title yields exactly one error.
-- `POST /api/notes` maps validation errors to `400 { errors }`, so over-long titles get 400.
+Titles have no maximum length on create or update. `validateCreateInput` only requires a title to be a string that is non-empty after trimming; a missing, non-string, empty or whitespace-only title yields exactly one error on field `title`. Titles are stored trimmed.
 
 ## Invariants and known gaps
 
-- The limit applies to **create only**. `validateUpdateInput` deliberately still accepts longer titles, so a note can be updated past 100 characters. A unit test pins this scope; changing it is a product decision.
-- The content and tags rules are unchanged by the title limit. Content is only checked to be a string, so empty content is accepted on create.
-- Coverage of the title limit is at the unit level; there is no supertest test of the 400 response from the HTTP endpoint.
-- A stale TODO comment in `src/api/notes.ts` still mentions a 200-character title maximum; the authoritative value is `MAX_TITLE_LENGTH`.
+- Content is only checked to be a string, so empty content is accepted on create.
+- A stale TODO comment in `src/api/notes.ts` still mentions a 200-character title maximum; it is stale and no title limit is enforced.
 
 ## Update validation contract
 
@@ -29,4 +24,4 @@ Validation helpers live in `src/utils/validation.ts` and are called by the API h
 - Field errors are collected and returned together; `{}` is accepted as a no-op update.
 - On success, `data` contains only the supplied fields, with `title` trimmed.
 
-If the title limit is ever extended to update, or removed from create, update this JSDoc, this document and the README together.
+If a title limit is ever introduced, update this JSDoc, this document and the README together.

@@ -41,7 +41,7 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
-Note titles are limited to 100 characters (measured after trimming) on create; longer titles return `400`. See [docs/validation.md](docs/validation.md).
+Note titles have no maximum length. See [docs/validation.md](docs/validation.md).
 
 ## Tech Stack
 
