@@ -1,4 +1,4 @@
-import { validateCreateInput, validateUpdateInput } from "../src/utils/validation";
+import { MAX_TITLE_LENGTH, validateCreateInput, validateUpdateInput } from "../src/utils/validation";
 
 describe("validateCreateInput", () => {
   it("accepts valid input with all fields", () => {
@@ -42,6 +42,34 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("exports MAX_TITLE_LENGTH equal to 100", () => {
+    expect(MAX_TITLE_LENGTH).toBe(100);
+  });
+
+  it("rejects a 101-character title with a title error", () => {
+    const result = validateCreateInput({ title: "a".repeat(101), content: "x" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("title");
+    }
+  });
+
+  it("accepts a title of exactly 100 characters", () => {
+    const result = validateCreateInput({ title: "a".repeat(100), content: "x" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toHaveLength(100);
+    }
+  });
+
+  it("measures title length after trimming surrounding whitespace", () => {
+    const result = validateCreateInput({ title: "  " + "a".repeat(100) + "  ", content: "x" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toHaveLength(100);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -61,6 +89,11 @@ describe("validateUpdateInput", () => {
 
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
+    expect(result.valid).toBe(true);
+  });
+
+  it("still accepts a 101-character title (length limit is create-only)", () => {
+    const result = validateUpdateInput({ title: "a".repeat(101) });
     expect(result.valid).toBe(true);
   });
 });
