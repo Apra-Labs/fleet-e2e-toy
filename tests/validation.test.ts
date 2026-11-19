@@ -59,8 +59,23 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(false);
   });
 
-  it("accepts empty object (no-op update)", () => {
+  it("rejects empty object with a body error", () => {
     const result = validateUpdateInput({});
-    expect(result.valid).toBe(true);
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "body")).toBe(true);
+    }
+  });
+
+  it.each([{ title: "x" }, { content: "" }, { tags: [] }])("accepts single-field body %j", (body) => {
+    expect(validateUpdateInput(body).valid).toBe(true);
+  });
+
+  it("still reports field errors on title, not body", () => {
+    const result = validateUpdateInput({ title: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.map((e) => e.field)).toEqual(["title"]);
+    }
   });
 });

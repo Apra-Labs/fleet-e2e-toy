@@ -104,6 +104,19 @@ describe("PUT /api/notes/:id", () => {
     expect(res.body.content).toBe("Old");
   });
 
+  it("rejects empty body with 400 and leaves note unchanged", async () => {
+    const create = await request(app)
+      .post("/api/notes")
+      .send({ title: "Keep", content: "Same", tags: ["a"] });
+
+    const res = await request(app).put(`/api/notes/${create.body.id}`).send({});
+    expect(res.status).toBe(400);
+    expect(res.body.errors.some((e: { field: string }) => e.field === "body")).toBe(true);
+
+    const get = await request(app).get(`/api/notes/${create.body.id}`);
+    expect(get.body).toEqual(create.body);
+  });
+
   it("returns 404 for non-existent note", async () => {
     const res = await request(app)
       .put("/api/notes/no-such-id")
