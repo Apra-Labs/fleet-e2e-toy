@@ -1,0 +1,29 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 1
+  },
+  "entries": [
+    {
+      "id": "ac7cca3b-37e3-4f82-b11b-2cf5e1e5d44b",
+      "type": "knowledge",
+      "title": "GET /api/notes validates page/limit before filtering, then slices",
+      "summary": "GET /api/notes validates page/limit with validatePaginationQuery before the tag and q filters, then slices the filtered list. The default limit is 20 and the maximum is 100.",
+      "symbols": [
+        "validatePaginationQuery"
+      ],
+      "source_files": [
+        "src/api/notes.ts",
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-19T05:20:47.319Z",
+      "source_file_hashes": {
+        "src/api/notes.ts": "9faf57a81f798c648ba94cf3470b747bb0aebaf4",
+        "src/utils/validation.ts": "22f70ca40b8f7a7142c8e4867a6c949824eab01a"
+      }
+    }
+  ]
+}
