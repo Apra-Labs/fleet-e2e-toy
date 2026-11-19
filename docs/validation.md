@@ -21,6 +21,7 @@ Validation helpers live in `src/utils/validation.ts` and are called by the API h
 `validateUpdateInput` is documented with a JSDoc block describing its behaviour:
 
 - A falsy or non-object body is rejected with a single error on field `body`.
+- Arrays are objects as far as the guard is concerned, so they bypass the body-level error: `validateCreateInput([])` reports the missing title and content, and `validateUpdateInput([])` is accepted as a no-op update.
 - `title`, `content` and `tags` are all optional and each is checked only when present.
 - `title` must be non-empty after trimming; there is no maximum length on update.
 - `content` may be any string, including an empty one.
