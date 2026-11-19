@@ -1,7 +1,7 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "commit": "489f4192823e4281fdacd6c44e7fbbbc53df3ba5",
     "branch": "kb834-base",
     "entry_count": 2
   },
@@ -24,21 +24,37 @@
       }
     },
     {
-      "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
+      "id": "c8cadece-8837-4d11-88ea-7d9253fb2795",
       "type": "knowledge",
-      "title": "Note titles have no maximum length",
-      "summary": "validateCreateInput in src/utils/validation.ts accepts a note title of any length on create. It only checks that the title is a string whose trimmed form is non-empty; no maximum-length check exists.",
+      "title": "Title max length (100) is enforced on create only, not update",
+      "summary": "validateCreateInput rejects titles whose trimmed length exceeds MAX_TITLE_LENGTH (100); validateUpdateInput deliberately has no length limit, so PATCH/PUT can still set a longer title.",
       "symbols": [
-        "validateCreateInput"
+        "validateCreateInput",
+        "validateUpdateInput",
+        "MAX_TITLE_LENGTH"
       ],
       "source_files": [
-        "src/utils/validation.ts"
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
       ],
       "confidence": "CONFIRMED",
-      "updated_at": "2026-11-19T21:13:32.520Z",
+      "updated_at": "2026-11-19T21:54:30.780Z",
       "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+        "src/utils/validation.ts": "a9e5dce0571e59169e7456239e946372bfee38ab",
+        "tests/validation.test.ts": "9f39a0e54d05d934bfc2f863418a00129115d3a7"
       }
+    }
+  ],
+  "demotions": [
+    {
+      "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
+      "at": "2026-11-19T21:54:37.014Z",
+      "reason": "withdrawn",
+      "note": "At kb834/p2 HEAD, validateCreateInput in src/utils/validation.ts rejects titles whose trimmed length is over MAX_TITLE_LENGTH = 100. The claim says no maximum-length check exists, which this sprint made false. tests/validation.test.ts covers the 101-character rejection, and it passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
     }
   ]
 }
