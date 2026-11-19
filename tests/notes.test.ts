@@ -138,3 +138,16 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("POST /api/notes with a very long title", () => {
+  it("accepts a 5000-character title and returns it on GET", async () => {
+    const title = "a".repeat(5000);
+    const res = await request(app).post("/api/notes").send({ title, content: "Body" });
+    expect(res.status).toBe(201);
+    expect(res.body.title).toBe(title);
+
+    const got = await request(app).get(`/api/notes/${res.body.id}`);
+    expect(got.status).toBe(200);
+    expect(got.body.title).toBe(title);
+  });
+});

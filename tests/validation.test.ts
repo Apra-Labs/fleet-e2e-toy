@@ -42,6 +42,31 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("accepts a 5000-character title unchanged in length", () => {
+    const result = validateCreateInput({ title: "a".repeat(5000), content: "x" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toHaveLength(5000);
+    }
+  });
+
+  it("trims a 5000-character title with surrounding whitespace", () => {
+    const result = validateCreateInput({ title: "  " + "a".repeat(5000) + "  ", content: "x" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toHaveLength(5000);
+    }
+  });
+
+  it("still rejects a whitespace-only title with exactly one title error", () => {
+    const result = validateCreateInput({ title: "   ", content: "x" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe("title");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
