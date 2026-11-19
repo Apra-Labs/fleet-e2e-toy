@@ -295,3 +295,54 @@ describe("PUT /api/notes/:id updatedAt", () => {
     expect(noteStore.getById(created.body.id)?.title).toBe("T");
   });
 });
+
+describe("updatedAt lifecycle end to end", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  function at(iso: string): void {
+    jest.setSystemTime(new Date(iso));
+  }
+
+  it("bumps updatedAt on each PUT and persists it", async () => {
+    jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate"] });
+    at("2026-02-01T00:00:00.000Z");
+    const created = await request(app).post("/api/notes").send({ title: "T", content: "C" });
+    expect(created.body.createdAt).toBe(created.body.updatedAt);
+    const { id, createdAt } = created.body;
+
+    at("2026-02-01T01:00:00.000Z");
+    const first = await request(app).put(`/api/notes/${id}`).send({ title: "T1" });
+    at("2026-02-01T02:00:00.000Z");
+    const second = await request(app).put(`/api/notes/${id}`).send({ content: "C2" });
+
+    expect(new Date(first.body.updatedAt).getTime()).toBeGreaterThan(new Date(created.body.updatedAt).getTime());
+    expect(new Date(second.body.updatedAt).getTime()).toBeGreaterThan(new Date(first.body.updatedAt).getTime());
+    for (const body of [first.body, second.body]) {
+      expect(body.createdAt).toBe(createdAt);
+      expect(body.id).toBe(id);
+    }
+
+    const one = await request(app).get(`/api/notes/${id}`);
+    expect(one.body.updatedAt).toBe(second.body.updatedAt);
+    const all = await request(app).get("/api/notes");
+    expect(all.body[0].updatedAt).toBe(second.body.updatedAt);
+  });
+
+  it("leaves updatedAt unchanged after a rejected 400 or 404 PUT", async () => {
+    jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate"] });
+    at("2026-03-01T00:00:00.000Z");
+    const created = await request(app).post("/api/notes").send({ title: "T", content: "C" });
+    const { id, updatedAt } = created.body;
+
+    at("2026-03-01T01:00:00.000Z");
+    const bad = await request(app).put(`/api/notes/${id}`).send({ title: "" });
+    expect(bad.status).toBe(400);
+    const missing = await request(app).put("/api/notes/unknown").send({ title: "X" });
+    expect(missing.status).toBe(404);
+
+    const got = await request(app).get(`/api/notes/${id}`);
+    expect(got.body.updatedAt).toBe(updatedAt);
+  });
+});
