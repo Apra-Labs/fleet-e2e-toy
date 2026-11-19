@@ -1,0 +1,44 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "kb834-base",
+    "entry_count": 2
+  },
+  "entries": [
+    {
+      "id": "ae5f7174-8033-4be4-a7af-98445ddfe19e",
+      "type": "knowledge",
+      "title": "Create validation accepts an empty content string",
+      "summary": "validateCreateInput in src/utils/validation.ts accepts content \"\" on create. It only checks typeof content === 'string', so an empty string passes and the note is created with empty content.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-19T21:13:32.664Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
+      "type": "knowledge",
+      "title": "Note titles have no maximum length",
+      "summary": "validateCreateInput in src/utils/validation.ts accepts a note title of any length on create. It only checks that the title is a string whose trimmed form is non-empty; no maximum-length check exists.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-19T21:13:32.520Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    }
+  ]
+}
