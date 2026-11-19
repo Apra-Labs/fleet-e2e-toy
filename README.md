@@ -34,7 +34,7 @@ npm start       # http://localhost:3000
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/notes` | List all notes (optional: `?tag=`, `?q=`) |
+| GET | `/api/notes` | List notes (optional: `?tag=`, `?q=`, `?page=`, `?limit=`). Paginated: `page` defaults to 1, `limit` defaults to 20 (max 100). Invalid values (non-positive-integers, including leading zeros) return 400 `{ errors }` |
 | GET | `/api/notes/:id` | Get a note by ID |
 | POST | `/api/notes` | Create a note |
 | PUT | `/api/notes/:id` | Update a note |
