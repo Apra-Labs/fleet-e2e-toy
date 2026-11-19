@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "kb834-hbase",
+    "entry_count": 0
+  },
+  "entries": [],
+  "demotions": [
+    {
+      "id": "3c0004bd-eb17-4855-99cb-40721a80c524",
+      "at": "2026-11-19T23:07:33.915Z",
+      "reason": "withdrawn",
+      "note": "At kb834/p3 HEAD, src/utils/validation.ts lines 56-61 return valid:false with a 'body' error when title, content and tags are all undefined, so {} is rejected. The test 'rejects empty object with a body error' in tests/validation.test.ts passes. The claim that {} is accepted as a valid update is false.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    }
+  ]
+}
