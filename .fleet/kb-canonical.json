@@ -26,24 +26,20 @@
       }
     },
     {
-      "id": "c8cadece-8837-4d11-88ea-7d9253fb2795",
+      "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
       "type": "knowledge",
-      "title": "Title max length (100) is enforced on create only, not update",
-      "summary": "validateCreateInput rejects titles whose trimmed length exceeds MAX_TITLE_LENGTH (100); validateUpdateInput deliberately has no length limit, so PATCH/PUT can still set a longer title.",
+      "title": "Note titles have no maximum length",
+      "summary": "validateCreateInput in src/utils/validation.ts accepts a note title of any length on create. It only checks that the title is a string whose trimmed form is non-empty; no maximum-length check exists.",
       "symbols": [
-        "validateCreateInput",
-        "validateUpdateInput",
-        "MAX_TITLE_LENGTH"
+        "validateCreateInput"
       ],
       "source_files": [
-        "src/utils/validation.ts",
-        "tests/validation.test.ts"
+        "src/utils/validation.ts"
       ],
       "confidence": "CONFIRMED",
-      "updated_at": "2026-11-19T21:54:30.780Z",
+      "updated_at": "2026-11-19T21:13:32.520Z",
       "source_file_hashes": {
-        "src/utils/validation.ts": "a9e5dce0571e59169e7456239e946372bfee38ab",
-        "tests/validation.test.ts": "9f39a0e54d05d934bfc2f863418a00129115d3a7"
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
       }
     }
   ],
@@ -54,10 +50,10 @@
       "reason": "demoted"
     },
     {
-      "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
-      "at": "2026-11-19T21:54:37.014Z",
+      "id": "c8cadece-8837-4d11-88ea-7d9253fb2795",
+      "at": "2026-11-19T22:48:54.838Z",
       "reason": "withdrawn",
-      "note": "At kb834/p2 HEAD, validateCreateInput in src/utils/validation.ts rejects titles whose trimmed length is over MAX_TITLE_LENGTH = 100. The claim says no maximum-length check exists, which this sprint made false. tests/validation.test.ts covers the 101-character rejection, and it passes.",
+      "note": "At kb834/p2 HEAD, src/utils/validation.ts has no MAX_TITLE_LENGTH and validateCreateInput has no length check. tests/validation.test.ts now asserts that a 5000-char title is accepted on create. The claim that create rejects titles over 100 characters is false.",
       "evidence_files": [
         "src/utils/validation.ts",
         "tests/validation.test.ts"
