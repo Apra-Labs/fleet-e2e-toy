@@ -46,6 +46,27 @@ export function validateCreateInput(
   };
 }
 
+/**
+ * Validates the body of an update (PUT/PATCH) request for a note.
+ *
+ * All three fields are optional; each check runs only when its field is not `undefined`:
+ * - `title`: if present, must be a string that is non-empty after trimming. There is no
+ *   maximum length on update; `MAX_TITLE_LENGTH` (100) applies to create only.
+ * - `content`: if present, must be a string. An empty string is allowed.
+ * - `tags`: if present, must be an array whose elements are all strings.
+ *
+ * A falsy or non-object body (for example `null` or `undefined`) is rejected immediately
+ * with a single error on field `body`. Otherwise all field errors are collected and
+ * returned together.
+ *
+ * An empty object `{}` is currently accepted as a no-op update.
+ *
+ * On success, `data` contains only the supplied fields, with `title` trimmed.
+ *
+ * @param body - The parsed request body to validate; may be any value.
+ * @returns `{ valid: true, data }` when the body is acceptable, otherwise
+ *   `{ valid: false, errors }` with one or more `ValidationError` entries.
+ */
 export function validateUpdateInput(
   body: unknown
 ): { valid: true; data: UpdateNoteInput } | { valid: false; errors: ValidationError[] } {
