@@ -7,20 +7,22 @@
   },
   "entries": [
     {
-      "id": "ae5f7174-8033-4be4-a7af-98445ddfe19e",
+      "id": "5f721d0d-af5c-49ce-807b-dfeb558e55e9",
       "type": "knowledge",
-      "title": "Create validation accepts an empty content string",
-      "summary": "validateCreateInput in src/utils/validation.ts accepts content \"\" on create. It only checks typeof content === 'string', so an empty string passes and the note is created with empty content.",
+      "title": "Array request bodies bypass the body-level validation error",
+      "summary": "validateCreateInput/validateUpdateInput only reject the whole body (field 'body') when it is falsy or typeof !== 'object'; an array body passes that guard and is validated field-by-field instead.",
       "symbols": [
-        "validateCreateInput"
+        "validateCreateInput",
+        "validateUpdateInput",
+        "ValidationError"
       ],
       "source_files": [
         "src/utils/validation.ts"
       ],
       "confidence": "CONFIRMED",
-      "updated_at": "2026-11-19T21:13:32.664Z",
+      "updated_at": "2026-11-19T22:30:49.277Z",
       "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+        "src/utils/validation.ts": "0d2ba25f6d482d3edd0a7d58649c9375dc7936e3"
       }
     },
     {
@@ -46,6 +48,11 @@
     }
   ],
   "demotions": [
+    {
+      "id": "ae5f7174-8033-4be4-a7af-98445ddfe19e",
+      "at": "2026-11-19T21:46:08.669Z",
+      "reason": "demoted"
+    },
     {
       "id": "f00c6c53-557c-4758-b34c-3e0cc1e9e325",
       "at": "2026-11-19T21:54:37.014Z",
