@@ -5,7 +5,9 @@ import { validateCreateInput, validateUpdateInput } from "../utils/validation";
 
 const router = Router();
 
-// TODO: Add pagination to GET /api/notes (query params: page, limit)
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
+
 // TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
 // TODO: Add updatedAt timestamp on PUT (currently not updated)
@@ -27,7 +29,10 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  res.json(notes);
+  const page = req.query.page !== undefined ? Number(req.query.page) : DEFAULT_PAGE;
+  const limit = req.query.limit !== undefined ? Number(req.query.limit) : DEFAULT_LIMIT;
+  const start = (page - 1) * limit;
+  res.json(notes.slice(start, start + limit));
 });
 
 // Get a single note by ID

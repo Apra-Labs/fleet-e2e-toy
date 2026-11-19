@@ -53,6 +53,52 @@ describe("GET /api/notes", () => {
   });
 });
 
+function seedNotes(count: number, tagFor?: (i: number) => string[]): void {
+  for (let i = 1; i <= count; i++) {
+    const stamp = new Date(2026, 0, 1).toISOString();
+    noteStore.create({
+      id: `n${i}`,
+      title: `Note ${i}`,
+      content: `Body ${i}`,
+      tags: tagFor ? tagFor(i) : [],
+      createdAt: stamp,
+      updatedAt: stamp,
+    });
+  }
+}
+
+describe("GET /api/notes pagination", () => {
+  it("returns notes 11-20 for page=2&limit=10", async () => {
+    seedNotes(25);
+    const res = await request(app).get("/api/notes?page=2&limit=10");
+    expect(res.status).toBe(200);
+    expect(res.body.map((n: { id: string }) => n.id)).toEqual(
+      Array.from({ length: 10 }, (_, i) => `n${i + 11}`)
+    );
+  });
+
+  it("defaults to the first 20 notes", async () => {
+    seedNotes(25);
+    const res = await request(app).get("/api/notes");
+    expect(res.body).toHaveLength(20);
+    expect(res.body[0].id).toBe("n1");
+  });
+
+  it("returns a partial last page and [] past the end", async () => {
+    seedNotes(25);
+    const last = await request(app).get("/api/notes?page=3&limit=10");
+    expect(last.body).toHaveLength(5);
+    const past = await request(app).get("/api/notes?page=4&limit=10");
+    expect(past.body).toEqual([]);
+  });
+
+  it("applies pagination after filters", async () => {
+    seedNotes(25, (i) => (i <= 12 ? ["x"] : ["y"]));
+    const res = await request(app).get("/api/notes?tag=x&limit=5&page=3");
+    expect(res.body.map((n: { id: string }) => n.id)).toEqual(["n11", "n12"]);
+  });
+});
+
 describe("GET /api/notes/:id", () => {
   it("returns 404 for non-existent note", async () => {
     const res = await request(app).get("/api/notes/does-not-exist");
