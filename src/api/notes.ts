@@ -7,7 +7,6 @@ const router = Router();
 
 // TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
-// TODO: Add updatedAt timestamp on PUT (currently not updated)
 
 // List all notes, with optional tag filter and search
 router.get("/", (req: Request, res: Response) => {

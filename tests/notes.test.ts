@@ -267,3 +267,31 @@ describe("paginated GET /api/notes end to end", () => {
     expect(noteStore.getAll()).toEqual(before);
   });
 });
+
+describe("PUT /api/notes/:id updatedAt", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("sets a later updatedAt, keeps createdAt, and persists it", async () => {
+    jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate"] });
+    jest.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+    const created = await request(app).post("/api/notes").send({ title: "T", content: "C" });
+    jest.setSystemTime(new Date("2026-01-01T00:05:00.000Z"));
+    const put = await request(app).put(`/api/notes/${created.body.id}`).send({ title: "T2" });
+    expect(put.status).toBe(200);
+    expect(new Date(put.body.updatedAt).getTime()).toBeGreaterThan(new Date(created.body.updatedAt).getTime());
+    expect(put.body.createdAt).toBe(created.body.createdAt);
+    const got = await request(app).get(`/api/notes/${created.body.id}`);
+    expect(got.body.updatedAt).toBe(put.body.updatedAt);
+  });
+
+  it("returns 404 for unknown id and changes nothing", async () => {
+    const created = await request(app).post("/api/notes").send({ title: "T", content: "C" });
+    const before = noteStore.getAll();
+    const res = await request(app).put("/api/notes/nope").send({ title: "X" });
+    expect(res.status).toBe(404);
+    expect(noteStore.getAll()).toEqual(before);
+    expect(noteStore.getById(created.body.id)?.title).toBe("T");
+  });
+});
