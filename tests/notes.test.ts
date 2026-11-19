@@ -213,3 +213,57 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("paginated GET /api/notes end to end", () => {
+  async function seedViaApi(): Promise<string[]> {
+    const ids: string[] = [];
+    for (let i = 1; i <= 30; i++) {
+      const res = await request(app)
+        .post("/api/notes")
+        .send({ title: `Item ${i}`, content: i % 3 === 0 ? "alpha" : "beta", tags: i % 2 === 0 ? ["x"] : ["y"] });
+      ids.push(res.body.id);
+    }
+    return ids;
+  }
+
+  it("walks every note exactly once in store order, then returns []", async () => {
+    const ids = await seedViaApi();
+    const seen: string[] = [];
+    for (let page = 1; page <= 5; page++) {
+      const res = await request(app).get(`/api/notes?page=${page}&limit=7`);
+      expect(res.status).toBe(200);
+      seen.push(...res.body.map((n: { id: string }) => n.id));
+    }
+    expect(seen).toEqual(ids);
+    const after = await request(app).get("/api/notes?page=6&limit=7");
+    expect(after.body).toEqual([]);
+  });
+
+  it("composes with tag and q filters", async () => {
+    await seedViaApi();
+    // tag=x -> even i; q=alpha -> i divisible by 3; both -> 6,12,18,24,30
+    const p1 = await request(app).get("/api/notes?tag=x&q=alpha&page=1&limit=2");
+    expect(p1.body.map((n: { title: string }) => n.title)).toEqual(["Item 6", "Item 12"]);
+    const p3 = await request(app).get("/api/notes?tag=x&q=alpha&page=3&limit=2");
+    expect(p3.body.map((n: { title: string }) => n.title)).toEqual(["Item 30"]);
+  });
+
+  it("returns at most 20 notes with no params", async () => {
+    await seedViaApi();
+    const res = await request(app).get("/api/notes");
+    expect(res.body).toHaveLength(20);
+  });
+
+  it.each([
+    ["page=0", "page"],
+    ["page=abc", "page"],
+    ["limit=101", "limit"],
+  ])("rejects %s with 400 and leaves the store unchanged", async (qs, field) => {
+    await seedViaApi();
+    const before = noteStore.getAll();
+    const res = await request(app).get(`/api/notes?${qs}`);
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toEqual([{ field, message: expect.any(String) }]);
+    expect(noteStore.getAll()).toEqual(before);
+  });
+});
