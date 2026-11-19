@@ -15,3 +15,17 @@ Validation helpers live in `src/utils/validation.ts` and are called by the API h
 - The content and tags rules are unchanged by the title limit. Content is only checked to be a string, so empty content is accepted on create.
 - Coverage of the title limit is at the unit level; there is no supertest test of the 400 response from the HTTP endpoint.
 - A stale TODO comment in `src/api/notes.ts` still mentions a 200-character title maximum; the authoritative value is `MAX_TITLE_LENGTH`.
+
+## Update validation contract
+
+`validateUpdateInput` is documented with a JSDoc block describing its behaviour:
+
+- A falsy or non-object body is rejected with a single error on field `body`.
+- `title`, `content` and `tags` are all optional and each is checked only when present.
+- `title` must be non-empty after trimming; there is no maximum length on update.
+- `content` may be any string, including an empty one.
+- `tags` must be an array of strings.
+- Field errors are collected and returned together; `{}` is accepted as a no-op update.
+- On success, `data` contains only the supplied fields, with `title` trimmed.
+
+If the title limit is ever extended to update, or removed from create, update this JSDoc, this document and the README together.
