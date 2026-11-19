@@ -87,6 +87,12 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("returns 400 for empty content string", async () => {
+    const res = await request(app).post("/api/notes").send({ title: "T", content: "" });
+    expect(res.status).toBe(400);
+    expect(res.body.errors.some((e: { field: string }) => e.field === "content")).toBe(true);
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
