@@ -5,6 +5,8 @@ export interface ValidationError {
   message: string;
 }
 
+export const MAX_TAGS = 10;
+
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
@@ -27,6 +29,8 @@ export function validateCreateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.length > MAX_TAGS) {
+      errors.push({ field: "tags", message: `Tags must contain at most ${MAX_TAGS} entries` });
     }
   }
 

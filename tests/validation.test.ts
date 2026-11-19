@@ -35,6 +35,24 @@ describe("validateCreateInput", () => {
     expect(result.valid).toBe(false);
   });
 
+  it("accepts exactly 10 tags", () => {
+    const tags = Array.from({ length: 10 }, (_, i) => `t${i}`);
+    const result = validateCreateInput({ title: "T", content: "C", tags });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(tags);
+    }
+  });
+
+  it("rejects 11 tags with a tags error", () => {
+    const tags = Array.from({ length: 11 }, (_, i) => `t${i}`);
+    const result = validateCreateInput({ title: "T", content: "C", tags });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
+
   it("rejects non-string tags", () => {
     const result = validateCreateInput({ title: "Note", content: "Body", tags: [1, 2] });
     expect(result.valid).toBe(false);
