@@ -1,26 +1,31 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "commit": "489f4192823e4281fdacd6c44e7fbbbc53df3ba5",
     "branch": "kb834-base",
     "entry_count": 2
   },
   "entries": [
     {
-      "id": "ae5f7174-8033-4be4-a7af-98445ddfe19e",
+      "id": "49d1320e-55b5-4ce7-9224-05e8b9edca31",
       "type": "knowledge",
-      "title": "Create validation accepts an empty content string",
-      "summary": "validateCreateInput in src/utils/validation.ts accepts content \"\" on create. It only checks typeof content === 'string', so an empty string passes and the note is created with empty content.",
+      "title": "Create validation rejects exactly-empty content but allows whitespace",
+      "summary": "validateCreateInput rejects content === '' with a ValidationError on field 'content' ('Content must be a non-empty string') but accepts whitespace-only content untrimmed. validateUpdateInput still accepts content ''.",
       "symbols": [
-        "validateCreateInput"
+        "validateCreateInput",
+        "validateUpdateInput"
       ],
       "source_files": [
-        "src/utils/validation.ts"
+        "src/utils/validation.ts",
+        "tests/validation.test.ts",
+        "tests/notes.test.ts"
       ],
       "confidence": "CONFIRMED",
-      "updated_at": "2026-11-19T21:13:32.664Z",
+      "updated_at": "2026-11-19T21:46:02.224Z",
       "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+        "src/utils/validation.ts": "683cb0455dfaa5d0d5701bc78a70bf5d215871e1",
+        "tests/notes.test.ts": "e60fdc3602709c5d4382997ebb6bb8c7a558903b",
+        "tests/validation.test.ts": "a58cdfb523ec8ed9c234e702d78f75f92a8fc294"
       }
     },
     {
@@ -39,6 +44,28 @@
       "source_file_hashes": {
         "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
       }
+    }
+  ],
+  "demotions": [
+    {
+      "id": "ae5f7174-8033-4be4-a7af-98445ddfe19e",
+      "at": "2026-11-19T21:46:08.669Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, src/utils/validation.ts:25-26 rejects content === '' in validateCreateInput with an error on field 'content'. The new test 'rejects empty content string' in tests/validation.test.ts passes, so the claim that create accepts '' is false.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "c034e08a-b324-43d1-b5d1-a01cc7ad22f6",
+      "at": "2026-11-19T21:46:08.669Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, validateCreateInput in src/utils/validation.ts has no MAX_TAGS constant and no tag-count check. The tags block only checks that tags is an array of strings, and grep finds no MAX_TAGS in src/ or tests/. Create does not reject 11+ tags, so the claimed create-only cap of 10 does not exist.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/notes.test.ts"
+      ]
     }
   ]
 }

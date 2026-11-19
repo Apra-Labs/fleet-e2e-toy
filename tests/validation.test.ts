@@ -42,6 +42,22 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects empty content string with an error on field 'content'", () => {
+    const result = validateCreateInput({ title: "T", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("accepts whitespace-only content and preserves it unchanged", () => {
+    const result = validateCreateInput({ title: "T", content: " " });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe(" ");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -61,6 +77,11 @@ describe("validateUpdateInput", () => {
 
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
+    expect(result.valid).toBe(true);
+  });
+
+  it("still accepts empty content string (update unchanged)", () => {
+    const result = validateUpdateInput({ content: "" });
     expect(result.valid).toBe(true);
   });
 });

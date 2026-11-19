@@ -22,6 +22,8 @@ export function validateCreateInput(
 
   if (typeof obj.content !== "string") {
     errors.push({ field: "content", message: "Content must be a string" });
+  } else if (obj.content === "") {
+    errors.push({ field: "content", message: "Content must be a non-empty string" });
   }
 
   if (obj.tags !== undefined) {
