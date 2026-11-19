@@ -1,7 +1,18 @@
 import { CreateNoteInput, UpdateNoteInput } from "../models/note";
 
+/**
+ * A single validation failure. Failures are collected into the `errors` array returned by
+ * `validateCreateInput` and `validateUpdateInput` when `valid` is `false`.
+ */
 export interface ValidationError {
+  /**
+   * The input key that failed: `title`, `content` or `tags`. Set to `body` when the whole
+   * request body is rejected because it is not a JSON object.
+   */
   field: string;
+  /**
+   * Human-readable reason for the failure, safe to return to the client.
+   */
   message: string;
 }
 
