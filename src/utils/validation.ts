@@ -76,3 +76,35 @@ export function validateUpdateInput(
 
   return { valid: true, data };
 }
+
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_LIMIT = 20;
+export const MAX_LIMIT = 100;
+
+export function validatePaginationQuery(
+  query: Record<string, unknown>
+): { valid: true; page: number; limit: number } | { valid: false; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  const parse = (value: unknown): number | undefined => {
+    if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) return undefined;
+    return Number(value);
+  };
+
+  let page = DEFAULT_PAGE;
+  if (query.page !== undefined) {
+    const p = parse(query.page);
+    if (p === undefined) errors.push({ field: "page", message: "page must be a positive integer" });
+    else page = p;
+  }
+
+  let limit = DEFAULT_LIMIT;
+  if (query.limit !== undefined) {
+    const l = parse(query.limit);
+    if (l === undefined) errors.push({ field: "limit", message: "limit must be a positive integer" });
+    else if (l > MAX_LIMIT) errors.push({ field: "limit", message: `limit must be at most ${MAX_LIMIT}` });
+    else limit = l;
+  }
+
+  if (errors.length > 0) return { valid: false, errors };
+  return { valid: true, page, limit };
+}

@@ -99,6 +99,35 @@ describe("GET /api/notes pagination", () => {
   });
 });
 
+describe("GET /api/notes pagination validation", () => {
+  it.each([
+    ["page=0", "page"],
+    ["page=abc", "page"],
+    ["page=-1", "page"],
+    ["limit=101", "limit"],
+    ["limit=0", "limit"],
+    ["limit=1.5", "limit"],
+  ])("returns 400 for %s", async (qs, field) => {
+    const res = await request(app).get(`/api/notes?${qs}`);
+    expect(res.status).toBe(400);
+    expect(res.body.errors.map((e: { field: string }) => e.field)).toContain(field);
+  });
+
+  it("reports both invalid params", async () => {
+    const res = await request(app).get("/api/notes?page=0&limit=abc");
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toHaveLength(2);
+  });
+
+  it("accepts limit=100 and valid page/limit", async () => {
+    seedNotes(25);
+    expect((await request(app).get("/api/notes?limit=100")).status).toBe(200);
+    const res = await request(app).get("/api/notes?page=2&limit=10");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(10);
+  });
+});
+
 describe("GET /api/notes/:id", () => {
   it("returns 404 for non-existent note", async () => {
     const res = await request(app).get("/api/notes/does-not-exist");

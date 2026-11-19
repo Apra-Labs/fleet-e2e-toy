@@ -1,12 +1,9 @@
 import { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { noteStore, Note } from "../models/note";
-import { validateCreateInput, validateUpdateInput } from "../utils/validation";
+import { validateCreateInput, validateUpdateInput, validatePaginationQuery } from "../utils/validation";
 
 const router = Router();
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 20;
 
 // TODO: Add input length validation (title max 200 chars, content max 10000 chars)
 // TODO: Return 400 if tags array contains duplicates
@@ -14,6 +11,12 @@ const DEFAULT_LIMIT = 20;
 
 // List all notes, with optional tag filter and search
 router.get("/", (req: Request, res: Response) => {
+  const pagination = validatePaginationQuery(req.query);
+  if (!pagination.valid) {
+    res.status(400).json({ errors: pagination.errors });
+    return;
+  }
+
   let notes = noteStore.getAll();
 
   const tag = req.query.tag as string | undefined;
@@ -29,8 +32,7 @@ router.get("/", (req: Request, res: Response) => {
     );
   }
 
-  const page = req.query.page !== undefined ? Number(req.query.page) : DEFAULT_PAGE;
-  const limit = req.query.limit !== undefined ? Number(req.query.limit) : DEFAULT_LIMIT;
+  const { page, limit } = pagination;
   const start = (page - 1) * limit;
   res.json(notes.slice(start, start + limit));
 });
