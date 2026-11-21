@@ -5,6 +5,21 @@ export interface ValidationError {
   message: string;
 }
 
+/**
+ * Validates the request body for creating a note.
+ *
+ * @param body - The raw request body (expected to be a JSON object).
+ * @returns A discriminated union:
+ *   - `{ valid: true, data: CreateNoteInput }` when all checks pass. `data.title`
+ *     is trimmed and `data.tags` defaults to `[]` when absent.
+ *   - `{ valid: false, errors: ValidationError[] }` otherwise. Errors can be
+ *     reported on these fields only:
+ *     - `body`: the body is not a non-null object (returned alone, early exit).
+ *     - `title`: missing, not a string, or blank after trim; OR longer than
+ *       100 characters after trim.
+ *     - `content`: not a string (an empty string is accepted).
+ *     - `tags`: present but not an array of strings.
+ */
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
