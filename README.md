@@ -43,7 +43,7 @@ npm start       # http://localhost:3000
 
 ## Input Validation
 
-Titles on create are limited to 100 characters (after trimming); updating a note with an empty `tags` array is rejected. See [docs/input-validation.md](docs/input-validation.md).
+Titles on create are limited to 100 characters (after trimming); empty `content` on create is rejected; updating a note with an empty `tags` array is rejected. See [docs/input-validation.md](docs/input-validation.md).
 
 ## Tech Stack
 
