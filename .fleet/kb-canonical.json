@@ -1,0 +1,112 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "kb834m-base",
+    "entry_count": 6
+  },
+  "entries": [
+    {
+      "id": "3030fa03-eb27-4969-bb83-2e2c0b5f6cc1",
+      "type": "knowledge",
+      "title": "Note update accepts an empty tags array",
+      "summary": "validateUpdateInput in src/utils/validation.ts accepts tags: [] on update, which clears all tags.",
+      "symbols": [
+        "validateUpdateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:11:01.049Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "3aa5a260-b16a-4776-9130-c68fe3cc5d29",
+      "type": "knowledge",
+      "title": "Note update accepts an empty content string",
+      "summary": "validateUpdateInput in src/utils/validation.ts accepts content equal to the empty string on update: only a non-string content is rejected.",
+      "symbols": [
+        "validateUpdateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:11:00.063Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "617b275f-e309-44cb-ab7b-c29dabd5f04e",
+      "type": "knowledge",
+      "title": "Note titles have no maximum length on create",
+      "summary": "validateCreateInput in src/utils/validation.ts accepts a note title of any length; there is no maximum-length check.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:11:00.310Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "67be8e63-0592-49e4-be66-af67f4455bf7",
+      "type": "knowledge",
+      "title": "Note create accepts an empty content string",
+      "summary": "validateCreateInput in src/utils/validation.ts accepts content equal to the empty string on create: it only checks typeof content === string.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:10:59.818Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "8d50d68c-0831-4a60-b4f7-a1a1e2cecaad",
+      "type": "knowledge",
+      "title": "Note create accepts any number of tags",
+      "summary": "validateCreateInput in src/utils/validation.ts places no limit on the number of tags on create.",
+      "symbols": [
+        "validateCreateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:11:00.560Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    },
+    {
+      "id": "d77c5a4d-cf10-4152-b3fa-65e97fc12b3b",
+      "type": "knowledge",
+      "title": "validateUpdateInput trims the title it returns",
+      "summary": "validateUpdateInput in src/utils/validation.ts returns data.title as the trimmed title string.",
+      "symbols": [
+        "validateUpdateInput"
+      ],
+      "source_files": [
+        "src/utils/validation.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-21T06:11:00.808Z",
+      "source_file_hashes": {
+        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+      }
+    }
+  ]
+}
