@@ -87,6 +87,36 @@ describe("POST /api/notes", () => {
     expect(res.status).toBe(400);
     expect(res.body.errors).toBeDefined();
   });
+
+  it("rejects tags containing an empty string with 400", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "C", tags: ["work", ""] });
+    expect(res.status).toBe(400);
+    expect(Array.isArray(res.body.errors)).toBe(true);
+    expect(res.body.errors.some((e: { field: string }) => e.field === "tags")).toBe(true);
+  });
+
+  it("rejects whitespace-only tags with 400", async () => {
+    const res = await request(app)
+      .post("/api/notes")
+      .send({ title: "T", content: "C", tags: ["   "] });
+    expect(res.status).toBe(400);
+  });
+
+  it("still accepts valid tags and stores nothing for rejected requests", async () => {
+    await request(app).post("/api/notes").send({ title: "Bad1", content: "C", tags: ["work", ""] });
+    await request(app).post("/api/notes").send({ title: "Bad2", content: "C", tags: ["   "] });
+    const ok = await request(app)
+      .post("/api/notes")
+      .send({ title: "Good", content: "C", tags: ["work"] });
+    expect(ok.status).toBe(201);
+    expect(ok.body.tags).toEqual(["work"]);
+
+    const list = await request(app).get("/api/notes");
+    expect(list.body).toHaveLength(1);
+    expect(list.body[0].title).toBe("Good");
+  });
 });
 
 describe("PUT /api/notes/:id", () => {
