@@ -42,6 +42,24 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("gives exactly one tags error with the existing message for non-string tags", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: [1, 2] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0]).toEqual({ field: "tags", message: "Tags must be an array of strings" });
+    }
+  });
+
+  it.each([[[""]], [["   "]], [["work", ""]]])("rejects empty or blank tag elements %j", (tags) => {
+    const result = validateCreateInput({ title: "N", content: "B", tags });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe("tags");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {

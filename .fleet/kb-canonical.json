@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "kb834m-hbase",
+    "entry_count": 0
+  },
+  "entries": [],
+  "demotions": [
+    {
+      "id": "7e9bcf22-8eaa-4b45-bd0d-94c7d8d347d1",
+      "at": "2026-11-21T10:50:14.817Z",
+      "reason": "withdrawn",
+      "note": "At kb834m/f HEAD, validateUpdateInput in src/utils/validation.ts has no check for an empty update body. After the non-object check it only validates fields that are present, so {} returns valid:true with data {}. tests/validation.test.ts has no 'body' empty-update test. The claimed logic exists only in commit 1c4e0d1, which is on another branch.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "f890c305-575a-4c94-995b-db2c1b6462d8",
+      "at": "2026-11-21T10:50:14.817Z",
+      "reason": "withdrawn",
+      "note": "This sprint made the claim false. At HEAD, src/utils/validation.ts:30-31 rejects tags with any element that is empty after trim() ('Tags must not contain empty strings'). validateCreateInput with tags ['', 'a'] now returns valid:false, which the new tests in tests/validation.test.ts confirm.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    }
+  ]
+}
