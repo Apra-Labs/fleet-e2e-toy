@@ -44,6 +44,25 @@ export function validateCreateInput(
   };
 }
 
+/**
+ * Validates the body of a partial note update (e.g. PUT/PATCH).
+ *
+ * Every field is optional; only the fields present in the body are checked
+ * and copied into the result:
+ * - `title`, if present, must be a string that is non-empty after trimming.
+ *   The stored value is trimmed. There is no length cap on update.
+ * - `content`, if present, must be a string. An empty string is allowed.
+ * - `tags`, if present, must be an array of strings and must not be empty.
+ *
+ * A body that is missing, falsy, or not an object fails immediately with a
+ * single error on field `body`. Otherwise all field errors are collected
+ * rather than failing on the first one.
+ *
+ * @param body - The parsed request body, of unknown shape.
+ * @returns `{ valid: true, data }` where `data` is an `UpdateNoteInput`
+ *   containing only the supplied fields (with `title` trimmed), or
+ *   `{ valid: false, errors }` where `errors` is a `ValidationError[]`.
+ */
 export function validateUpdateInput(
   body: unknown
 ): { valid: true; data: UpdateNoteInput } | { valid: false; errors: ValidationError[] } {
