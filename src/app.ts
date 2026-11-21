@@ -8,7 +8,7 @@ app.use("/api/notes", notesRouter);
 
 // Health check
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+  res.status(200).json({ status: "healthy" });
 });
 
 export default app;
