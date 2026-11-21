@@ -41,6 +41,10 @@ npm start       # http://localhost:3000
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
+## Input Validation
+
+Titles on create are limited to 100 characters (after trimming); updating a note with an empty `tags` array is rejected. See [docs/input-validation.md](docs/input-validation.md).
+
 ## Tech Stack
 
 Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
