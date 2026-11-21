@@ -1,9 +1,9 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "35b45fd8c253ce8915415471aadbde95e8f2b853",
+    "commit": "427e84c5ba7d15c7e47eca3b95dd8c13461b9ba7",
     "branch": "kb834m-base",
-    "entry_count": 5
+    "entry_count": 4
   },
   "entries": [
     {
@@ -61,23 +61,6 @@
       }
     },
     {
-      "id": "8d50d68c-0831-4a60-b4f7-a1a1e2cecaad",
-      "type": "knowledge",
-      "title": "Note create accepts any number of tags",
-      "summary": "validateCreateInput in src/utils/validation.ts places no limit on the number of tags on create.",
-      "symbols": [
-        "validateCreateInput"
-      ],
-      "source_files": [
-        "src/utils/validation.ts"
-      ],
-      "confidence": "CONFIRMED",
-      "updated_at": "2026-11-21T06:11:00.560Z",
-      "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
-      }
-    },
-    {
       "id": "d77c5a4d-cf10-4152-b3fa-65e97fc12b3b",
       "type": "knowledge",
       "title": "validateUpdateInput trims the title it returns",
@@ -107,10 +90,29 @@
       ]
     },
     {
+      "id": "4ccaec26-0fa8-4f52-99b5-24ce4628d3b7",
+      "at": "2026-11-21T07:18:40.023Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, validateCreateInput in src/utils/validation.ts checks only typeof obj.content !== 'string' and has no check for an empty string, so content '' is accepted on create. The claim that create rejects empty-string content is false, and it contradicts CONFIRMED entry 67be8e63.",
+      "evidence_files": [
+        "src/utils/validation.ts"
+      ]
+    },
+    {
       "id": "617b275f-e309-44cb-ab7b-c29dabd5f04e",
       "at": "2026-11-21T06:40:37.624Z",
       "reason": "withdrawn",
       "note": "At HEAD, src/utils/validation.ts:21-22 rejects create titles whose trimmed length is over 100 ('Title must be at most 100 characters'), so the claim that there is no maximum-length check is false. The test 'rejects a 101-character title' passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "8d50d68c-0831-4a60-b4f7-a1a1e2cecaad",
+      "at": "2026-11-21T07:18:40.023Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, validateCreateInput in src/utils/validation.ts rejects more than 10 tags (else-if tags.length > 10, field 'tags'). This sprint added the cap, so 'no limit on the number of tags on create' is false. The new test 'rejects more than 10 tags on create' passes.",
       "evidence_files": [
         "src/utils/validation.ts",
         "tests/validation.test.ts"
