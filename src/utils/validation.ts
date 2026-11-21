@@ -18,6 +18,8 @@ export function validateCreateInput(
 
   if (typeof obj.title !== "string" || obj.title.trim().length === 0) {
     errors.push({ field: "title", message: "Title is required and must be a non-empty string" });
+  } else if (obj.title.trim().length > 100) {
+    errors.push({ field: "title", message: "Title must be at most 100 characters" });
   }
 
   if (typeof obj.content !== "string") {
@@ -64,6 +66,8 @@ export function validateUpdateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.length === 0) {
+      errors.push({ field: "tags", message: "Tags must not be an empty array" });
     }
   }
 

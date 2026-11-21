@@ -1,28 +1,11 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "commit": "35b45fd8c253ce8915415471aadbde95e8f2b853",
     "branch": "kb834m-base",
-    "entry_count": 6
+    "entry_count": 5
   },
   "entries": [
-    {
-      "id": "3030fa03-eb27-4969-bb83-2e2c0b5f6cc1",
-      "type": "knowledge",
-      "title": "Note update accepts an empty tags array",
-      "summary": "validateUpdateInput in src/utils/validation.ts accepts tags: [] on update, which clears all tags.",
-      "symbols": [
-        "validateUpdateInput"
-      ],
-      "source_files": [
-        "src/utils/validation.ts"
-      ],
-      "confidence": "CONFIRMED",
-      "updated_at": "2026-11-21T06:11:01.049Z",
-      "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
-      }
-    },
     {
       "id": "3aa5a260-b16a-4776-9130-c68fe3cc5d29",
       "type": "knowledge",
@@ -41,20 +24,23 @@
       }
     },
     {
-      "id": "617b275f-e309-44cb-ab7b-c29dabd5f04e",
+      "id": "42b26501-58f9-487e-b43e-602903ac9408",
       "type": "knowledge",
-      "title": "Note titles have no maximum length on create",
-      "summary": "validateCreateInput in src/utils/validation.ts accepts a note title of any length; there is no maximum-length check.",
+      "title": "Create title cap is 100 chars after trim; update has no cap",
+      "summary": "validateCreateInput rejects titles longer than 100 characters, measured after trim(). validateUpdateInput has no length cap, so PUT can set longer titles than create allows.",
       "symbols": [
-        "validateCreateInput"
+        "validateCreateInput",
+        "validateUpdateInput"
       ],
       "source_files": [
-        "src/utils/validation.ts"
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
       ],
       "confidence": "CONFIRMED",
-      "updated_at": "2026-11-21T06:11:00.310Z",
+      "updated_at": "2026-11-21T06:40:36.677Z",
       "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
+        "src/utils/validation.ts": "a40c4358ab25be03bbb0824c94b8315b2b373378",
+        "tests/validation.test.ts": "900695b1729ce37248b9a9caf878902cd28e1ae1"
       }
     },
     {
@@ -107,6 +93,28 @@
       "source_file_hashes": {
         "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
       }
+    }
+  ],
+  "demotions": [
+    {
+      "id": "3030fa03-eb27-4969-bb83-2e2c0b5f6cc1",
+      "at": "2026-11-21T06:40:37.624Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, validateUpdateInput in src/utils/validation.ts:69-70 rejects tags: [] with field 'tags' ('Tags must not be an empty array'), so update no longer accepts an empty tags array. The test 'rejects an empty tags array' passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "617b275f-e309-44cb-ab7b-c29dabd5f04e",
+      "at": "2026-11-21T06:40:37.624Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, src/utils/validation.ts:21-22 rejects create titles whose trimmed length is over 100 ('Title must be at most 100 characters'), so the claim that there is no maximum-length check is false. The test 'rejects a 101-character title' passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
     }
   ]
 }
