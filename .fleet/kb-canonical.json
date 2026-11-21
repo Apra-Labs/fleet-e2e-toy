@@ -1,28 +1,11 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "35b45fd8c253ce8915415471aadbde95e8f2b853",
+    "commit": "427e84c5ba7d15c7e47eca3b95dd8c13461b9ba7",
     "branch": "kb834m-base",
-    "entry_count": 5
+    "entry_count": 4
   },
   "entries": [
-    {
-      "id": "3aa5a260-b16a-4776-9130-c68fe3cc5d29",
-      "type": "knowledge",
-      "title": "Note update accepts an empty content string",
-      "summary": "validateUpdateInput in src/utils/validation.ts accepts content equal to the empty string on update: only a non-string content is rejected.",
-      "symbols": [
-        "validateUpdateInput"
-      ],
-      "source_files": [
-        "src/utils/validation.ts"
-      ],
-      "confidence": "CONFIRMED",
-      "updated_at": "2026-11-21T06:11:00.063Z",
-      "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
-      }
-    },
     {
       "id": "42b26501-58f9-487e-b43e-602903ac9408",
       "type": "knowledge",
@@ -101,6 +84,16 @@
       "at": "2026-11-21T06:40:37.624Z",
       "reason": "withdrawn",
       "note": "At HEAD, validateUpdateInput in src/utils/validation.ts:69-70 rejects tags: [] with field 'tags' ('Tags must not be an empty array'), so update no longer accepts an empty tags array. The test 'rejects an empty tags array' passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "3aa5a260-b16a-4776-9130-c68fe3cc5d29",
+      "at": "2026-11-21T07:34:18.387Z",
+      "reason": "withdrawn",
+      "note": "At HEAD, src/utils/validation.ts:64-65 validateUpdateInput has an else-if that pushes a 'content' error when obj.content === ''. The new test 'rejects an empty content string' in tests/validation.test.ts passes. So update no longer accepts an empty content string, and the claim is false.",
       "evidence_files": [
         "src/utils/validation.ts",
         "tests/validation.test.ts"
