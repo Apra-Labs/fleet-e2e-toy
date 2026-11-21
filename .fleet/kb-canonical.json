@@ -1,9 +1,9 @@
 {
   "version": 3,
   "provenance": {
-    "commit": "35b45fd8c253ce8915415471aadbde95e8f2b853",
+    "commit": "427e84c5ba7d15c7e47eca3b95dd8c13461b9ba7",
     "branch": "kb834m-base",
-    "entry_count": 5
+    "entry_count": 4
   },
   "entries": [
     {
@@ -61,23 +61,6 @@
       }
     },
     {
-      "id": "8d50d68c-0831-4a60-b4f7-a1a1e2cecaad",
-      "type": "knowledge",
-      "title": "Note create accepts any number of tags",
-      "summary": "validateCreateInput in src/utils/validation.ts places no limit on the number of tags on create.",
-      "symbols": [
-        "validateCreateInput"
-      ],
-      "source_files": [
-        "src/utils/validation.ts"
-      ],
-      "confidence": "CONFIRMED",
-      "updated_at": "2026-11-21T06:11:00.560Z",
-      "source_file_hashes": {
-        "src/utils/validation.ts": "9cfb289916438c8c26e796a92c27212a0e60f425"
-      }
-    },
-    {
       "id": "d77c5a4d-cf10-4152-b3fa-65e97fc12b3b",
       "type": "knowledge",
       "title": "validateUpdateInput trims the title it returns",
@@ -111,6 +94,16 @@
       "at": "2026-11-21T06:40:37.624Z",
       "reason": "withdrawn",
       "note": "At HEAD, src/utils/validation.ts:21-22 rejects create titles whose trimmed length is over 100 ('Title must be at most 100 characters'), so the claim that there is no maximum-length check is false. The test 'rejects a 101-character title' passes.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    },
+    {
+      "id": "8d50d68c-0831-4a60-b4f7-a1a1e2cecaad",
+      "at": "2026-11-21T07:02:28.647Z",
+      "reason": "withdrawn",
+      "note": "At kb834m/c HEAD, validateCreateInput in src/utils/validation.ts now pushes a tags ValidationError when tags.length > 10, and tests/validation.test.ts asserts that 11 tags are rejected. The claim that create places no limit on the number of tags is false.",
       "evidence_files": [
         "src/utils/validation.ts",
         "tests/validation.test.ts"
