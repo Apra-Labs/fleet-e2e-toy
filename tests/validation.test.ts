@@ -71,6 +71,24 @@ describe("validateCreateInput", () => {
       expect(result.data.tags).toEqual([]);
     }
   });
+
+  it("rejects more than 10 tags on create", () => {
+    const tags = Array.from({ length: 11 }, (_, i) => `t${i}`);
+    const result = validateCreateInput({ title: "Note", content: "Body", tags });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "tags")).toBe(true);
+    }
+  });
+
+  it("accepts exactly 10 tags on create", () => {
+    const tags = Array.from({ length: 10 }, (_, i) => `t${i}`);
+    const result = validateCreateInput({ title: "Note", content: "Body", tags });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(tags);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
