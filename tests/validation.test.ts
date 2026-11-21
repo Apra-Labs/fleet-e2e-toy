@@ -59,8 +59,28 @@ describe("validateUpdateInput", () => {
     expect(result.valid).toBe(false);
   });
 
-  it("accepts empty object (no-op update)", () => {
+  it("rejects empty object (no-op update) with a body error", () => {
     const result = validateUpdateInput({});
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe("body");
+    }
+  });
+
+  it("accepts update with content only, including empty string", () => {
+    const result = validateUpdateInput({ content: "" });
     expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe("");
+    }
+  });
+
+  it("accepts update with tags only, including empty array", () => {
+    const result = validateUpdateInput({ tags: [] });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual([]);
+    }
   });
 });
