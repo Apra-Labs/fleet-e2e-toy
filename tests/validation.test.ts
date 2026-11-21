@@ -71,6 +71,24 @@ describe("validateCreateInput", () => {
       expect(result.data.tags).toEqual([]);
     }
   });
+
+  it("accepts exactly 10 string tags", () => {
+    const tags = Array.from({ length: 10 }, (_, i) => `tag${i}`);
+    const result = validateCreateInput({ title: "Note", content: "Body", tags });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual(tags);
+    }
+  });
+
+  it("rejects 11 string tags with a tags error", () => {
+    const tags = Array.from({ length: 11 }, (_, i) => `tag${i}`);
+    const result = validateCreateInput({ title: "Note", content: "Body", tags });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "tags")).toBe(true);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -108,6 +126,12 @@ describe("validateUpdateInput", () => {
 
   it("accepts an omitted tags field", () => {
     const result = validateUpdateInput({ title: "Still fine" });
+    expect(result.valid).toBe(true);
+  });
+
+  it("accepts 11 string tags (no cap on update)", () => {
+    const tags = Array.from({ length: 11 }, (_, i) => `tag${i}`);
+    const result = validateUpdateInput({ tags });
     expect(result.valid).toBe(true);
   });
 });
