@@ -29,6 +29,8 @@ export function validateCreateInput(
   if (obj.tags !== undefined) {
     if (!Array.isArray(obj.tags) || !obj.tags.every((t) => typeof t === "string")) {
       errors.push({ field: "tags", message: "Tags must be an array of strings" });
+    } else if (obj.tags.length > 10) {
+      errors.push({ field: "tags", message: "Tags must contain at most 10 items" });
     }
   }
 
