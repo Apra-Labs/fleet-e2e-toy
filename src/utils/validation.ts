@@ -53,6 +53,13 @@ export function validateUpdateInput(
 
   const obj = body as Record<string, unknown>;
 
+  if (obj.title === undefined && obj.content === undefined && obj.tags === undefined) {
+    return {
+      valid: false,
+      errors: [{ field: "body", message: "Request body must include at least one of title, content or tags" }],
+    };
+  }
+
   if (obj.title !== undefined && (typeof obj.title !== "string" || obj.title.trim().length === 0)) {
     errors.push({ field: "title", message: "Title must be a non-empty string" });
   }
