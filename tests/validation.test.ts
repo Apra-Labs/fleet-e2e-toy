@@ -71,6 +71,39 @@ describe("validateCreateInput", () => {
       expect(result.data.tags).toEqual([]);
     }
   });
+
+  it("rejects empty-string content with a content error", () => {
+    const result = validateCreateInput({ title: "Note", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("reports empty-string content as the only error when the title is valid", () => {
+    const result = validateCreateInput({ title: "Note", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe("content");
+    }
+  });
+
+  it("accepts whitespace-only content and does not trim it", () => {
+    const result = validateCreateInput({ title: "Note", content: "   " });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe("   ");
+    }
+  });
+
+  it("accepts non-empty content (regression guard)", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe("Body");
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
