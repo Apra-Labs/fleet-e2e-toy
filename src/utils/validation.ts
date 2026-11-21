@@ -5,6 +5,23 @@ export interface ValidationError {
   message: string;
 }
 
+/**
+ * Validates the request body for creating a note.
+ *
+ * @param body The untrusted request body (unknown). It may be any JSON value;
+ *   non-object values and null are rejected.
+ * @returns A discriminated union on `valid`:
+ *   - `{ valid: true, data: CreateNoteInput }` when the body passes. `title` is
+ *     trimmed, `content` is passed through unchanged, and `tags` defaults to `[]`
+ *     when omitted.
+ *   - `{ valid: false, errors: ValidationError[] }` when it fails, where each
+ *     error is `{ field, message }`.
+ *
+ * A non-object or null body yields exactly one error with `field` set to `body`.
+ * Otherwise the `title`, `content` and `tags` checks all run and their errors are
+ * accumulated (not just the first one). `tags`, when present, must be an array of
+ * strings and every element must be non-blank after trimming.
+ */
 export function validateCreateInput(
   body: unknown
 ): { valid: true; data: CreateNoteInput } | { valid: false; errors: ValidationError[] } {
