@@ -44,7 +44,7 @@ describe("validateCreateInput", () => {
   });
 
   it("rejects a 101-character title", () => {
-    const result = validateCreateInput({ title: "a".repeat(101), content: "" });
+    const result = validateCreateInput({ title: "a".repeat(101), content: "Body" });
     expect(result.valid).toBe(false);
     if (!result.valid) {
       expect(result.errors.some((e) => e.field === "title")).toBe(true);
@@ -52,12 +52,12 @@ describe("validateCreateInput", () => {
   });
 
   it("accepts a 100-character title", () => {
-    const result = validateCreateInput({ title: "a".repeat(100), content: "" });
+    const result = validateCreateInput({ title: "a".repeat(100), content: "Body" });
     expect(result.valid).toBe(true);
   });
 
   it("accepts a title over 100 raw characters that is exactly 100 after trimming", () => {
-    const result = validateCreateInput({ title: " " + "a".repeat(100) + "  ", content: "" });
+    const result = validateCreateInput({ title: " " + "a".repeat(100) + "  ", content: "Body" });
     expect(result.valid).toBe(true);
     if (result.valid) {
       expect(result.data.title).toBe("a".repeat(100));
