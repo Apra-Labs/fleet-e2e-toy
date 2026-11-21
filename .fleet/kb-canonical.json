@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "kb834m-hbase",
+    "entry_count": 0
+  },
+  "entries": [],
+  "demotions": [
+    {
+      "id": "1b604c24-bfb6-42ca-aa1a-fc4fcbb909bb",
+      "at": "2026-11-21T10:35:20.012Z",
+      "reason": "withdrawn",
+      "note": "At sprint HEAD, validateUpdateInput (src/utils/validation.ts:56-61) returns valid:false with a 'body' error for {}. The updated test in tests/validation.test.ts asserts the rejection. So the claim that {} is accepted as a valid update no longer holds.",
+      "evidence_files": [
+        "src/utils/validation.ts",
+        "tests/validation.test.ts"
+      ]
+    }
+  ]
+}
