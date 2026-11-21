@@ -39,11 +39,11 @@ npm start       # http://localhost:3000
 | POST | `/api/notes` | Create a note |
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
-| GET | `/health` | Health check |
+| GET | `/health` | Health check (`{"status":"healthy"}`) |
 
 ## Input Validation
 
-Titles on create are limited to 100 characters (after trimming); updating a note with an empty `tags` array is rejected. See [docs/input-validation.md](docs/input-validation.md).
+Titles on create are limited to 100 characters (after trimming); creating a note with more than 10 tags is rejected; updating a note with an empty `tags` array is rejected. See [docs/input-validation.md](docs/input-validation.md).
 
 ## Tech Stack
 
