@@ -42,6 +42,35 @@ describe("validateCreateInput", () => {
       expect(result.errors[0].field).toBe("tags");
     }
   });
+
+  it("rejects a 101-character title", () => {
+    const result = validateCreateInput({ title: "a".repeat(101), content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "title")).toBe(true);
+    }
+  });
+
+  it("accepts a 100-character title", () => {
+    const result = validateCreateInput({ title: "a".repeat(100), content: "" });
+    expect(result.valid).toBe(true);
+  });
+
+  it("accepts a title over 100 raw characters that is exactly 100 after trimming", () => {
+    const result = validateCreateInput({ title: " " + "a".repeat(100) + "  ", content: "" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.title).toBe("a".repeat(100));
+    }
+  });
+
+  it("still accepts empty tags array on create", () => {
+    const result = validateCreateInput({ title: "Note", content: "Body", tags: [] });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.tags).toEqual([]);
+    }
+  });
 });
 
 describe("validateUpdateInput", () => {
@@ -61,6 +90,24 @@ describe("validateUpdateInput", () => {
 
   it("accepts empty object (no-op update)", () => {
     const result = validateUpdateInput({});
+    expect(result.valid).toBe(true);
+  });
+
+  it("rejects an empty tags array", () => {
+    const result = validateUpdateInput({ tags: [] });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "tags")).toBe(true);
+    }
+  });
+
+  it("accepts a non-empty tags array", () => {
+    const result = validateUpdateInput({ tags: ["a"] });
+    expect(result.valid).toBe(true);
+  });
+
+  it("accepts an omitted tags field", () => {
+    const result = validateUpdateInput({ title: "Still fine" });
     expect(result.valid).toBe(true);
   });
 });
