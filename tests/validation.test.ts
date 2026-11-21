@@ -110,4 +110,44 @@ describe("validateUpdateInput", () => {
     const result = validateUpdateInput({ title: "Still fine" });
     expect(result.valid).toBe(true);
   });
+
+  it("rejects an empty content string", () => {
+    const result = validateUpdateInput({ content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("rejects an empty content string even when a title is supplied", () => {
+    const result = validateUpdateInput({ title: "T", content: "" });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("accepts non-empty content and passes it through", () => {
+    const result = validateUpdateInput({ content: "hello" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBe("hello");
+    }
+  });
+
+  it("rejects non-string content with a content error", () => {
+    const result = validateUpdateInput({ content: 42 });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.some((e) => e.field === "content")).toBe(true);
+    }
+  });
+
+  it("leaves content undefined when content is omitted", () => {
+    const result = validateUpdateInput({ title: "T" });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.content).toBeUndefined();
+    }
+  });
 });
