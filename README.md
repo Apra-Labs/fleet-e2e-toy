@@ -37,7 +37,7 @@ npm start       # http://localhost:3000
 | GET | `/api/notes` | List all notes (optional: `?tag=`, `?q=`) |
 | GET | `/api/notes/:id` | Get a note by ID |
 | POST | `/api/notes` | Create a note |
-| PUT | `/api/notes/:id` | Update a note |
+| PUT | `/api/notes/:id` | Update a note (body must include at least one of `title`, `content`, `tags`; otherwise 400) |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
 
