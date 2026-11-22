@@ -26,7 +26,7 @@ Every file in this project exists because a specific workshop slide references i
 git clone https://github.com/Apra-Labs/noteapi-demo.git
 cd noteapi-demo
 npm install
-npm test        # 21 tests, all passing
+npm test        # 23 tests, all passing
 npm start       # http://localhost:3000
 ```
 
