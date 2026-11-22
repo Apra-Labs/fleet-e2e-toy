@@ -1,0 +1,29 @@
+{
+  "version": 3,
+  "provenance": {
+    "commit": "608c28e1bc878c542d8e2764cfb06fa905204ac1",
+    "branch": "main",
+    "entry_count": 1
+  },
+  "entries": [
+    {
+      "id": "94b235c2-b370-4999-84b0-d28e269e8e90",
+      "type": "knowledge",
+      "title": "Fixed-path GET routes in notes router must precede /:id",
+      "summary": "In src/api/notes.ts, any fixed-path GET such as /count must be registered before router.get('/:id'). Otherwise Express matches the path segment as an id and the handler returns 404 Note not found.",
+      "symbols": [
+        "router"
+      ],
+      "source_files": [
+        "src/api/notes.ts",
+        "tests/integration/notes-count.test.ts"
+      ],
+      "confidence": "CONFIRMED",
+      "updated_at": "2026-11-22T06:58:48.710Z",
+      "source_file_hashes": {
+        "src/api/notes.ts": "2f82a7870f1f7dd12c15a290312c218b588bd7dc",
+        "tests/integration/notes-count.test.ts": "48c4004b60ee6c7644163a2b2e1e1401475ea8d7"
+      }
+    }
+  ]
+}
