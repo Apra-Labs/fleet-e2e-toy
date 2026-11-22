@@ -53,6 +53,22 @@ describe("GET /api/notes", () => {
   });
 });
 
+describe("GET /api/notes/count", () => {
+  it("returns 0 on an empty store", async () => {
+    const res = await request(app).get("/api/notes/count");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ count: 0 });
+  });
+
+  it("returns 2 after two creates", async () => {
+    await request(app).post("/api/notes").send({ title: "A", content: "a", tags: [] });
+    await request(app).post("/api/notes").send({ title: "B", content: "b", tags: [] });
+    const res = await request(app).get("/api/notes/count");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ count: 2 });
+  });
+});
+
 describe("GET /api/notes/:id", () => {
   it("returns 404 for non-existent note", async () => {
     const res = await request(app).get("/api/notes/does-not-exist");
