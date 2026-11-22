@@ -138,3 +138,31 @@ describe("GET /health", () => {
     expect(res.body.status).toBe("ok");
   });
 });
+
+describe("GET /api/notes/count", () => {
+  it("returns 0 for an empty store", async () => {
+    const res = await request(app).get("/api/notes/count");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ count: 0 });
+  });
+
+  it("returns the number of notes and does not shadow /:id", async () => {
+    const a = await request(app)
+      .post("/api/notes")
+      .send({ title: "First", content: "Content 1", tags: [] });
+    await request(app)
+      .post("/api/notes")
+      .send({ title: "Second", content: "Content 2", tags: [] });
+
+    const res = await request(app).get("/api/notes/count");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ count: 2 });
+
+    const byId = await request(app).get(`/api/notes/${a.body.id}`);
+    expect(byId.status).toBe(200);
+    expect(byId.body.id).toBe(a.body.id);
+
+    const unknown = await request(app).get("/api/notes/unknown-id");
+    expect(unknown.status).toBe(404);
+  });
+});

@@ -30,6 +30,11 @@ router.get("/", (req: Request, res: Response) => {
   res.json(notes);
 });
 
+// Count all notes (must be registered before "/:id")
+router.get("/count", (_req: Request, res: Response) => {
+  res.status(200).json({ count: noteStore.getAll().length });
+});
+
 // Get a single note by ID
 router.get("/:id", (req: Request<{ id: string }>, res: Response) => {
   const note = noteStore.getById(req.params.id);
