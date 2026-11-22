@@ -39,6 +39,7 @@ npm start       # http://localhost:3000
 | POST | `/api/notes` | Create a note |
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
+| GET | `/api/version` | Current package version (`{ version }`) |
 | GET | `/health` | Health check |
 
 ## Tech Stack
