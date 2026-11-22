@@ -35,6 +35,7 @@ npm start       # http://localhost:3000
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/notes` | List all notes (optional: `?tag=`, `?q=`) |
+| GET | `/api/notes/count` | Total number of notes, returned as `{ "count": n }` (must stay registered before `/:id` so it is not shadowed) |
 | GET | `/api/notes/:id` | Get a note by ID |
 | POST | `/api/notes` | Create a note |
 | PUT | `/api/notes/:id` | Update a note |
