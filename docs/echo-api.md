@@ -12,6 +12,24 @@
 | no `msg` | `400 {"error": "msg query parameter is required"}` |
 | `?msg=a&msg=b` (repeated) | `400 {"error": "msg query parameter is required"}` |
 
+## Length endpoint
+
+`GET /api/echo/length?msg=<text>` returns the number of characters (UTF-16 code units,
+i.e. JavaScript `string.length`) in the `msg` query parameter.
+
+| Request | Response |
+|---------|----------|
+| `?msg=hello` | `200 {"length": 5}` |
+| `?msg=hello%20world` | `200 {"length": 11}` (measured after URL-decoding) |
+| `?msg=` (empty) | `200 {"length": 0}` |
+| no `msg` | `400 {"error": "msg query parameter is required"}` |
+| `?msg=a&msg=b` (repeated) | `400 {"error": "msg query parameter is required"}` |
+
+It uses the same `typeof msg === "string"` validation as the echo route, and lives in
+the same router (`src/api/echo.ts`), so it is mounted under `/api/echo`. Tests are in
+`tests/echo-length.test.ts`. The two handlers currently duplicate the validation code;
+extracting a shared helper is a possible cleanup.
+
 ## Design notes
 
 - Validation is a single `typeof msg === "string"` check. Express parses a missing
