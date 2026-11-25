@@ -40,6 +40,7 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/api/echo` | Echo the msg query param as {echo: msg} |
+| GET | `/api/echo/length` | Return the length of the msg query param as {length: n} |
 | GET | `/health` | Health check |
 
 ## Tech Stack
