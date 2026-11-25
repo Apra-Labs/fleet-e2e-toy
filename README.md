@@ -48,3 +48,5 @@ Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
 ## License
 
 MIT
+
+Human note for the pr856 proof.
