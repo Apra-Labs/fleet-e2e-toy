@@ -48,3 +48,4 @@ Node.js + Express + TypeScript, in-memory store, Jest + supertest for tests.
 ## License
 
 MIT
+Issues are tracked in beads.
