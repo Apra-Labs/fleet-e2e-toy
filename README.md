@@ -40,6 +40,7 @@ npm start       # http://localhost:3000
 | PUT | `/api/notes/:id` | Update a note |
 | DELETE | `/api/notes/:id` | Delete a note |
 | GET | `/health` | Health check |
+| GET | `/ping` | Liveness probe; returns `200` with `{"pong": true}` |
 
 ## Tech Stack
 
