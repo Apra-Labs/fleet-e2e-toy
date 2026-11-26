@@ -11,4 +11,9 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+// Ping
+app.get("/ping", (_req, res) => {
+  res.status(200).json({ pong: true });
+});
+
 export default app;
